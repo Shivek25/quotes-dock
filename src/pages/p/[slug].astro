@@ -15,6 +15,15 @@ const defaultPkg =
 const initialMin = defaultPkg ? defaultPkg.prices.sedan : 145;
 const initialMax = initialMin + 20;
 const isPreview = prospect?.mode === 'preview';
+
+const glossReadings = [
+  { before: '64.2', after: '98.6', delta: '+34.4', beforeWidth: '64%', afterWidth: '98%' },
+  { before: '68.8', after: '97.4', delta: '+28.6', beforeWidth: '69%', afterWidth: '97%' },
+  { before: '66.0', after: '96.9', delta: '+30.9', beforeWidth: '66%', afterWidth: '97%' },
+  { before: '61.5', after: '98.1', delta: '+36.6', beforeWidth: '62%', afterWidth: '98%' },
+  { before: '70.4', after: '97.8', delta: '+27.4', beforeWidth: '70%', afterWidth: '98%' },
+  { before: '58.9', after: '96.5', delta: '+37.6', beforeWidth: '59%', afterWidth: '96%' },
+];
 ---
 
 {
@@ -23,25 +32,27 @@ const isPreview = prospect?.mode === 'preview';
       title="Preview Not Found | QuotesDock"
       description="This detailing preview page could not be found."
     >
-      <main class="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
-        <div class="w-full rounded-2xl border border-[#CBD5E1] bg-white p-8 shadow-sm">
-          <p class="text-sm font-semibold text-[#0369A1]">QuotesDock Preview</p>
-          <h1 class="mt-2 text-2xl font-bold text-[#0F172A]">
+      <main class="carbon-mesh mx-auto flex min-h-screen flex-col items-center justify-center px-6 py-16 text-center">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-8">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+            QuotesDock Preview
+          </span>
+          <h1 class="mt-4 text-2xl font-bold text-white">
             This preview link is not active
           </h1>
-          <p class="mt-3 text-sm leading-relaxed text-[#475569]">
-            Check that the business slug is spelled right, or open your Founder Studio to generate a new detailer preview.
+          <p class="mt-3 text-sm leading-relaxed text-[#94A3B8]">
+            Check that the business slug is spelled correctly, or open your Founder Studio to generate a new detailer preview.
           </p>
           <div class="mt-6 flex flex-wrap justify-center gap-3">
             <a
               href="/"
-              class="rounded-lg border border-[#CBD5E1] bg-white px-4 py-2.5 text-sm font-semibold text-[#0F172A] transition-colors hover:bg-slate-50"
+              class="rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
             >
               View Live Demos
             </a>
             <a
               href="/studio"
-              class="rounded-lg bg-[#0369A1] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0284C7]"
+              class="rounded-xl bg-[#00F2FE] px-4 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE]"
             >
               Open Founder Studio
             </a>
@@ -55,131 +66,210 @@ const isPreview = prospect?.mode === 'preview';
       description={prospect.tagline}
     >
       {isPreview && (
-        <div class="border-b border-sky-800/60 bg-[#082F49] px-4 py-2.5 text-white">
-          <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="inline-flex shrink-0 items-center rounded-full bg-sky-400/20 px-2.5 py-0.5 text-xs font-semibold text-sky-200 ring-1 ring-sky-400/40">
-                Live Preview
+        <div class="border-b border-cyan-400/30 bg-[#061A26] px-4 py-2 text-xs text-cyan-50 sm:text-sm">
+          <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2">
+            <div class="flex min-w-0 max-w-full flex-1 items-start gap-2.5 sm:items-center">
+              <span class="relative mt-1 flex h-2 w-2 shrink-0 sm:mt-0">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-75" />
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
               </span>
-              <span class="truncate text-sky-50">
-                Built for <strong>{prospect.businessName}</strong> ({prospect.city}) - test the 60-second quote form below
+              <span class="leading-snug">
+                <strong class="text-[#00F2FE]">Live Custom Preview</strong> prepared for{' '}
+                <strong>{prospect.businessName}</strong> ({prospect.city}) - test your 60-second quote configurator below
               </span>
             </div>
             <a
               href="#quote-calculator"
-              class="shrink-0 font-semibold text-sky-200 underline decoration-sky-400/60 underline-offset-4 hover:text-white"
+              class="shrink-0 font-semibold text-[#00F2FE] underline decoration-cyan-400/50 underline-offset-4 hover:text-white"
             >
-              Test quote flow
+              Run Quote Test
             </a>
           </div>
         </div>
       )}
 
-      {/* Hero Section: Obsidian Wet-Bay Studio Look */}
-      <header class="bay-grid-bg relative bg-[#0C131F] text-white">
-        <div class="mx-auto max-w-5xl px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-12">
-          <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-6">
-            <div>
-              <div class="flex flex-wrap items-center gap-2.5">
-                <span class="text-lg font-extrabold tracking-tight text-white sm:text-xl">
+      {/* Sticky Glass Navigation Bar */}
+      <nav class="sticky top-0 z-40 border-b border-slate-800/80 bg-[#0A0C10]/85 backdrop-blur-xl">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
+          <div class="flex min-w-0 items-center gap-3.5">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-400/10 text-[#00F2FE] cyan-glow-sm">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M12 2L20 6.5V17.5L12 22L4 17.5V6.5L12 2Z" />
+                <path d="M12 7L16 9.5V14.5L12 17L8 14.5V9.5L12 7Z" />
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="font-display truncate text-base font-bold tracking-tight text-white sm:text-lg">
                   {prospect.businessName}
                 </span>
-                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-300 ring-1 ring-emerald-500/30">
-                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  {prospect.turnaroundBadge}
-                </span>
               </div>
-              <p class="mt-1 text-xs text-slate-300 sm:text-sm">
-                Mobile Unit Serving: {prospect.serviceArea}
-              </p>
-            </div>
-
-            <div class="flex items-center gap-3">
-              <a
-                href={`tel:${prospect.phoneDisplay.replace(/[^+\d]/g, '')}`}
-                class="rounded-lg border border-slate-700 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-100 transition-colors hover:border-slate-500 hover:bg-slate-800 sm:text-sm"
-              >
-                Call / Text: {prospect.phoneDisplay}
-              </a>
-              <a
-                href="#quote-calculator"
-                class="hidden rounded-lg bg-[#0369A1] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#0284C7] sm:inline-flex"
-              >
-                Get 60s Quote
-              </a>
+              <div class="flex items-center gap-1.5 text-[11px] text-[#94A3B8]">
+                <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                <span class="truncate">Mobile Unit: {prospect.city}</span>
+              </div>
             </div>
           </div>
 
-          <div class="mt-8 grid items-center gap-8 lg:grid-cols-12">
-            <div class="lg:col-span-7">
-              <div class="inline-flex flex-wrap items-center gap-2 rounded-lg border border-slate-700/80 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-200">
-                <span class="font-bold text-amber-400">
-                  ★ {prospect.ratingScore}
+          <div class="hidden items-center gap-7 text-xs font-semibold tracking-wide text-[#94A3B8] lg:flex">
+            <a href="#quote-calculator" class="text-[#00F2FE] transition-colors hover:text-white">
+              Configurator
+            </a>
+            <a href="#job-proof" class="transition-colors hover:text-white">
+              Job Proof
+            </a>
+            <a href="#rig-specs" class="transition-colors hover:text-white">
+              Mobile Rig
+            </a>
+            <a href="#faq" class="transition-colors hover:text-white">
+              FAQ
+            </a>
+          </div>
+
+          <div class="flex shrink-0 items-center gap-2.5">
+            <a
+              href={`tel:${prospect.phoneDisplay.replace(/[^+\d]/g, '')}`}
+              class="hidden rounded-lg border border-slate-700/80 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white sm:inline-flex"
+            >
+              {prospect.phoneDisplay}
+            </a>
+            <a
+              href="#quote-calculator"
+              class="rounded-lg bg-[#00F2FE] px-4 py-2 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm sm:text-sm"
+            >
+              Get 60s Quote
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* Atmospheric Wet-Bay Studio Hero */}
+      <header class="carbon-mesh relative overflow-hidden border-b border-slate-800/80">
+        <div class="tunnel-ambient pointer-events-none absolute -top-32 left-1/2 h-80 w-[90vw] max-w-[720px] -translate-x-1/2 rounded-full bg-[#00F2FE]/10 blur-[120px]" />
+
+        <div class="mx-auto max-w-7xl px-4 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-14">
+          <div class="grid items-center gap-10 lg:grid-cols-12">
+            {/* Left Copy & Metrics */}
+            <div class="reveal-up is-visible min-w-0 lg:col-span-7">
+              <div class="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-1.5 text-xs">
+                <span class="relative flex h-2 w-2">
+                  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-75" />
+                  <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
                 </span>
-                <span class="text-slate-300">
-                  across {prospect.reviewCount}+ jobs ({prospect.ratingSource})
-                </span>
+                <span class="font-semibold text-white">{prospect.turnaroundBadge}</span>
                 <span class="text-slate-500">|</span>
-                <span class="text-sky-300">{prospect.instagramHandle}</span>
+                <span class="font-bold text-amber-400">★ {prospect.ratingScore}</span>
+                <span class="text-slate-300">({prospect.reviewCount}+ public reviews)</span>
+                <span class="text-slate-500">|</span>
+                <span class="text-[#00F2FE]">{prospect.instagramHandle}</span>
               </div>
 
-              <h1 class="mt-4 max-w-[21ch] text-3xl font-extrabold leading-[1.12] tracking-tight text-white sm:text-4xl lg:text-5xl">
+              <h1 class="mt-5 max-w-[20ch] text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[54px]">
                 {prospect.heroHeadline}
               </h1>
 
-              <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
+              <p class="mt-4 max-w-2xl text-base leading-relaxed text-[#94A3B8] sm:text-lg">
                 {prospect.heroSubheadline}
               </p>
 
-              <div class="mt-6 flex flex-wrap gap-3">
+              <div class="mt-7 flex flex-wrap items-center gap-4">
                 <a
                   href="#quote-calculator"
-                  class="inline-flex items-center justify-center rounded-xl bg-[#0369A1] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-sky-950/40 transition-colors hover:bg-[#0284C7] sm:text-base"
+                  class="group inline-flex items-center gap-2.5 rounded-xl bg-[#00F2FE] px-6 py-4 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow sm:text-base"
                 >
-                  Calculate My 60-Second Quote
+                  <span>Configure Driveway Quote</span>
+                  <svg
+                    class="h-4 w-4 transition-transform group-hover:translate-x-1"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                 </a>
                 <a
                   href="#job-proof"
-                  class="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 px-5 py-3.5 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-500 hover:text-white"
+                  class="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/70 px-5 py-4 text-sm font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
                 >
-                  See Job Results
+                  Inspect Gloss Proof
                 </a>
+              </div>
+
+              {/* 4-Card Telemetry Strip */}
+              <div class="mt-8 grid grid-cols-2 gap-3 border-t border-slate-800/80 pt-6 sm:grid-cols-4">
+                <div class="glass-panel rounded-xl p-3.5">
+                  <div class="font-display tabular-nums text-lg font-bold text-[#00F2FE]">
+                    ★ {prospect.ratingScore}
+                  </div>
+                  <div class="mt-0.5 text-[11px] font-medium text-[#94A3B8]">
+                    {prospect.reviewCount}+ Public Reviews
+                  </div>
+                </div>
+                <div class="glass-panel rounded-xl p-3.5">
+                  <div class="font-display tabular-nums text-lg font-bold text-white">
+                    0 PPM
+                  </div>
+                  <div class="mt-0.5 text-[11px] font-medium text-[#94A3B8]">
+                    Spot-Free Pure Rinse
+                  </div>
+                </div>
+                <div class="glass-panel rounded-xl p-3.5">
+                  <div class="font-display tabular-nums text-lg font-bold text-[#00F2FE]">
+                    98+ GU
+                  </div>
+                  <div class="mt-0.5 text-[11px] font-medium text-[#94A3B8]">
+                    Target Gloss Depth
+                  </div>
+                </div>
+                <div class="glass-panel rounded-xl p-3.5">
+                  <div class="font-display text-lg font-bold text-emerald-400">
+                    60 Sec
+                  </div>
+                  <div class="mt-0.5 text-[11px] font-medium text-[#94A3B8]">
+                    Instant Quote Flow
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Right Spec Card: Mobile Rig Readiness */}
-            <div class="lg:col-span-5">
-              <div class="rounded-2xl border border-slate-700/80 bg-slate-900/90 p-5 shadow-xl">
-                <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                  <span class="text-sm font-bold text-white">
-                    Why Driveway Owners Book With Us
-                  </span>
-                  <span class="shrink-0 whitespace-nowrap rounded bg-slate-800 px-2 py-0.5 text-xs font-medium text-sky-300">
-                    {prospect.city}
-                  </span>
-                </div>
-                <ul class="mt-4 space-y-3">
-                  {prospect.trustPoints.map((point) => (
-                    <li class="flex items-start gap-2.5 text-sm text-slate-200">
-                      <svg
-                        class="mt-0.5 h-4 w-4 shrink-0 text-emerald-400"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div class="mt-5 rounded-xl border border-slate-800 bg-[#0C131F] p-3.5 text-xs text-slate-300">
-                  <span class="font-semibold text-white">60-Second Quote Promise:</span>{' '}
-                  Pick your vehicle size and package below to see your estimated price range immediately with zero obligation.
+            {/* Right Optical Bay Frame */}
+            <div class="reveal-up is-visible stagger-1 lg:col-span-5">
+              <div class="glass-panel anisotropic-border relative overflow-hidden rounded-2xl p-2">
+                <div class="relative aspect-[4/3] overflow-hidden rounded-xl bg-[#070A0F]">
+                  <img
+                    src="/images/hero-wetbay.jpg"
+                    alt={`${prospect.businessName} wet-bay detailing showcase`}
+                    class="h-full w-full object-cover object-[70%_62%] scale-105"
+                  />
+                  {/* Mask upper-left background wall cleanly so image works for every city */}
+                  <div
+                    class="pointer-events-none absolute inset-0"
+                    style="background: linear-gradient(125deg, rgba(10,12,16,0.92) 0%, rgba(10,12,16,0.42) 45%, rgba(10,12,16,0.08) 100%), linear-gradient(to top, rgba(10,12,16,0.94) 0%, transparent 52%);"
+                  />
+
+                  <div class="absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 rounded-xl border border-slate-700/70 bg-[#0A0C10]/85 px-4 py-3 backdrop-blur-md">
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#00F2FE]">
+                        <span class="h-1.5 w-1.5 rounded-full bg-[#00F2FE]" />
+                        Autonomous Mobile Unit
+                      </div>
+                      <div class="mt-0.5 truncate text-xs text-slate-300">
+                        Serving {prospect.serviceArea}
+                      </div>
+                    </div>
+                    <div class="shrink-0 text-right">
+                      <div class="font-display tabular-nums text-base font-bold text-white">
+                        {prospect.currencySymbol}{initialMin}+
+                      </div>
+                      <div class="text-[10px] uppercase tracking-wider text-[#94A3B8]">
+                        Base Reset
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -188,44 +278,43 @@ const isPreview = prospect?.mode === 'preview';
       </header>
 
       {/* Main Content */}
-      <main class="mx-auto max-w-5xl px-4 pb-28 pt-8 sm:px-6 sm:pb-16 sm:pt-12">
-        {/* Interactive 60-Second Driveway Quote Calculator */}
+      <main class="mx-auto max-w-7xl px-4 pb-32 pt-12 sm:px-6 sm:pt-16">
+        {/* Interactive 60-Second Driveway Quote Configurator */}
         <section
           id="quote-calculator"
-          class="rounded-2xl border border-[#CBD5E1] bg-white p-5 shadow-sm sm:p-8"
+          class="reveal-up glass-panel anisotropic-border rounded-2xl p-5 sm:p-8 lg:p-10"
         >
-          <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-6">
+          <div class="flex flex-wrap items-start justify-between gap-6 border-b border-slate-800 pb-6">
             <div>
-              <span class="inline-flex items-center rounded-md bg-sky-50 px-2.5 py-1 text-xs font-semibold text-[#0369A1] ring-1 ring-sky-200">
-                Step-by-Step Driveway Estimator
-              </span>
-              <h2 class="mt-2 text-2xl font-extrabold tracking-tight text-[#0F172A] sm:text-3xl">
-                Get Your 60-Second Quote
+              <div class="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+                Real-Time Driveway Estimator
+              </div>
+              <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                60-Second Driveway Quote Configurator
               </h2>
-              <p class="mt-1 text-sm text-[#475569]">
-                Tap your vehicle size and detail level to view instant pricing for {prospect.city}.
+              <p class="mt-1.5 text-sm text-[#94A3B8]">
+                Tap your vehicle class, detailing tier, and condition for an instant {prospect.city} estimate.
               </p>
             </div>
 
-            <div class="rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-left sm:text-right">
-              <div class="text-xs font-semibold text-[#0369A1]">
+            <div class="rounded-xl border border-cyan-400/35 bg-[#0A0C10]/90 px-5 py-3.5 cyan-glow-sm">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">
                 Live Estimated Range
               </div>
               <div
                 id="calc-top-estimate"
-                class="tabular-nums mt-0.5 text-2xl font-extrabold text-[#0F172A]"
+                class="font-display tabular-nums mt-0.5 text-2xl font-bold text-[#00F2FE] sm:text-3xl"
               >
                 {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
               </div>
-              <div id="calc-top-duration" class="text-xs text-[#475569]">
+              <div id="calc-top-duration" class="mt-0.5 text-xs text-slate-300">
                 {defaultPkg?.durationLabel}
               </div>
             </div>
           </div>
 
-          <form id="quote-form" class="mt-6 space-y-8" novalidate>
+          <form id="quote-form" class="mt-8 space-y-10" novalidate>
             <input type="hidden" name="slug" value={prospect.slug} />
-            {/* Honeypot anti-spam field */}
             <div class="hidden" aria-hidden="true">
               <label for="website_url">Leave blank</label>
               <input
@@ -238,113 +327,189 @@ const isPreview = prospect?.mode === 'preview';
               />
             </div>
 
-            {/* Step 1: Vehicle Size */}
+            {/* Step 01: Vehicle Class with Custom SVG Silhouettes */}
             <div>
-              <label class="block text-sm font-bold text-[#0F172A]">
-                1. What size vehicle are we detailing?
-              </label>
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-3">
+                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#06121A]">
+                    01
+                  </span>
+                  <h3 class="text-base font-bold text-white sm:text-lg">
+                    Select Vehicle Class
+                  </h3>
+                </div>
+                <span class="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+                  Step 1 of 4
+                </span>
+              </div>
+
               <div
                 id="vehicle-size-group"
-                class="mt-3 grid gap-3 sm:grid-cols-3"
+                class="mt-4 grid gap-4 md:grid-cols-3"
                 role="radiogroup"
                 aria-label="Vehicle size"
               >
                 <button
                   type="button"
                   data-vehicle="sedan"
+                  data-vehicle-label="Coupe / Sedan"
                   aria-checked="true"
                   role="radio"
-                  class="vehicle-btn flex flex-col items-start rounded-xl border-2 border-[#0369A1] bg-sky-50/60 p-4 text-left transition-colors"
+                  class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 p-5 text-left cyan-glow-sm"
                 >
-                  <span class="text-sm font-bold text-[#0F172A]">
-                    Coupe / Sedan
-                  </span>
-                  <span class="mt-1 text-xs text-[#475569]">
-                    2-door or 4-door cars (Civic, Model 3, 3 Series)
-                  </span>
+                  <div class="flex w-full items-start justify-between gap-3">
+                    {/* Sedan SVG Silhouette */}
+                    <svg class="h-10 w-24 text-[#00F2FE]" viewBox="0 0 120 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M10 30H22M40 30H82M100 30H110L112 24L104 20L82 18L66 10H36L20 18L10 21V30Z" />
+                      <circle cx="31" cy="30" r="7" />
+                      <circle cx="91" cy="30" r="7" />
+                    </svg>
+                    <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-[#00F2FE] bg-[#00F2FE]" />
+                  </div>
+                  <div class="mt-3">
+                    <div class="font-display text-base font-bold text-white">
+                      Coupe / Sedan
+                    </div>
+                    <p class="mt-1 text-xs text-[#94A3B8]">
+                      2-door or 4-door cars (Civic, Model 3, BMW 3 Series)
+                    </p>
+                    <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-[#00F2FE]">
+                      Standard Baseline Scale
+                    </div>
+                  </div>
                 </button>
 
                 <button
                   type="button"
                   data-vehicle="suv"
+                  data-vehicle-label="Mid-Size SUV"
                   aria-checked="false"
                   role="radio"
-                  class="vehicle-btn flex flex-col items-start rounded-xl border border-[#CBD5E1] bg-white p-4 text-left transition-colors hover:border-slate-400"
+                  class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-5 text-left hover:border-cyan-400/50"
                 >
-                  <span class="text-sm font-bold text-[#0F172A]">
-                    Mid-Size SUV / Crossover
-                  </span>
-                  <span class="mt-1 text-xs text-[#475569]">
-                    2-row SUVs & wagons (RAV4, CR-V, Model Y, Q5)
-                  </span>
+                  <div class="flex w-full items-start justify-between gap-3">
+                    {/* Mid-Size SUV SVG Silhouette */}
+                    <svg class="h-10 w-24 text-slate-300" viewBox="0 0 120 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M10 30H22M40 30H82M100 30H110L112 22L104 18L90 17L76 9H30L18 18L10 21V30Z" />
+                      <circle cx="31" cy="30" r="7.5" />
+                      <circle cx="91" cy="30" r="7.5" />
+                    </svg>
+                    <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-slate-600" />
+                  </div>
+                  <div class="mt-3">
+                    <div class="font-display text-base font-bold text-white">
+                      Mid-Size SUV / Crossover
+                    </div>
+                    <p class="mt-1 text-xs text-[#94A3B8]">
+                      2-row SUVs & wagons (RAV4, CR-V, Model Y, Porsche Macan)
+                    </p>
+                    <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+                      +Mid-Size Surface Area
+                    </div>
+                  </div>
                 </button>
 
                 <button
                   type="button"
                   data-vehicle="truck_xl"
+                  data-vehicle-label="3-Row SUV / Pickup"
                   aria-checked="false"
                   role="radio"
-                  class="vehicle-btn flex flex-col items-start rounded-xl border border-[#CBD5E1] bg-white p-4 text-left transition-colors hover:border-slate-400"
+                  class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-5 text-left hover:border-cyan-400/50"
                 >
-                  <span class="text-sm font-bold text-[#0F172A]">
-                    3-Row SUV / Pickup Truck
-                  </span>
-                  <span class="mt-1 text-xs text-[#475569]">
-                    Full-size trucks, minivans & XL SUVs (F-150, Tahoe, XC90)
-                  </span>
+                  <div class="flex w-full items-start justify-between gap-3">
+                    {/* Pickup / Full-Size Truck SVG Silhouette */}
+                    <svg class="h-10 w-24 text-slate-300" viewBox="0 0 120 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M8 30H21M39 30H83M101 30H113V19H72V9H34L20 18L8 21V30Z" />
+                      <circle cx="30" cy="30" r="8" />
+                      <circle cx="92" cy="30" r="8" />
+                    </svg>
+                    <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-slate-600" />
+                  </div>
+                  <div class="mt-3">
+                    <div class="font-display text-base font-bold text-white">
+                      3-Row SUV / Pickup Truck
+                    </div>
+                    <p class="mt-1 text-xs text-[#94A3B8]">
+                      Full-size trucks, minivans & XL SUVs (F-150, Tahoe, Range Rover)
+                    </p>
+                    <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+                      +Full-Size Rig Scale
+                    </div>
+                  </div>
                 </button>
               </div>
             </div>
 
-            {/* Step 2: Detailing Package */}
+            {/* Step 02: Detailing Packages */}
             <div>
-              <label class="block text-sm font-bold text-[#0F172A]">
-                2. Choose your detailing package
-              </label>
-              <div id="package-group" class="mt-3 grid gap-4 lg:grid-cols-3">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-3">
+                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#06121A]">
+                    02
+                  </span>
+                  <h3 class="text-base font-bold text-white sm:text-lg">
+                    Choose Preservation Package
+                  </h3>
+                </div>
+                <span class="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+                  Step 2 of 4
+                </span>
+              </div>
+
+              <div id="package-group" class="mt-4 grid gap-5 lg:grid-cols-3">
                 {prospect.packages.map((pkg, idx) => {
                   const isDefault = defaultPkg ? pkg.id === defaultPkg.id : idx === 0;
                   return (
                     <button
                       type="button"
                       data-package-id={pkg.id}
+                      data-package-name={pkg.name}
                       data-price-sedan={pkg.prices.sedan}
                       data-price-suv={pkg.prices.suv}
                       data-price-truck_xl={pkg.prices.truck_xl}
                       data-duration={pkg.durationLabel}
                       aria-pressed={isDefault ? 'true' : 'false'}
-                      class={`package-btn relative flex h-full flex-col justify-between rounded-xl p-5 text-left transition-colors ${
+                      class={`package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl p-6 text-left ${
                         isDefault
-                          ? 'border-2 border-[#0369A1] bg-sky-50/50'
-                          : 'border border-[#CBD5E1] bg-white hover:border-slate-400'
+                          ? 'border-2 border-[#00F2FE] bg-[#00F2FE]/8 cyan-glow-sm'
+                          : 'border border-slate-700/80 bg-[#0A0C10]/65 hover:border-cyan-400/50'
                       }`}
                     >
+                      {pkg.popular && (
+                        <span class="absolute -top-3 right-5 rounded-full bg-[#00F2FE] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-[#06121A]">
+                          Most Booked
+                        </span>
+                      )}
+
                       <div>
                         <div class="flex items-start justify-between gap-2">
-                          <span class="text-base font-bold text-[#0F172A]">
+                          <span class="font-display text-lg font-bold text-white">
                             {pkg.name}
                           </span>
-                          {pkg.popular && (
-                            <span class="shrink-0 rounded-full bg-[#0369A1] px-2.5 py-0.5 text-[11px] font-bold text-white">
-                              Most Popular
-                            </span>
-                          )}
+                          <span
+                            class={`pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 ${
+                              isDefault
+                                ? 'border-[#00F2FE] bg-[#00F2FE]'
+                                : 'border-slate-600'
+                            }`}
+                          />
                         </div>
-                        <p class="mt-1 text-xs text-[#475569]">{pkg.tagline}</p>
+                        <p class="mt-1 text-xs text-[#94A3B8]">{pkg.tagline}</p>
 
-                        <div class="mt-3 flex items-baseline gap-2 border-b border-slate-200 pb-3">
-                          <span class="pkg-price-display tabular-nums text-2xl font-extrabold text-[#0F172A]">
+                        <div class="mt-4 flex items-baseline gap-2 border-b border-slate-800 pb-4">
+                          <span class="pkg-price-display font-display tabular-nums text-3xl font-bold text-[#00F2FE]">
                             {prospect.currencySymbol}{pkg.prices.sedan}
                           </span>
-                          <span class="text-xs font-medium text-[#475569]">
-                            base ({pkg.durationLabel})
+                          <span class="text-xs text-[#94A3B8]">
+                            ({pkg.durationLabel})
                           </span>
                         </div>
 
-                        <ul class="mt-3 space-y-2">
+                        <ul class="mt-4 space-y-2.5">
                           {pkg.features.map((feat) => (
-                            <li class="flex items-start gap-2 text-xs leading-snug text-[#334155]">
-                              <span class="mt-0.5 text-[#15803D] font-bold">✓</span>
+                            <li class="flex items-start gap-2.5 text-xs leading-relaxed text-slate-200">
+                              <span class="mt-0.5 font-bold text-[#00F2FE]">✓</span>
                               <span>{feat}</span>
                             </li>
                           ))}
@@ -356,45 +521,49 @@ const isPreview = prospect?.mode === 'preview';
               </div>
             </div>
 
-            {/* Step 3: Condition & Add-ons */}
-            <div class="grid gap-6 lg:grid-cols-2">
-              <div>
-                <label class="block text-sm font-bold text-[#0F172A]">
-                  3. Current vehicle condition
-                </label>
-                <div id="condition-group" class="mt-3 space-y-2.5">
+            {/* Step 03: Condition & Add-ons */}
+            <div class="grid gap-8 lg:grid-cols-12">
+              <div class="lg:col-span-6">
+                <div class="flex items-center gap-3">
+                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#06121A]">
+                    03
+                  </span>
+                  <h3 class="text-base font-bold text-white sm:text-lg">
+                    Vehicle Condition & Extras
+                  </h3>
+                </div>
+
+                <div id="condition-group" class="mt-4 space-y-2.5">
                   <button
                     type="button"
                     data-condition="standard"
-                    class="condition-btn flex w-full items-center justify-between rounded-xl border-2 border-[#0369A1] bg-sky-50/60 px-4 py-3 text-left transition-colors"
+                    class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 px-4 py-3.5 text-left"
                   >
                     <div>
-                      <div class="text-sm font-bold text-[#0F172A]">
+                      <div class="text-sm font-bold text-white">
                         Standard Daily Condition
                       </div>
-                      <div class="text-xs text-[#475569]">
-                        Normal dust, light road film & everyday tidy cabin
+                      <div class="text-xs text-[#94A3B8]">
+                        Normal road dust & everyday tidy cabin
                       </div>
                     </div>
-                    <span class="tabular-nums text-xs font-bold text-[#15803D]">
-                      Included
-                    </span>
+                    <span class="text-xs font-bold text-emerald-400">Included</span>
                   </button>
 
                   <button
                     type="button"
                     data-condition="pet_hair"
-                    class="condition-btn flex w-full items-center justify-between rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-left transition-colors hover:border-slate-400"
+                    class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 px-4 py-3.5 text-left hover:border-cyan-400/50"
                   >
                     <div>
-                      <div class="text-sm font-bold text-[#0F172A]">
+                      <div class="text-sm font-bold text-white">
                         Pet Hair Removal Needed
                       </div>
-                      <div class="text-xs text-[#475569]">
-                        Dog/cat hair embedded in seats or cargo carpet
+                      <div class="text-xs text-[#94A3B8]">
+                        Woven dog/cat hair in seats or cargo carpet
                       </div>
                     </div>
-                    <span class="tabular-nums text-xs font-bold text-[#0F172A]">
+                    <span class="tabular-nums text-xs font-bold text-[#00F2FE]">
                       +{prospect.currencySymbol}25 to +{prospect.currencySymbol}45
                     </span>
                   </button>
@@ -402,45 +571,45 @@ const isPreview = prospect?.mode === 'preview';
                   <button
                     type="button"
                     data-condition="heavy_soil"
-                    class="condition-btn flex w-full items-center justify-between rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-left transition-colors hover:border-slate-400"
+                    class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 px-4 py-3.5 text-left hover:border-cyan-400/50"
                   >
                     <div>
-                      <div class="text-sm font-bold text-[#0F172A]">
-                        Heavy Mud, Spills, or Work Truck
+                      <div class="text-sm font-bold text-white">
+                        Heavy Mud, Spills, or Work Rig
                       </div>
-                      <div class="text-xs text-[#475569]">
+                      <div class="text-xs text-[#94A3B8]">
                         Deep stain extraction, salt crust, or heavy grime
                       </div>
                     </div>
-                    <span class="tabular-nums text-xs font-bold text-[#0F172A]">
+                    <span class="tabular-nums text-xs font-bold text-[#00F2FE]">
                       +{prospect.currencySymbol}35 to +{prospect.currencySymbol}65
                     </span>
                   </button>
                 </div>
               </div>
 
-              <div>
-                <label class="block text-sm font-bold text-[#0F172A]">
-                  Optional extras (tap to add)
-                </label>
-                <div class="mt-3 grid gap-2.5 sm:grid-cols-2">
+              <div class="lg:col-span-6">
+                <div class="text-sm font-bold text-white sm:pt-1">
+                  Optional Technical Upgrades
+                </div>
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
                   {prospect.addons.map((addon) => (
-                    <label class="addon-label flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#CBD5E1] bg-white p-3 transition-colors hover:border-slate-400">
+                    <label class="addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-3.5 hover:border-cyan-400/50">
                       <input
                         type="checkbox"
                         name="addonsSelected"
                         value={addon.id}
                         data-addon-price={addon.price}
-                        class="addon-checkbox mt-0.5 h-4 w-4 rounded border-slate-300 text-[#0369A1]"
+                        class="addon-checkbox mt-0.5 h-4 w-4 rounded border-slate-600 bg-[#0A0C10] text-[#00F2FE]"
                       />
                       <span class="min-w-0 flex-1">
-                        <span class="flex items-center justify-between gap-1 text-xs font-bold text-[#0F172A]">
+                        <span class="flex items-center justify-between gap-2 text-xs font-bold text-white">
                           <span class="truncate">{addon.name}</span>
-                          <span class="tabular-nums shrink-0 text-[#0369A1]">
+                          <span class="tabular-nums shrink-0 text-[#00F2FE]">
                             +{prospect.currencySymbol}{addon.price}
                           </span>
                         </span>
-                        <span class="mt-0.5 block text-[11px] leading-snug text-[#475569]">
+                        <span class="mt-1 block text-[11px] leading-snug text-[#94A3B8]">
                           {addon.description}
                         </span>
                       </span>
@@ -450,22 +619,28 @@ const isPreview = prospect?.mode === 'preview';
               </div>
             </div>
 
-            {/* Step 4: Contact Details */}
-            <div class="rounded-2xl border border-[#CBD5E1] bg-[#F8FAFC] p-5 sm:p-6">
-              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
-                <div>
-                  <h3 class="text-base font-bold text-[#0F172A]">
-                    4. Where should {prospect.businessName} send your confirmed quote?
-                  </h3>
-                  <p class="mt-0.5 text-xs text-[#475569]">
-                    No payment needed now. We confirm exact arrival windows by text or call.
-                  </p>
+            {/* Step 04: Driveway Dispatch Form */}
+            <div class="rounded-2xl border border-slate-700/80 bg-[#0A0C10]/85 p-5 sm:p-7">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div class="flex items-center gap-3">
+                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#06121A]">
+                    04
+                  </span>
+                  <div>
+                    <h3 class="text-base font-bold text-white">
+                      Where should {prospect.businessName} send your quote?
+                    </h3>
+                    <p class="mt-0.5 text-xs text-[#94A3B8]">
+                      Zero card required today. Exact arrival slot confirmed by text.
+                    </p>
+                  </div>
                 </div>
-                <div class="rounded-lg bg-[#0C131F] px-3.5 py-2 text-white">
-                  <span class="text-[11px] text-slate-300">Estimated Total: </span>
+
+                <div class="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2">
+                  <span class="text-xs text-slate-300">Estimated Total: </span>
                   <span
                     id="calc-form-estimate"
-                    class="tabular-nums text-base font-extrabold text-sky-300"
+                    class="font-display tabular-nums text-lg font-bold text-[#00F2FE]"
                   >
                     {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
                   </span>
@@ -474,10 +649,7 @@ const isPreview = prospect?.mode === 'preview';
 
               <div class="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label
-                    for="customerName"
-                    class="block text-xs font-bold text-[#0F172A]"
-                  >
+                  <label for="customerName" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
                     Your Name *
                   </label>
                   <input
@@ -486,15 +658,12 @@ const isPreview = prospect?.mode === 'preview';
                     type="text"
                     required
                     placeholder="Alex Rivera"
-                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-slate-400"
+                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500"
                   />
                 </div>
 
                 <div>
-                  <label
-                    for="customerPhone"
-                    class="block text-xs font-bold text-[#0F172A]"
-                  >
+                  <label for="customerPhone" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
                     Mobile Number (for text confirmation) *
                   </label>
                   <input
@@ -503,15 +672,12 @@ const isPreview = prospect?.mode === 'preview';
                     type="tel"
                     required
                     placeholder={prospect.country === 'UK' ? '07700 900123' : '(512) 555-0199'}
-                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-slate-400"
+                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500"
                   />
                 </div>
 
                 <div>
-                  <label
-                    for="customerPostal"
-                    class="block text-xs font-bold text-[#0F172A]"
-                  >
+                  <label for="customerPostal" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
                     Driveway {prospect.postalLabel} *
                   </label>
                   <input
@@ -520,21 +686,18 @@ const isPreview = prospect?.mode === 'preview';
                     type="text"
                     required
                     placeholder={prospect.country === 'UK' ? 'GL50 2AA' : '78704'}
-                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-slate-400"
+                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500"
                   />
                 </div>
 
                 <div>
-                  <label
-                    for="preferredTiming"
-                    class="block text-xs font-bold text-[#0F172A]"
-                  >
+                  <label for="preferredTiming" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
                     Preferred Timing
                   </label>
                   <select
                     id="preferredTiming"
                     name="preferredTiming"
-                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A]"
+                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white"
                   >
                     <option value="this_week">This Week (Earliest Open Slot)</option>
                     <option value="next_week">Next Week</option>
@@ -543,18 +706,15 @@ const isPreview = prospect?.mode === 'preview';
                 </div>
 
                 <div class="sm:col-span-2">
-                  <label
-                    for="notes"
-                    class="block text-xs font-bold text-[#0F172A]"
-                  >
-                    Vehicle Make/Model & Any Special Notes (Optional)
+                  <label for="notes" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                    Vehicle Make/Model & Driveway Notes (Optional)
                   </label>
                   <input
                     id="notes"
                     name="notes"
                     type="text"
-                    placeholder="e.g. 2022 White Toyota RAV4, driveway has plenty of shade"
-                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-slate-400"
+                    placeholder="e.g. 2023 White Toyota RAV4, parked in private driveway"
+                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500"
                   />
                 </div>
               </div>
@@ -562,19 +722,19 @@ const isPreview = prospect?.mode === 'preview';
               <div
                 id="quote-error-box"
                 role="alert"
-                class="mt-4 hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+                class="mt-4 hidden rounded-xl border border-red-400/40 bg-red-950/60 px-4 py-3 text-sm font-medium text-red-200"
               />
 
-              <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-xs text-[#475569]">
+              <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-xs text-[#94A3B8]">
                   {isPreview
-                    ? 'Preview Mode Active: Submitting runs a safe live test without emailing anyone.'
-                    : `Sent straight to ${prospect.businessName} for rapid confirmation.`}
+                    ? 'Preview Mode Safety: Submitting runs a live test without sending emails.'
+                    : `Dispatched straight to ${prospect.businessName} for rapid confirmation.`}
                 </p>
                 <button
                   id="submit-quote-btn"
                   type="submit"
-                  class="inline-flex items-center justify-center rounded-xl bg-[#0369A1] px-6 py-3.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#0284C7] disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
+                  class="inline-flex items-center justify-center rounded-xl bg-[#00F2FE] px-7 py-3.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
                 >
                   Get My 60-Second Quote
                 </button>
@@ -583,139 +743,224 @@ const isPreview = prospect?.mode === 'preview';
           </form>
         </section>
 
-        {/* Category Job-Proof Showcase (6 Photo Slots) */}
-        <section id="job-proof" class="mt-12">
+        {/* Gloss Telemetry & Interactive Job-Proof Showcase */}
+        <section id="job-proof" class="reveal-up mt-16">
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 class="text-2xl font-extrabold tracking-tight text-[#0F172A]">
-                Recent Work & Typical Job Results
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+                Optical Gloss Verification
+              </span>
+              <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                Recent Work & Paint-Correction Telemetry
               </h2>
-              <p class="mt-1 text-sm text-[#475569]">
-                Clean before-and-after inspection standards for {prospect.city} vehicles.
+              <p class="mt-1.5 text-sm text-[#94A3B8]">
+                Toggle each inspection card to compare arrival condition against finished results in {prospect.city}.
               </p>
             </div>
             {isPreview && (
-              <span class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900">
-                Owner Note: These 6 slots swap to your own real photos within 24 hrs of launch
+              <span class="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3.5 py-2 text-xs font-semibold text-amber-200">
+                Owner Note: We replace these 6 slots with your real job photos in 24 hrs
               </span>
             )}
           </div>
 
-          <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {prospect.gallery.map((item, index) => (
-              <article class="flex flex-col justify-between overflow-hidden rounded-2xl border border-[#CBD5E1] bg-white shadow-xs">
-                <div
-                  class="relative px-5 py-4 text-white"
-                  style={`background: linear-gradient(135deg, #0C131F 0%, ${item.accentHex} 160%);`}
+          <div class="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {prospect.gallery.map((item, index) => {
+              const reading = glossReadings[index % glossReadings.length];
+              return (
+                <article
+                  class="glass-panel interactive-card anisotropic-border flex flex-col justify-between rounded-2xl p-5"
+                  data-proof-card={item.id}
                 >
-                  <div class="flex items-center justify-between text-xs text-slate-300">
-                    <span class="font-semibold">Job Proof #{index + 1}</span>
-                    <span class="rounded bg-white/10 px-2 py-0.5 text-[11px] font-medium text-white">
-                      {item.vehicleLabel}
-                    </span>
-                  </div>
-                  <h3 class="mt-2.5 text-base font-bold text-white">
-                    {item.title}
-                  </h3>
-                  <p class="mt-0.5 text-xs font-medium text-sky-200">
-                    {item.servicePerformed}
-                  </p>
-                </div>
-
-                <div class="flex flex-1 flex-col justify-between p-5">
-                  <p class="text-xs leading-relaxed text-[#334155]">
-                    {item.resultSummary}
-                  </p>
-
-                  <div class="mt-4 space-y-2 border-t border-slate-100 pt-3 text-xs">
-                    <div class="rounded-lg bg-slate-50 px-3 py-2">
-                      <span class="font-bold text-slate-700">Before: </span>
-                      <span class="text-slate-600">{item.beforeNote}</span>
+                  <div>
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-xs font-bold uppercase tracking-wider text-[#00F2FE]">
+                        Job Proof #0{index + 1}
+                      </span>
+                      <span class="rounded-md border border-slate-700 bg-[#0A0C10] px-2.5 py-0.5 text-[11px] font-semibold text-slate-200">
+                        {item.vehicleLabel}
+                      </span>
                     </div>
-                    <div class="rounded-lg bg-emerald-50/70 px-3 py-2">
-                      <span class="font-bold text-[#15803D]">After: </span>
-                      <span class="text-slate-700">{item.afterNote}</span>
+
+                    <h3 class="mt-3 text-lg font-bold text-white">
+                      {item.title}
+                    </h3>
+                    <p class="mt-0.5 text-xs font-semibold text-sky-300">
+                      {item.servicePerformed}
+                    </p>
+                    <p class="mt-2.5 text-xs leading-relaxed text-[#94A3B8]">
+                      {item.resultSummary}
+                    </p>
+                  </div>
+
+                  {/* Horiba 60° Gloss Unit Telemetry & Interactive Before/After Switch */}
+                  <div class="mt-5 space-y-3 rounded-xl border border-slate-800 bg-[#0A0C10]/85 p-4">
+                    <div class="space-y-1.5">
+                      <div class="flex justify-between font-mono text-[11px]">
+                        <span class="text-[#94A3B8]">Arrival Reading</span>
+                        <span class="font-bold text-amber-300">{reading.before} GU</span>
+                      </div>
+                      <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                        <div class="h-full rounded-full bg-amber-400/80" style={`width: ${reading.beforeWidth};`} />
+                      </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                      <div class="flex justify-between font-mono text-[11px]">
+                        <span class="font-semibold text-white">Cured Finish</span>
+                        <span class="font-bold text-[#00F2FE]">{reading.after} GU ({reading.delta})</span>
+                      </div>
+                      <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                        <div class="h-full rounded-full bg-[#00F2FE]" style={`width: ${reading.afterWidth};`} />
+                      </div>
+                    </div>
+
+                    <div class="border-t border-slate-800 pt-3">
+                      <div class="flex items-center gap-2">
+                        <button
+                          type="button"
+                          data-toggle-proof="after"
+                          class="proof-tab-btn rounded-lg bg-[#00F2FE]/15 px-2.5 py-1 text-[11px] font-bold text-[#00F2FE] ring-1 ring-cyan-400/40"
+                        >
+                          After Finish
+                        </button>
+                        <button
+                          type="button"
+                          data-toggle-proof="before"
+                          class="proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#94A3B8] hover:text-white"
+                        >
+                          Before Arrival
+                        </button>
+                      </div>
+                      <p
+                        class="proof-note mt-2 text-xs leading-snug text-emerald-300"
+                        data-before-text={`Before: ${item.beforeNote}`}
+                        data-after-text={`After: ${item.afterNote}`}
+                      >
+                        After: {item.afterNote}
+                      </p>
                     </div>
                   </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Autonomous Rig Capabilities */}
+        <section id="rig-specs" class="reveal-up mt-16">
+          <div class="max-w-2xl">
+            <span class="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+              Autonomous Driveway Rig
+            </span>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Zero House Hookups Required
+            </h2>
+            <p class="mt-1.5 text-sm text-[#94A3B8]">
+              Serving <strong>{prospect.serviceArea}</strong> with self-contained spot-free water and quiet studio power.
+            </p>
+          </div>
+
+          <div class="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {prospect.trustPoints.map((point, idx) => (
+              <div class="glass-panel anisotropic-border rounded-2xl p-5">
+                <div class="font-mono text-xs font-bold text-[#00F2FE]">
+                  SPEC 0{idx + 1}
                 </div>
-              </article>
+                <div class="mt-2 text-base font-bold text-white">
+                  {point}
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        {/* Service Coverage & Quick FAQ */}
-        <section class="mt-12 grid gap-6 rounded-2xl border border-[#CBD5E1] bg-white p-6 sm:grid-cols-2 sm:p-8">
-          <div>
-            <h2 class="text-lg font-bold text-[#0F172A]">
-              Driveway Coverage & Rig Requirements
-            </h2>
-            <p class="mt-2 text-sm leading-relaxed text-[#475569]">
-              {prospect.businessName} serves <strong>{prospect.serviceArea}</strong>. We bring our own spot-free water tank and quiet generator, so we can detail at your home driveway, apartment lot (with permission), or office parking spot.
+        {/* FAQ Section */}
+        <section id="faq" class="reveal-up mt-16 grid gap-6 md:grid-cols-2">
+          <div class="glass-panel rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white">
+              Do I pay anything online when submitting a quote?
+            </h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+              Never. You pick your vehicle class and package to see a transparent price range right away. We confirm your arrival window by text and you pay only after inspecting your car.
             </p>
           </div>
-          <div class="space-y-3 text-sm">
-            <div class="rounded-xl bg-[#F8FAFC] p-3.5">
-              <div class="font-bold text-[#0F172A]">
-                Do I pay upfront when requesting a quote?
-              </div>
-              <p class="mt-1 text-xs text-[#475569]">
-                Never. You get an instant price range here, we confirm your time slot by text, and you only pay once you inspect the finished car.
-              </p>
-            </div>
-            <div class="rounded-xl bg-[#F8FAFC] p-3.5">
-              <div class="font-bold text-[#0F172A]">
-                How long does a typical detail take?
-              </div>
-              <p class="mt-1 text-xs text-[#475569]">
-                Express refreshes take 1.5 to 2 hours, while full interior resets or gloss enhancements run 2.5 to 4.5 hours on-site.
-              </p>
-            </div>
+          <div class="glass-panel rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white">
+              Can you detail at my office or apartment lot?
+            </h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+              Yes, as long as there is safe space next to your vehicle for our mobile unit (and property management permits mobile service), we bring all water and power on board.
+            </p>
           </div>
         </section>
       </main>
 
-      {/* Sticky Mobile Bottom Dock */}
-      <div class="fixed inset-x-0 bottom-0 z-30 border-t border-slate-700 bg-[#0C131F]/95 px-4 py-3 text-white backdrop-blur-sm md:hidden">
-        <div class="mx-auto flex max-w-lg items-center justify-between gap-3">
-          <div>
-            <div class="text-[11px] text-slate-300">Estimated Driveway Quote</div>
-            <div
-              id="mobile-sticky-estimate"
-              class="tabular-nums text-lg font-extrabold text-sky-300"
-            >
-              {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
+      {/* Persistent Sticky Live Quote Dock */}
+      <aside class="fixed inset-x-0 bottom-0 z-40 border-t border-cyan-400/25 bg-[#0A0C10]/92 px-4 py-3 backdrop-blur-xl sm:px-6">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
+          <div class="hidden items-center gap-3 md:flex">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-400/35 bg-cyan-400/10 text-[#00F2FE]">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
+                <span id="dock-vehicle-label" class="text-white">Coupe / Sedan</span>
+                <span class="text-slate-600">·</span>
+                <span id="dock-package-label" class="text-[#00F2FE]">{defaultPkg?.name}</span>
+              </div>
+              <div id="dock-duration-label" class="text-xs text-[#94A3B8]">
+                {defaultPkg?.durationLabel} · Zero upfront payment
+              </div>
             </div>
           </div>
-          <a
-            href="#quote-form"
-            class="rounded-xl bg-[#0369A1] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0284C7]"
-          >
-            Lock In Quote
-          </a>
+
+          <div class="flex w-full items-center justify-between gap-4 md:w-auto md:justify-end">
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">
+                Estimated Driveway Total
+              </div>
+              <div
+                id="mobile-sticky-estimate"
+                class="font-display tabular-nums text-xl font-bold text-[#00F2FE] sm:text-2xl"
+              >
+                {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
+              </div>
+            </div>
+            <a
+              href="#customerName"
+              id="dock-cta-btn"
+              class="rounded-xl bg-[#00F2FE] px-5 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+            >
+              Lock In Quote
+            </a>
+          </div>
         </div>
-      </div>
+      </aside>
 
       {/* Owner Lead Notification Simulator Modal */}
       <div
         id="quote-success-modal"
-        class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/75 p-4 backdrop-blur-xs"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-md"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-heading"
       >
-        <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#CBD5E1] bg-white p-6 shadow-2xl">
+        <div class="glass-panel cyan-glow max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-cyan-400/40 bg-[#11151E] p-6">
           <div class="flex items-start justify-between gap-4">
-            <div class="flex items-center gap-2.5">
-              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-[#15803D] font-bold">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20 font-bold text-emerald-400 ring-1 ring-emerald-400/40">
                 ✓
               </span>
               <div>
-                <h3 id="modal-heading" class="text-lg font-extrabold text-[#0F172A]">
+                <h3 id="modal-heading" class="text-lg font-bold text-white">
                   {isPreview
                     ? 'Test Quote Logged (Preview Simulator)'
                     : 'Quote Request Received'}
                 </h3>
-                <p class="text-xs text-[#475569]">
+                <p class="text-xs text-[#94A3B8]">
                   {prospect.businessName} ({prospect.city})
                 </p>
               </div>
@@ -723,7 +968,7 @@ const isPreview = prospect?.mode === 'preview';
             <button
               id="close-modal-btn"
               type="button"
-              class="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+              class="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-cyan-400/40 hover:text-white"
             >
               Close
             </button>
@@ -731,27 +976,27 @@ const isPreview = prospect?.mode === 'preview';
 
           <div
             id="modal-customer-summary"
-            class="mt-4 rounded-xl border border-slate-200 bg-[#F8FAFC] p-4 text-sm text-[#0F172A]"
+            class="mt-5 rounded-xl border border-slate-700/80 bg-[#0A0C10] p-4 text-sm text-white"
           />
 
-          <div class="mt-4">
+          <div class="mt-5">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-[#0369A1]">
+              <span class="text-xs font-bold text-[#00F2FE]">
                 What the Business Owner Receives Instantly:
               </span>
-              <span class="rounded bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-[#15803D]">
+              <span class="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 ring-1 ring-emerald-400/30">
                 Instant Lead Alert
               </span>
             </div>
             <pre
               id="modal-owner-sms"
-              class="mt-2 whitespace-pre-wrap rounded-xl bg-[#0C131F] p-4 font-mono text-xs leading-relaxed text-sky-100"
+              class="mt-2 whitespace-pre-wrap rounded-xl border border-slate-800 bg-[#06080C] p-4 font-mono text-xs leading-relaxed text-cyan-100"
             />
           </div>
 
           {isPreview && (
-            <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs leading-relaxed text-amber-950">
-              <strong>Preview Mode Safety:</strong> No automated email or SMS was sent. Once {prospect.businessName} activates this page ($50 founding setup + $15/mo), every customer submission routes straight to your phone/inbox with your real job photos live.
+            <div class="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3.5 text-xs leading-relaxed text-amber-100">
+              <strong>Preview Mode Safety:</strong> No automated email or SMS was sent. Once {prospect.businessName} activates this page ($50 founding setup + $15/mo), real customer leads route straight to your phone/inbox with your real job photos live.
             </div>
           )}
 
@@ -759,7 +1004,7 @@ const isPreview = prospect?.mode === 'preview';
             <button
               id="done-modal-btn"
               type="button"
-              class="rounded-xl bg-[#0369A1] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0284C7]"
+              class="rounded-xl bg-[#00F2FE] px-5 py-2.5 text-sm font-bold text-[#06121A] hover:bg-[#4FACFE]"
             >
               Done
             </button>
@@ -772,11 +1017,14 @@ const isPreview = prospect?.mode === 'preview';
         define:vars={{
           currencySymbol: prospect.currencySymbol,
           defaultPackageId: defaultPkg?.id ?? '',
+          defaultPackageName: defaultPkg?.name ?? '',
         }}
       >
         (function () {
           let selectedVehicle = 'sedan';
+          let selectedVehicleLabel = 'Coupe / Sedan';
           let selectedPackageId = defaultPackageId;
+          let selectedPackageName = defaultPackageName;
           let selectedCondition = 'standard';
 
           const vehicleButtons = document.querySelectorAll('.vehicle-btn');
@@ -788,6 +1036,9 @@ const isPreview = prospect?.mode === 'preview';
           const topDurEl = document.getElementById('calc-top-duration');
           const formEstEl = document.getElementById('calc-form-estimate');
           const mobileEstEl = document.getElementById('mobile-sticky-estimate');
+          const dockVehicleEl = document.getElementById('dock-vehicle-label');
+          const dockPackageEl = document.getElementById('dock-package-label');
+          const dockDurationEl = document.getElementById('dock-duration-label');
 
           const form = document.getElementById('quote-form');
           const submitBtn = document.getElementById('submit-quote-btn');
@@ -799,6 +1050,13 @@ const isPreview = prospect?.mode === 'preview';
           const closeModalBtn = document.getElementById('close-modal-btn');
           const doneModalBtn = document.getElementById('done-modal-btn');
 
+          function pulsePrice(el) {
+            if (!el) return;
+            el.classList.remove('price-bump');
+            void el.offsetWidth;
+            el.classList.add('price-bump');
+          }
+
           function getConditionSpread(cond) {
             if (cond === 'pet_hair') return [25, 45];
             if (cond === 'heavy_soil') return [35, 65];
@@ -806,7 +1064,6 @@ const isPreview = prospect?.mode === 'preview';
           }
 
           function updatePricingDisplay() {
-            // Update each package card displayed price for selected vehicle size
             packageButtons.forEach((btn) => {
               const priceAttr = btn.getAttribute(`data-price-${selectedVehicle}`);
               const priceEl = btn.querySelector('.pkg-price-display');
@@ -837,32 +1094,64 @@ const isPreview = prospect?.mode === 'preview';
             const estMax = basePrice + condMax + addonsSum;
             const formatted = `${currencySymbol}${estMin} - ${currencySymbol}${estMax}`;
 
-            if (topEstEl) topEstEl.textContent = formatted;
+            if (topEstEl) {
+              topEstEl.textContent = formatted;
+              pulsePrice(topEstEl);
+            }
             if (topDurEl) topDurEl.textContent = duration;
-            if (formEstEl) formEstEl.textContent = formatted;
-            if (mobileEstEl) mobileEstEl.textContent = formatted;
+            if (formEstEl) {
+              formEstEl.textContent = formatted;
+              pulsePrice(formEstEl);
+            }
+            if (mobileEstEl) {
+              mobileEstEl.textContent = formatted;
+              pulsePrice(mobileEstEl);
+            }
+            if (dockVehicleEl) dockVehicleEl.textContent = selectedVehicleLabel;
+            if (dockPackageEl) dockPackageEl.textContent = selectedPackageName;
+            if (dockDurationEl) {
+              dockDurationEl.textContent = `${duration} · Zero upfront payment`;
+            }
           }
 
-          function setVehicle(size) {
+          function setVehicle(size, label) {
             selectedVehicle = size;
+            selectedVehicleLabel = label;
             vehicleButtons.forEach((btn) => {
               const active = btn.getAttribute('data-vehicle') === size;
               btn.setAttribute('aria-checked', active ? 'true' : 'false');
               btn.className = active
-                ? 'vehicle-btn flex flex-col items-start rounded-xl border-2 border-[#0369A1] bg-sky-50/60 p-4 text-left transition-colors'
-                : 'vehicle-btn flex flex-col items-start rounded-xl border border-[#CBD5E1] bg-white p-4 text-left transition-colors hover:border-slate-400';
+                ? 'vehicle-btn interactive-card flex flex-col justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 p-5 text-left cyan-glow-sm'
+                : 'vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-5 text-left hover:border-cyan-400/50';
+              const svg = btn.querySelector('svg');
+              const dot = btn.querySelector('.vehicle-dot');
+              if (svg) {
+                svg.setAttribute('class', active ? 'h-10 w-24 text-[#00F2FE]' : 'h-10 w-24 text-slate-300');
+              }
+              if (dot) {
+                dot.className = active
+                  ? 'vehicle-dot h-4 w-4 rounded-full border-2 border-[#00F2FE] bg-[#00F2FE]'
+                  : 'vehicle-dot h-4 w-4 rounded-full border-2 border-slate-600';
+              }
             });
             updatePricingDisplay();
           }
 
-          function setPackage(pkgId) {
+          function setPackage(pkgId, pkgName) {
             selectedPackageId = pkgId;
+            selectedPackageName = pkgName;
             packageButtons.forEach((btn) => {
               const active = btn.getAttribute('data-package-id') === pkgId;
               btn.setAttribute('aria-pressed', active ? 'true' : 'false');
               btn.className = active
-                ? 'package-btn relative flex h-full flex-col justify-between rounded-xl border-2 border-[#0369A1] bg-sky-50/50 p-5 text-left transition-colors'
-                : 'package-btn relative flex h-full flex-col justify-between rounded-xl border border-[#CBD5E1] bg-white p-5 text-left transition-colors hover:border-slate-400';
+                ? 'package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 p-6 text-left cyan-glow-sm'
+                : 'package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-6 text-left hover:border-cyan-400/50';
+              const dot = btn.querySelector('.pkg-dot');
+              if (dot) {
+                dot.className = active
+                  ? 'pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-[#00F2FE] bg-[#00F2FE]'
+                  : 'pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-slate-600';
+              }
             });
             updatePricingDisplay();
           }
@@ -872,8 +1161,8 @@ const isPreview = prospect?.mode === 'preview';
             conditionButtons.forEach((btn) => {
               const active = btn.getAttribute('data-condition') === cond;
               btn.className = active
-                ? 'condition-btn flex w-full items-center justify-between rounded-xl border-2 border-[#0369A1] bg-sky-50/60 px-4 py-3 text-left transition-colors'
-                : 'condition-btn flex w-full items-center justify-between rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-left transition-colors hover:border-slate-400';
+                ? 'condition-btn interactive-card flex w-full items-center justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 px-4 py-3.5 text-left'
+                : 'condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 px-4 py-3.5 text-left hover:border-cyan-400/50';
             });
             updatePricingDisplay();
           }
@@ -881,14 +1170,16 @@ const isPreview = prospect?.mode === 'preview';
           vehicleButtons.forEach((btn) => {
             btn.addEventListener('click', () => {
               const val = btn.getAttribute('data-vehicle');
-              if (val) setVehicle(val);
+              const label = btn.getAttribute('data-vehicle-label') || 'Coupe / Sedan';
+              if (val) setVehicle(val, label);
             });
           });
 
           packageButtons.forEach((btn) => {
             btn.addEventListener('click', () => {
               const val = btn.getAttribute('data-package-id');
-              if (val) setPackage(val);
+              const name = btn.getAttribute('data-package-name') || '';
+              if (val) setPackage(val, name);
             });
           });
 
@@ -904,10 +1195,36 @@ const isPreview = prospect?.mode === 'preview';
               const parentLabel = cb.closest('.addon-label');
               if (parentLabel) {
                 parentLabel.className = cb.checked
-                  ? 'addon-label flex cursor-pointer items-start gap-2.5 rounded-xl border-2 border-[#0369A1] bg-sky-50/50 p-3 transition-colors'
-                  : 'addon-label flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#CBD5E1] bg-white p-3 transition-colors hover:border-slate-400';
+                  ? 'addon-label interactive-card flex cursor-pointer items-start gap-3 rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 p-3.5'
+                  : 'addon-label interactive-card flex cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-3.5 hover:border-cyan-400/50';
               }
               updatePricingDisplay();
+            });
+          });
+
+          // Interactive Before / After toggles on Job Proof cards
+          document.querySelectorAll('[data-proof-card]').forEach((card) => {
+            const buttons = card.querySelectorAll('.proof-tab-btn');
+            const noteEl = card.querySelector('.proof-note');
+            if (!noteEl) return;
+
+            buttons.forEach((btn) => {
+              btn.addEventListener('click', () => {
+                const mode = btn.getAttribute('data-toggle-proof');
+                buttons.forEach((b) => {
+                  const isActive = b === btn;
+                  b.className = isActive
+                    ? 'proof-tab-btn rounded-lg bg-[#00F2FE]/15 px-2.5 py-1 text-[11px] font-bold text-[#00F2FE] ring-1 ring-cyan-400/40'
+                    : 'proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#94A3B8] hover:text-white';
+                });
+                if (mode === 'before') {
+                  noteEl.textContent = noteEl.getAttribute('data-before-text') || '';
+                  noteEl.className = 'proof-note mt-2 text-xs leading-snug text-amber-200';
+                } else {
+                  noteEl.textContent = noteEl.getAttribute('data-after-text') || '';
+                  noteEl.className = 'proof-note mt-2 text-xs leading-snug text-emerald-300';
+                }
+              });
             });
           });
 
@@ -972,15 +1289,15 @@ const isPreview = prospect?.mode === 'preview';
               if (result.quote && modalSummary && modalSms && modal) {
                 modalSummary.innerHTML = '';
                 const line1 = document.createElement('div');
-                line1.className = 'font-bold text-[#0F172A]';
+                line1.className = 'font-bold text-white';
                 line1.textContent = `${result.quote.vehicleLabel} · ${result.quote.packageName}`;
 
                 const line2 = document.createElement('div');
-                line2.className = 'mt-1 text-xs text-[#475569]';
+                line2.className = 'mt-1 text-xs text-[#00F2FE] font-semibold';
                 line2.textContent = `Estimated Range: ${result.quote.priceRange} (${result.quote.durationLabel})`;
 
                 const line3 = document.createElement('div');
-                line3.className = 'mt-1 text-xs text-[#475569]';
+                line3.className = 'mt-1 text-xs text-[#94A3B8]';
                 line3.textContent = `Contact: ${result.quote.customerName} (${result.quote.customerPhone}) · ${result.quote.customerPostal}`;
 
                 modalSummary.appendChild(line1);
