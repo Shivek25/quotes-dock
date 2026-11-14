@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build & Astro
+dist/
+.astro/
+
+# Cloudflare / Wrangler local state
+.wrangler/
+
+# Secrets & local env
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# Logs & OS files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Knowledge graph
+graphify-out/

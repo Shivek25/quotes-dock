@@ -1,0 +1,28 @@
+{
+  "name": "quotes-dock",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "db:migrate:local": "wrangler d1 migrations apply quotes-dock-db --local"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.5.0",
+    "@tailwindcss/vite": "^4.0.14",
+    "astro": "^5.5.2",
+    "drizzle-orm": "^0.40.0",
+    "tailwindcss": "^4.0.14",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@types/node": "^22.13.10",
+    "drizzle-kit": "^0.30.5",
+    "typescript": "^5.8.2",
+    "wrangler": "^4.4.0"
+  }
+}

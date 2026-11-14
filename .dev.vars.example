@@ -1,0 +1,4 @@
+# Local development environment variables (copy to .dev.vars if needed)
+ADMIN_STUDIO_KEY=qd_local_founder_key_2026
+# Optional: Resend API key for live client email notifications
+RESEND_API_KEY=
