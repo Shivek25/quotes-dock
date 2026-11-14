@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { listProspectsWithStats } from '../lib/db/repository';
+
+const d1 = Astro.locals.runtime.env.DB;
+const items = await listProspectsWithStats(d1);
+---
+
+<BaseLayout
+  title="QuotesDock | Preview-First Quote & Job-Proof Pages for Mobile Car Detailers"
+  description="Live mobile-first 60-second quote calculators and job-proof landing pages for US and UK mobile car detailers."
+>
+  <header class="bay-grid-bg border-b border-slate-800 bg-[#0C131F] text-white">
+    <div class="mx-auto max-w-6xl px-4 pb-14 pt-6 sm:px-6">
+      <nav class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl font-extrabold tracking-tight text-white">
+            QuotesDock
+          </span>
+          <span class="rounded-full bg-sky-500/20 px-2.5 py-0.5 text-xs font-semibold text-sky-300 ring-1 ring-sky-400/30">
+            Mobile Detailing Edition
+          </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <a
+            href="#demos"
+            class="text-sm font-semibold text-slate-300 transition-colors hover:text-white"
+          >
+            Live Demos
+          </a>
+          <a
+            href="/studio"
+            class="rounded-xl bg-[#0369A1] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#0284C7]"
+          >
+            Open Founder Studio
+          </a>
+        </div>
+      </nav>
+
+      <div class="mt-10 grid items-center gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-7">
+          <h1 class="max-w-[19ch] text-3xl font-extrabold leading-[1.12] tracking-tight text-white sm:text-5xl">
+            Turn Instagram & Maps Detailers Into Instant Quote Bookings
+          </h1>
+          <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
+            Instead of selling vague website ideas, show local mobile detailers a working, mobile-first preview page with a 60-second driveway quote calculator built for their business.
+          </p>
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a
+              href="/studio"
+              class="rounded-xl bg-[#0369A1] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-sky-950/50 transition-colors hover:bg-[#0284C7] sm:text-base"
+            >
+              Generate a New Preview
+            </a>
+            <a
+              href="/p/apex-gloss-austin"
+              class="rounded-xl border border-slate-700 bg-slate-900/70 px-5 py-3.5 text-sm font-semibold text-slate-100 transition-colors hover:border-slate-500 hover:text-white"
+            >
+              Try Sample Quote Page
+            </a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="rounded-2xl border border-slate-700/80 bg-slate-900/90 p-6">
+            <div class="text-xs font-bold text-sky-300">
+              Founding Client Launch Scope
+            </div>
+            <div class="tabular-nums mt-2 text-3xl font-extrabold text-white">
+              $50 setup + $15/mo
+            </div>
+            <p class="mt-1 text-xs text-slate-300">
+              Launch pricing for first 5 founding clients (scales to $150 setup + $29-$49/mo).
+            </p>
+            <ul class="mt-5 space-y-2.5 border-t border-slate-800 pt-4 text-sm text-slate-200">
+              <li class="flex items-center gap-2">
+                <span class="font-bold text-emerald-400">✓</span>
+                <span>1 fast mobile-first quote page (/p/their-business)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="font-bold text-emerald-400">✓</span>
+                <span>Up to 6 real job photos swapped in within 24 hrs</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="font-bold text-emerald-400">✓</span>
+                <span>Interactive 60-second driveway price estimator</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="font-bold text-emerald-400">✓</span>
+                <span>1 included edit round + zero surprise hosting bills</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="demos" class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-extrabold tracking-tight text-[#0F172A]">
+          Active Detailing Previews ({items.length})
+        </h2>
+        <p class="mt-1 text-sm text-[#475569]">
+          Open any preview on your phone to test the 60-second quote calculator and owner lead alert simulator.
+        </p>
+      </div>
+      <a
+        href="/studio"
+        class="text-sm font-bold text-[#0369A1] hover:text-[#0284C7]"
+      >
+        Manage in Founder Studio
+      </a>
+    </div>
+
+    <div class="mt-6 grid gap-5 md:grid-cols-3">
+      {items.map(({ prospect, previewTestQuotes }) => (
+        <article class="flex flex-col justify-between rounded-2xl border border-[#CBD5E1] bg-white p-5 shadow-xs">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">
+                {prospect.city} ({prospect.country})
+              </span>
+              <span
+                class={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                  prospect.mode === 'live'
+                    ? 'bg-emerald-100 text-[#15803D]'
+                    : 'bg-sky-100 text-[#0369A1]'
+                }`}
+              >
+                {prospect.mode === 'live' ? 'Live' : 'Preview'}
+              </span>
+            </div>
+
+            <h3 class="mt-3 text-lg font-extrabold text-[#0F172A]">
+              {prospect.businessName}
+            </h3>
+            <p class="mt-1 text-xs leading-relaxed text-[#475569]">
+              {prospect.tagline}
+            </p>
+
+            <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-[#475569]">
+              <span>★ {prospect.ratingScore} ({prospect.reviewCount} reviews)</span>
+              <span class="tabular-nums font-semibold text-[#0F172A]">
+                {previewTestQuotes} test quote{previewTestQuotes === 1 ? '' : 's'}
+              </span>
+            </div>
+          </div>
+
+          <a
+            href={`/p/${prospect.slug}`}
+            class="mt-5 inline-flex items-center justify-center rounded-xl bg-[#0C131F] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0369A1]"
+          >
+            Open Live Preview
+          </a>
+        </article>
+      ))}
+    </div>
+  </main>
+</BaseLayout>

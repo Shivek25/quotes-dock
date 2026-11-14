@@ -1,0 +1,1010 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProspectBySlug } from '../../lib/db/repository';
+
+const { slug } = Astro.params;
+const d1 = Astro.locals.runtime.env.DB;
+const prospect = slug ? await getProspectBySlug(d1, slug) : null;
+
+if (!prospect) {
+  Astro.response.status = 404;
+}
+
+const defaultPkg =
+  prospect?.packages.find((p) => p.popular) ?? prospect?.packages[0] ?? null;
+const initialMin = defaultPkg ? defaultPkg.prices.sedan : 145;
+const initialMax = initialMin + 20;
+const isPreview = prospect?.mode === 'preview';
+---
+
+{
+  !prospect ? (
+    <BaseLayout
+      title="Preview Not Found | QuotesDock"
+      description="This detailing preview page could not be found."
+    >
+      <main class="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
+        <div class="w-full rounded-2xl border border-[#CBD5E1] bg-white p-8 shadow-sm">
+          <p class="text-sm font-semibold text-[#0369A1]">QuotesDock Preview</p>
+          <h1 class="mt-2 text-2xl font-bold text-[#0F172A]">
+            This preview link is not active
+          </h1>
+          <p class="mt-3 text-sm leading-relaxed text-[#475569]">
+            Check that the business slug is spelled right, or open your Founder Studio to generate a new detailer preview.
+          </p>
+          <div class="mt-6 flex flex-wrap justify-center gap-3">
+            <a
+              href="/"
+              class="rounded-lg border border-[#CBD5E1] bg-white px-4 py-2.5 text-sm font-semibold text-[#0F172A] transition-colors hover:bg-slate-50"
+            >
+              View Live Demos
+            </a>
+            <a
+              href="/studio"
+              class="rounded-lg bg-[#0369A1] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0284C7]"
+            >
+              Open Founder Studio
+            </a>
+          </div>
+        </div>
+      </main>
+    </BaseLayout>
+  ) : (
+    <BaseLayout
+      title={`${prospect.businessName} | Instant 60-Second Driveway Quote`}
+      description={prospect.tagline}
+    >
+      {isPreview && (
+        <div class="border-b border-sky-800/60 bg-[#082F49] px-4 py-2.5 text-white">
+          <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="inline-flex shrink-0 items-center rounded-full bg-sky-400/20 px-2.5 py-0.5 text-xs font-semibold text-sky-200 ring-1 ring-sky-400/40">
+                Live Preview
+              </span>
+              <span class="truncate text-sky-50">
+                Built for <strong>{prospect.businessName}</strong> ({prospect.city}) - test the 60-second quote form below
+              </span>
+            </div>
+            <a
+              href="#quote-calculator"
+              class="shrink-0 font-semibold text-sky-200 underline decoration-sky-400/60 underline-offset-4 hover:text-white"
+            >
+              Test quote flow
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* Hero Section: Obsidian Wet-Bay Studio Look */}
+      <header class="bay-grid-bg relative bg-[#0C131F] text-white">
+        <div class="mx-auto max-w-5xl px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-12">
+          <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-6">
+            <div>
+              <div class="flex flex-wrap items-center gap-2.5">
+                <span class="text-lg font-extrabold tracking-tight text-white sm:text-xl">
+                  {prospect.businessName}
+                </span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-300 ring-1 ring-emerald-500/30">
+                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  {prospect.turnaroundBadge}
+                </span>
+              </div>
+              <p class="mt-1 text-xs text-slate-300 sm:text-sm">
+                Mobile Unit Serving: {prospect.serviceArea}
+              </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <a
+                href={`tel:${prospect.phoneDisplay.replace(/[^+\d]/g, '')}`}
+                class="rounded-lg border border-slate-700 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-100 transition-colors hover:border-slate-500 hover:bg-slate-800 sm:text-sm"
+              >
+                Call / Text: {prospect.phoneDisplay}
+              </a>
+              <a
+                href="#quote-calculator"
+                class="hidden rounded-lg bg-[#0369A1] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#0284C7] sm:inline-flex"
+              >
+                Get 60s Quote
+              </a>
+            </div>
+          </div>
+
+          <div class="mt-8 grid items-center gap-8 lg:grid-cols-12">
+            <div class="lg:col-span-7">
+              <div class="inline-flex flex-wrap items-center gap-2 rounded-lg border border-slate-700/80 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-200">
+                <span class="font-bold text-amber-400">
+                  ★ {prospect.ratingScore}
+                </span>
+                <span class="text-slate-300">
+                  across {prospect.reviewCount}+ jobs ({prospect.ratingSource})
+                </span>
+                <span class="text-slate-500">|</span>
+                <span class="text-sky-300">{prospect.instagramHandle}</span>
+              </div>
+
+              <h1 class="mt-4 max-w-[21ch] text-3xl font-extrabold leading-[1.12] tracking-tight text-white sm:text-4xl lg:text-5xl">
+                {prospect.heroHeadline}
+              </h1>
+
+              <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
+                {prospect.heroSubheadline}
+              </p>
+
+              <div class="mt-6 flex flex-wrap gap-3">
+                <a
+                  href="#quote-calculator"
+                  class="inline-flex items-center justify-center rounded-xl bg-[#0369A1] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-sky-950/40 transition-colors hover:bg-[#0284C7] sm:text-base"
+                >
+                  Calculate My 60-Second Quote
+                </a>
+                <a
+                  href="#job-proof"
+                  class="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 px-5 py-3.5 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-500 hover:text-white"
+                >
+                  See Job Results
+                </a>
+              </div>
+            </div>
+
+            {/* Right Spec Card: Mobile Rig Readiness */}
+            <div class="lg:col-span-5">
+              <div class="rounded-2xl border border-slate-700/80 bg-slate-900/90 p-5 shadow-xl">
+                <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                  <span class="text-sm font-bold text-white">
+                    Why Driveway Owners Book With Us
+                  </span>
+                  <span class="shrink-0 whitespace-nowrap rounded bg-slate-800 px-2 py-0.5 text-xs font-medium text-sky-300">
+                    {prospect.city}
+                  </span>
+                </div>
+                <ul class="mt-4 space-y-3">
+                  {prospect.trustPoints.map((point) => (
+                    <li class="flex items-start gap-2.5 text-sm text-slate-200">
+                      <svg
+                        class="mt-0.5 h-4 w-4 shrink-0 text-emerald-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div class="mt-5 rounded-xl border border-slate-800 bg-[#0C131F] p-3.5 text-xs text-slate-300">
+                  <span class="font-semibold text-white">60-Second Quote Promise:</span>{' '}
+                  Pick your vehicle size and package below to see your estimated price range immediately with zero obligation.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main class="mx-auto max-w-5xl px-4 pb-28 pt-8 sm:px-6 sm:pb-16 sm:pt-12">
+        {/* Interactive 60-Second Driveway Quote Calculator */}
+        <section
+          id="quote-calculator"
+          class="rounded-2xl border border-[#CBD5E1] bg-white p-5 shadow-sm sm:p-8"
+        >
+          <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-6">
+            <div>
+              <span class="inline-flex items-center rounded-md bg-sky-50 px-2.5 py-1 text-xs font-semibold text-[#0369A1] ring-1 ring-sky-200">
+                Step-by-Step Driveway Estimator
+              </span>
+              <h2 class="mt-2 text-2xl font-extrabold tracking-tight text-[#0F172A] sm:text-3xl">
+                Get Your 60-Second Quote
+              </h2>
+              <p class="mt-1 text-sm text-[#475569]">
+                Tap your vehicle size and detail level to view instant pricing for {prospect.city}.
+              </p>
+            </div>
+
+            <div class="rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-left sm:text-right">
+              <div class="text-xs font-semibold text-[#0369A1]">
+                Live Estimated Range
+              </div>
+              <div
+                id="calc-top-estimate"
+                class="tabular-nums mt-0.5 text-2xl font-extrabold text-[#0F172A]"
+              >
+                {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
+              </div>
+              <div id="calc-top-duration" class="text-xs text-[#475569]">
+                {defaultPkg?.durationLabel}
+              </div>
+            </div>
+          </div>
+
+          <form id="quote-form" class="mt-6 space-y-8" novalidate>
+            <input type="hidden" name="slug" value={prospect.slug} />
+            {/* Honeypot anti-spam field */}
+            <div class="hidden" aria-hidden="true">
+              <label for="website_url">Leave blank</label>
+              <input
+                id="website_url"
+                name="website_url"
+                type="text"
+                tabindex="-1"
+                autocomplete="off"
+                value=""
+              />
+            </div>
+
+            {/* Step 1: Vehicle Size */}
+            <div>
+              <label class="block text-sm font-bold text-[#0F172A]">
+                1. What size vehicle are we detailing?
+              </label>
+              <div
+                id="vehicle-size-group"
+                class="mt-3 grid gap-3 sm:grid-cols-3"
+                role="radiogroup"
+                aria-label="Vehicle size"
+              >
+                <button
+                  type="button"
+                  data-vehicle="sedan"
+                  aria-checked="true"
+                  role="radio"
+                  class="vehicle-btn flex flex-col items-start rounded-xl border-2 border-[#0369A1] bg-sky-50/60 p-4 text-left transition-colors"
+                >
+                  <span class="text-sm font-bold text-[#0F172A]">
+                    Coupe / Sedan
+                  </span>
+                  <span class="mt-1 text-xs text-[#475569]">
+                    2-door or 4-door cars (Civic, Model 3, 3 Series)
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  data-vehicle="suv"
+                  aria-checked="false"
+                  role="radio"
+                  class="vehicle-btn flex flex-col items-start rounded-xl border border-[#CBD5E1] bg-white p-4 text-left transition-colors hover:border-slate-400"
+                >
+                  <span class="text-sm font-bold text-[#0F172A]">
+                    Mid-Size SUV / Crossover
+                  </span>
+                  <span class="mt-1 text-xs text-[#475569]">
+                    2-row SUVs & wagons (RAV4, CR-V, Model Y, Q5)
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  data-vehicle="truck_xl"
+                  aria-checked="false"
+                  role="radio"
+                  class="vehicle-btn flex flex-col items-start rounded-xl border border-[#CBD5E1] bg-white p-4 text-left transition-colors hover:border-slate-400"
+                >
+                  <span class="text-sm font-bold text-[#0F172A]">
+                    3-Row SUV / Pickup Truck
+                  </span>
+                  <span class="mt-1 text-xs text-[#475569]">
+                    Full-size trucks, minivans & XL SUVs (F-150, Tahoe, XC90)
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Step 2: Detailing Package */}
+            <div>
+              <label class="block text-sm font-bold text-[#0F172A]">
+                2. Choose your detailing package
+              </label>
+              <div id="package-group" class="mt-3 grid gap-4 lg:grid-cols-3">
+                {prospect.packages.map((pkg, idx) => {
+                  const isDefault = defaultPkg ? pkg.id === defaultPkg.id : idx === 0;
+                  return (
+                    <button
+                      type="button"
+                      data-package-id={pkg.id}
+                      data-price-sedan={pkg.prices.sedan}
+                      data-price-suv={pkg.prices.suv}
+                      data-price-truck_xl={pkg.prices.truck_xl}
+                      data-duration={pkg.durationLabel}
+                      aria-pressed={isDefault ? 'true' : 'false'}
+                      class={`package-btn relative flex h-full flex-col justify-between rounded-xl p-5 text-left transition-colors ${
+                        isDefault
+                          ? 'border-2 border-[#0369A1] bg-sky-50/50'
+                          : 'border border-[#CBD5E1] bg-white hover:border-slate-400'
+                      }`}
+                    >
+                      <div>
+                        <div class="flex items-start justify-between gap-2">
+                          <span class="text-base font-bold text-[#0F172A]">
+                            {pkg.name}
+                          </span>
+                          {pkg.popular && (
+                            <span class="shrink-0 rounded-full bg-[#0369A1] px-2.5 py-0.5 text-[11px] font-bold text-white">
+                              Most Popular
+                            </span>
+                          )}
+                        </div>
+                        <p class="mt-1 text-xs text-[#475569]">{pkg.tagline}</p>
+
+                        <div class="mt-3 flex items-baseline gap-2 border-b border-slate-200 pb-3">
+                          <span class="pkg-price-display tabular-nums text-2xl font-extrabold text-[#0F172A]">
+                            {prospect.currencySymbol}{pkg.prices.sedan}
+                          </span>
+                          <span class="text-xs font-medium text-[#475569]">
+                            base ({pkg.durationLabel})
+                          </span>
+                        </div>
+
+                        <ul class="mt-3 space-y-2">
+                          {pkg.features.map((feat) => (
+                            <li class="flex items-start gap-2 text-xs leading-snug text-[#334155]">
+                              <span class="mt-0.5 text-[#15803D] font-bold">✓</span>
+                              <span>{feat}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Step 3: Condition & Add-ons */}
+            <div class="grid gap-6 lg:grid-cols-2">
+              <div>
+                <label class="block text-sm font-bold text-[#0F172A]">
+                  3. Current vehicle condition
+                </label>
+                <div id="condition-group" class="mt-3 space-y-2.5">
+                  <button
+                    type="button"
+                    data-condition="standard"
+                    class="condition-btn flex w-full items-center justify-between rounded-xl border-2 border-[#0369A1] bg-sky-50/60 px-4 py-3 text-left transition-colors"
+                  >
+                    <div>
+                      <div class="text-sm font-bold text-[#0F172A]">
+                        Standard Daily Condition
+                      </div>
+                      <div class="text-xs text-[#475569]">
+                        Normal dust, light road film & everyday tidy cabin
+                      </div>
+                    </div>
+                    <span class="tabular-nums text-xs font-bold text-[#15803D]">
+                      Included
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    data-condition="pet_hair"
+                    class="condition-btn flex w-full items-center justify-between rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-left transition-colors hover:border-slate-400"
+                  >
+                    <div>
+                      <div class="text-sm font-bold text-[#0F172A]">
+                        Pet Hair Removal Needed
+                      </div>
+                      <div class="text-xs text-[#475569]">
+                        Dog/cat hair embedded in seats or cargo carpet
+                      </div>
+                    </div>
+                    <span class="tabular-nums text-xs font-bold text-[#0F172A]">
+                      +{prospect.currencySymbol}25 to +{prospect.currencySymbol}45
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    data-condition="heavy_soil"
+                    class="condition-btn flex w-full items-center justify-between rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-left transition-colors hover:border-slate-400"
+                  >
+                    <div>
+                      <div class="text-sm font-bold text-[#0F172A]">
+                        Heavy Mud, Spills, or Work Truck
+                      </div>
+                      <div class="text-xs text-[#475569]">
+                        Deep stain extraction, salt crust, or heavy grime
+                      </div>
+                    </div>
+                    <span class="tabular-nums text-xs font-bold text-[#0F172A]">
+                      +{prospect.currencySymbol}35 to +{prospect.currencySymbol}65
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-bold text-[#0F172A]">
+                  Optional extras (tap to add)
+                </label>
+                <div class="mt-3 grid gap-2.5 sm:grid-cols-2">
+                  {prospect.addons.map((addon) => (
+                    <label class="addon-label flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#CBD5E1] bg-white p-3 transition-colors hover:border-slate-400">
+                      <input
+                        type="checkbox"
+                        name="addonsSelected"
+                        value={addon.id}
+                        data-addon-price={addon.price}
+                        class="addon-checkbox mt-0.5 h-4 w-4 rounded border-slate-300 text-[#0369A1]"
+                      />
+                      <span class="min-w-0 flex-1">
+                        <span class="flex items-center justify-between gap-1 text-xs font-bold text-[#0F172A]">
+                          <span class="truncate">{addon.name}</span>
+                          <span class="tabular-nums shrink-0 text-[#0369A1]">
+                            +{prospect.currencySymbol}{addon.price}
+                          </span>
+                        </span>
+                        <span class="mt-0.5 block text-[11px] leading-snug text-[#475569]">
+                          {addon.description}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4: Contact Details */}
+            <div class="rounded-2xl border border-[#CBD5E1] bg-[#F8FAFC] p-5 sm:p-6">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
+                <div>
+                  <h3 class="text-base font-bold text-[#0F172A]">
+                    4. Where should {prospect.businessName} send your confirmed quote?
+                  </h3>
+                  <p class="mt-0.5 text-xs text-[#475569]">
+                    No payment needed now. We confirm exact arrival windows by text or call.
+                  </p>
+                </div>
+                <div class="rounded-lg bg-[#0C131F] px-3.5 py-2 text-white">
+                  <span class="text-[11px] text-slate-300">Estimated Total: </span>
+                  <span
+                    id="calc-form-estimate"
+                    class="tabular-nums text-base font-extrabold text-sky-300"
+                  >
+                    {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
+                  </span>
+                </div>
+              </div>
+
+              <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label
+                    for="customerName"
+                    class="block text-xs font-bold text-[#0F172A]"
+                  >
+                    Your Name *
+                  </label>
+                  <input
+                    id="customerName"
+                    name="customerName"
+                    type="text"
+                    required
+                    placeholder="Alex Rivera"
+                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-slate-400"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    for="customerPhone"
+                    class="block text-xs font-bold text-[#0F172A]"
+                  >
+                    Mobile Number (for text confirmation) *
+                  </label>
+                  <input
+                    id="customerPhone"
+                    name="customerPhone"
+                    type="tel"
+                    required
+                    placeholder={prospect.country === 'UK' ? '07700 900123' : '(512) 555-0199'}
+                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-slate-400"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    for="customerPostal"
+                    class="block text-xs font-bold text-[#0F172A]"
+                  >
+                    Driveway {prospect.postalLabel} *
+                  </label>
+                  <input
+                    id="customerPostal"
+                    name="customerPostal"
+                    type="text"
+                    required
+                    placeholder={prospect.country === 'UK' ? 'GL50 2AA' : '78704'}
+                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-slate-400"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    for="preferredTiming"
+                    class="block text-xs font-bold text-[#0F172A]"
+                  >
+                    Preferred Timing
+                  </label>
+                  <select
+                    id="preferredTiming"
+                    name="preferredTiming"
+                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A]"
+                  >
+                    <option value="this_week">This Week (Earliest Open Slot)</option>
+                    <option value="next_week">Next Week</option>
+                    <option value="flexible">I am flexible on days</option>
+                  </select>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label
+                    for="notes"
+                    class="block text-xs font-bold text-[#0F172A]"
+                  >
+                    Vehicle Make/Model & Any Special Notes (Optional)
+                  </label>
+                  <input
+                    id="notes"
+                    name="notes"
+                    type="text"
+                    placeholder="e.g. 2022 White Toyota RAV4, driveway has plenty of shade"
+                    class="mt-1.5 w-full rounded-xl border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-slate-400"
+                  />
+                </div>
+              </div>
+
+              <div
+                id="quote-error-box"
+                role="alert"
+                class="mt-4 hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+              />
+
+              <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-xs text-[#475569]">
+                  {isPreview
+                    ? 'Preview Mode Active: Submitting runs a safe live test without emailing anyone.'
+                    : `Sent straight to ${prospect.businessName} for rapid confirmation.`}
+                </p>
+                <button
+                  id="submit-quote-btn"
+                  type="submit"
+                  class="inline-flex items-center justify-center rounded-xl bg-[#0369A1] px-6 py-3.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#0284C7] disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
+                >
+                  Get My 60-Second Quote
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        {/* Category Job-Proof Showcase (6 Photo Slots) */}
+        <section id="job-proof" class="mt-12">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold tracking-tight text-[#0F172A]">
+                Recent Work & Typical Job Results
+              </h2>
+              <p class="mt-1 text-sm text-[#475569]">
+                Clean before-and-after inspection standards for {prospect.city} vehicles.
+              </p>
+            </div>
+            {isPreview && (
+              <span class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900">
+                Owner Note: These 6 slots swap to your own real photos within 24 hrs of launch
+              </span>
+            )}
+          </div>
+
+          <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {prospect.gallery.map((item, index) => (
+              <article class="flex flex-col justify-between overflow-hidden rounded-2xl border border-[#CBD5E1] bg-white shadow-xs">
+                <div
+                  class="relative px-5 py-4 text-white"
+                  style={`background: linear-gradient(135deg, #0C131F 0%, ${item.accentHex} 160%);`}
+                >
+                  <div class="flex items-center justify-between text-xs text-slate-300">
+                    <span class="font-semibold">Job Proof #{index + 1}</span>
+                    <span class="rounded bg-white/10 px-2 py-0.5 text-[11px] font-medium text-white">
+                      {item.vehicleLabel}
+                    </span>
+                  </div>
+                  <h3 class="mt-2.5 text-base font-bold text-white">
+                    {item.title}
+                  </h3>
+                  <p class="mt-0.5 text-xs font-medium text-sky-200">
+                    {item.servicePerformed}
+                  </p>
+                </div>
+
+                <div class="flex flex-1 flex-col justify-between p-5">
+                  <p class="text-xs leading-relaxed text-[#334155]">
+                    {item.resultSummary}
+                  </p>
+
+                  <div class="mt-4 space-y-2 border-t border-slate-100 pt-3 text-xs">
+                    <div class="rounded-lg bg-slate-50 px-3 py-2">
+                      <span class="font-bold text-slate-700">Before: </span>
+                      <span class="text-slate-600">{item.beforeNote}</span>
+                    </div>
+                    <div class="rounded-lg bg-emerald-50/70 px-3 py-2">
+                      <span class="font-bold text-[#15803D]">After: </span>
+                      <span class="text-slate-700">{item.afterNote}</span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* Service Coverage & Quick FAQ */}
+        <section class="mt-12 grid gap-6 rounded-2xl border border-[#CBD5E1] bg-white p-6 sm:grid-cols-2 sm:p-8">
+          <div>
+            <h2 class="text-lg font-bold text-[#0F172A]">
+              Driveway Coverage & Rig Requirements
+            </h2>
+            <p class="mt-2 text-sm leading-relaxed text-[#475569]">
+              {prospect.businessName} serves <strong>{prospect.serviceArea}</strong>. We bring our own spot-free water tank and quiet generator, so we can detail at your home driveway, apartment lot (with permission), or office parking spot.
+            </p>
+          </div>
+          <div class="space-y-3 text-sm">
+            <div class="rounded-xl bg-[#F8FAFC] p-3.5">
+              <div class="font-bold text-[#0F172A]">
+                Do I pay upfront when requesting a quote?
+              </div>
+              <p class="mt-1 text-xs text-[#475569]">
+                Never. You get an instant price range here, we confirm your time slot by text, and you only pay once you inspect the finished car.
+              </p>
+            </div>
+            <div class="rounded-xl bg-[#F8FAFC] p-3.5">
+              <div class="font-bold text-[#0F172A]">
+                How long does a typical detail take?
+              </div>
+              <p class="mt-1 text-xs text-[#475569]">
+                Express refreshes take 1.5 to 2 hours, while full interior resets or gloss enhancements run 2.5 to 4.5 hours on-site.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Sticky Mobile Bottom Dock */}
+      <div class="fixed inset-x-0 bottom-0 z-30 border-t border-slate-700 bg-[#0C131F]/95 px-4 py-3 text-white backdrop-blur-sm md:hidden">
+        <div class="mx-auto flex max-w-lg items-center justify-between gap-3">
+          <div>
+            <div class="text-[11px] text-slate-300">Estimated Driveway Quote</div>
+            <div
+              id="mobile-sticky-estimate"
+              class="tabular-nums text-lg font-extrabold text-sky-300"
+            >
+              {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
+            </div>
+          </div>
+          <a
+            href="#quote-form"
+            class="rounded-xl bg-[#0369A1] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0284C7]"
+          >
+            Lock In Quote
+          </a>
+        </div>
+      </div>
+
+      {/* Owner Lead Notification Simulator Modal */}
+      <div
+        id="quote-success-modal"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/75 p-4 backdrop-blur-xs"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-heading"
+      >
+        <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#CBD5E1] bg-white p-6 shadow-2xl">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-2.5">
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-[#15803D] font-bold">
+                ✓
+              </span>
+              <div>
+                <h3 id="modal-heading" class="text-lg font-extrabold text-[#0F172A]">
+                  {isPreview
+                    ? 'Test Quote Logged (Preview Simulator)'
+                    : 'Quote Request Received'}
+                </h3>
+                <p class="text-xs text-[#475569]">
+                  {prospect.businessName} ({prospect.city})
+                </p>
+              </div>
+            </div>
+            <button
+              id="close-modal-btn"
+              type="button"
+              class="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+            >
+              Close
+            </button>
+          </div>
+
+          <div
+            id="modal-customer-summary"
+            class="mt-4 rounded-xl border border-slate-200 bg-[#F8FAFC] p-4 text-sm text-[#0F172A]"
+          />
+
+          <div class="mt-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-[#0369A1]">
+                What the Business Owner Receives Instantly:
+              </span>
+              <span class="rounded bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-[#15803D]">
+                Instant Lead Alert
+              </span>
+            </div>
+            <pre
+              id="modal-owner-sms"
+              class="mt-2 whitespace-pre-wrap rounded-xl bg-[#0C131F] p-4 font-mono text-xs leading-relaxed text-sky-100"
+            />
+          </div>
+
+          {isPreview && (
+            <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs leading-relaxed text-amber-950">
+              <strong>Preview Mode Safety:</strong> No automated email or SMS was sent. Once {prospect.businessName} activates this page ($50 founding setup + $15/mo), every customer submission routes straight to your phone/inbox with your real job photos live.
+            </div>
+          )}
+
+          <div class="mt-5 flex justify-end">
+            <button
+              id="done-modal-btn"
+              type="button"
+              class="rounded-xl bg-[#0369A1] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0284C7]"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <script
+        is:inline
+        define:vars={{
+          currencySymbol: prospect.currencySymbol,
+          defaultPackageId: defaultPkg?.id ?? '',
+        }}
+      >
+        (function () {
+          let selectedVehicle = 'sedan';
+          let selectedPackageId = defaultPackageId;
+          let selectedCondition = 'standard';
+
+          const vehicleButtons = document.querySelectorAll('.vehicle-btn');
+          const packageButtons = document.querySelectorAll('.package-btn');
+          const conditionButtons = document.querySelectorAll('.condition-btn');
+          const addonCheckboxes = document.querySelectorAll('.addon-checkbox');
+
+          const topEstEl = document.getElementById('calc-top-estimate');
+          const topDurEl = document.getElementById('calc-top-duration');
+          const formEstEl = document.getElementById('calc-form-estimate');
+          const mobileEstEl = document.getElementById('mobile-sticky-estimate');
+
+          const form = document.getElementById('quote-form');
+          const submitBtn = document.getElementById('submit-quote-btn');
+          const errorBox = document.getElementById('quote-error-box');
+
+          const modal = document.getElementById('quote-success-modal');
+          const modalSummary = document.getElementById('modal-customer-summary');
+          const modalSms = document.getElementById('modal-owner-sms');
+          const closeModalBtn = document.getElementById('close-modal-btn');
+          const doneModalBtn = document.getElementById('done-modal-btn');
+
+          function getConditionSpread(cond) {
+            if (cond === 'pet_hair') return [25, 45];
+            if (cond === 'heavy_soil') return [35, 65];
+            return [0, 20];
+          }
+
+          function updatePricingDisplay() {
+            // Update each package card displayed price for selected vehicle size
+            packageButtons.forEach((btn) => {
+              const priceAttr = btn.getAttribute(`data-price-${selectedVehicle}`);
+              const priceEl = btn.querySelector('.pkg-price-display');
+              if (priceAttr && priceEl) {
+                priceEl.textContent = `${currencySymbol}${priceAttr}`;
+              }
+            });
+
+            const activePkgBtn = document.querySelector(
+              `.package-btn[data-package-id="${selectedPackageId}"]`
+            );
+            if (!activePkgBtn) return;
+
+            const basePrice = Number(
+              activePkgBtn.getAttribute(`data-price-${selectedVehicle}`) || '145'
+            );
+            const duration = activePkgBtn.getAttribute('data-duration') || '';
+            const [condMin, condMax] = getConditionSpread(selectedCondition);
+
+            let addonsSum = 0;
+            addonCheckboxes.forEach((cb) => {
+              if (cb.checked) {
+                addonsSum += Number(cb.getAttribute('data-addon-price') || '0');
+              }
+            });
+
+            const estMin = basePrice + condMin + addonsSum;
+            const estMax = basePrice + condMax + addonsSum;
+            const formatted = `${currencySymbol}${estMin} - ${currencySymbol}${estMax}`;
+
+            if (topEstEl) topEstEl.textContent = formatted;
+            if (topDurEl) topDurEl.textContent = duration;
+            if (formEstEl) formEstEl.textContent = formatted;
+            if (mobileEstEl) mobileEstEl.textContent = formatted;
+          }
+
+          function setVehicle(size) {
+            selectedVehicle = size;
+            vehicleButtons.forEach((btn) => {
+              const active = btn.getAttribute('data-vehicle') === size;
+              btn.setAttribute('aria-checked', active ? 'true' : 'false');
+              btn.className = active
+                ? 'vehicle-btn flex flex-col items-start rounded-xl border-2 border-[#0369A1] bg-sky-50/60 p-4 text-left transition-colors'
+                : 'vehicle-btn flex flex-col items-start rounded-xl border border-[#CBD5E1] bg-white p-4 text-left transition-colors hover:border-slate-400';
+            });
+            updatePricingDisplay();
+          }
+
+          function setPackage(pkgId) {
+            selectedPackageId = pkgId;
+            packageButtons.forEach((btn) => {
+              const active = btn.getAttribute('data-package-id') === pkgId;
+              btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+              btn.className = active
+                ? 'package-btn relative flex h-full flex-col justify-between rounded-xl border-2 border-[#0369A1] bg-sky-50/50 p-5 text-left transition-colors'
+                : 'package-btn relative flex h-full flex-col justify-between rounded-xl border border-[#CBD5E1] bg-white p-5 text-left transition-colors hover:border-slate-400';
+            });
+            updatePricingDisplay();
+          }
+
+          function setCondition(cond) {
+            selectedCondition = cond;
+            conditionButtons.forEach((btn) => {
+              const active = btn.getAttribute('data-condition') === cond;
+              btn.className = active
+                ? 'condition-btn flex w-full items-center justify-between rounded-xl border-2 border-[#0369A1] bg-sky-50/60 px-4 py-3 text-left transition-colors'
+                : 'condition-btn flex w-full items-center justify-between rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-left transition-colors hover:border-slate-400';
+            });
+            updatePricingDisplay();
+          }
+
+          vehicleButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const val = btn.getAttribute('data-vehicle');
+              if (val) setVehicle(val);
+            });
+          });
+
+          packageButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const val = btn.getAttribute('data-package-id');
+              if (val) setPackage(val);
+            });
+          });
+
+          conditionButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const val = btn.getAttribute('data-condition');
+              if (val) setCondition(val);
+            });
+          });
+
+          addonCheckboxes.forEach((cb) => {
+            cb.addEventListener('change', () => {
+              const parentLabel = cb.closest('.addon-label');
+              if (parentLabel) {
+                parentLabel.className = cb.checked
+                  ? 'addon-label flex cursor-pointer items-start gap-2.5 rounded-xl border-2 border-[#0369A1] bg-sky-50/50 p-3 transition-colors'
+                  : 'addon-label flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#CBD5E1] bg-white p-3 transition-colors hover:border-slate-400';
+              }
+              updatePricingDisplay();
+            });
+          });
+
+          function closeModal() {
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+          }
+
+          closeModalBtn?.addEventListener('click', closeModal);
+          doneModalBtn?.addEventListener('click', closeModal);
+          modal?.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+          });
+
+          form?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!form || !submitBtn || !errorBox) return;
+
+            errorBox.classList.add('hidden');
+            errorBox.textContent = '';
+
+            const formData = new FormData(form);
+            const selectedAddons = [];
+            addonCheckboxes.forEach((cb) => {
+              if (cb.checked) selectedAddons.push(cb.value);
+            });
+
+            const payload = {
+              slug: String(formData.get('slug') || ''),
+              customerName: String(formData.get('customerName') || ''),
+              customerPhone: String(formData.get('customerPhone') || ''),
+              customerPostal: String(formData.get('customerPostal') || ''),
+              vehicleSize: selectedVehicle,
+              packageId: selectedPackageId,
+              conditionLevel: selectedCondition,
+              addonsSelected: selectedAddons,
+              preferredTiming: String(formData.get('preferredTiming') || 'this_week'),
+              notes: String(formData.get('notes') || ''),
+              website_url: String(formData.get('website_url') || ''),
+            };
+
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Calculating & Saving Quote...';
+
+            try {
+              const res = await fetch('/api/quotes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+              });
+              const result = await res.json();
+
+              if (!res.ok || !result.ok) {
+                errorBox.textContent =
+                  result.error || 'Please check your name, phone number, and postal code.';
+                errorBox.classList.remove('hidden');
+                return;
+              }
+
+              if (result.quote && modalSummary && modalSms && modal) {
+                modalSummary.innerHTML = '';
+                const line1 = document.createElement('div');
+                line1.className = 'font-bold text-[#0F172A]';
+                line1.textContent = `${result.quote.vehicleLabel} · ${result.quote.packageName}`;
+
+                const line2 = document.createElement('div');
+                line2.className = 'mt-1 text-xs text-[#475569]';
+                line2.textContent = `Estimated Range: ${result.quote.priceRange} (${result.quote.durationLabel})`;
+
+                const line3 = document.createElement('div');
+                line3.className = 'mt-1 text-xs text-[#475569]';
+                line3.textContent = `Contact: ${result.quote.customerName} (${result.quote.customerPhone}) · ${result.quote.customerPostal}`;
+
+                modalSummary.appendChild(line1);
+                modalSummary.appendChild(line2);
+                modalSummary.appendChild(line3);
+
+                modalSms.textContent = result.ownerPreview?.smsPreview || '';
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                form.reset();
+              }
+            } catch {
+              errorBox.textContent =
+                'Network error while submitting quote. Please try again.';
+              errorBox.classList.remove('hidden');
+            } finally {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+            }
+          });
+
+          updatePricingDisplay();
+        })();
+      </script>
+    </BaseLayout>
+  )
+}
