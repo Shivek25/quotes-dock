@@ -69,7 +69,7 @@ export const updateOutreachDraftSchema = z.object({
     .min(10, 'Message cannot be empty')
     .max(2000)
     .optional(),
-  approvalStatus:
+  approvalStatus: z
     .enum(['draft', 'approved', 'sent_manually', 'replied'])
     .optional(),
 });
