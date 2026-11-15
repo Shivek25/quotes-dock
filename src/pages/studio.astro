@@ -489,15 +489,23 @@ const statusLabels: Record<string, string> = {
                             <span>
                               Phone: <strong class="text-slate-200">{candidate.phoneDisplay || 'DM / Social Only'}</strong>
                             </span>
-                            {candidate.websiteUrl && (
+                            {candidate.websiteUrl ? (
                               <a
                                 href={candidate.websiteUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="font-semibold text-[#00F2FE] underline underline-offset-2 hover:text-white"
                               >
-                                Visit Website
+                                {/instagram\.com|instagr\.am|facebook\.com|fb\.com|linktr\.ee|tiktok\.com/i.test(
+                                  candidate.websiteUrl
+                                )
+                                  ? 'View Social Profile'
+                                  : 'Visit Website'}
                               </a>
+                            ) : (
+                              <span class="rounded border border-emerald-400/30 bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+                                No Website Listed
+                              </span>
                             )}
                           </div>
 
