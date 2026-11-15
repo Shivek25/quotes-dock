@@ -112,3 +112,28 @@ export const updateProspectModeSchema = z.object({
 export const deleteProspectSchema = z.object({
   prospectId: z.string().trim().min(2).max(80),
 });
+
+export const candidateItemSchema = z.object({
+  businessName: z.string().trim().min(2).max(120),
+  city: z.string().trim().min(2).max(80),
+  country: z.enum(['US', 'UK']).default('US'),
+  serviceArea: z.string().trim().min(2).max(180),
+  phoneDisplay: z.string().trim().max(40).optional().default(''),
+  instagramHandle: z.string().trim().min(2).max(160),
+  websiteUrl: z.string().trim().max(400).optional().default(''),
+  ratingScore: z.string().trim().min(1).max(10).default('4.9'),
+  reviewCount: z.coerce.number().int().min(0).max(50000).default(35),
+  fitScore: z.coerce.number().int().min(1).max(100).default(75),
+  fitSignals: z.array(z.string().trim().max(80)).max(8).default([]),
+  hasInstantQuote: z.boolean().optional().default(false),
+  personalizationNote: z.string().trim().min(5).max(280),
+});
+
+export const upsertCandidatesBatchSchema = z.object({
+  candidates: z.array(candidateItemSchema).min(1).max(10),
+});
+
+export const updateCandidateStatusSchema = z.object({
+  id: z.string().trim().min(2).max(80),
+  status: z.enum(['new', 'promoted', 'dismissed']),
+});

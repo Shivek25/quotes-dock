@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { listProspectsWithStats } from '../lib/db/repository';
+import {
+  listLeadCandidates,
+  listProspectsWithStats,
+} from '../lib/db/repository';
 import { isSandboxDemoSlug } from '../lib/db/seed-data';
 import {
   getConfiguredStudioKey,
@@ -35,6 +38,7 @@ if (Astro.request.method === 'POST' && configuredKey) {
 
 const authorized = isStudioAuthorized(Astro.request, Astro.cookies, env);
 const items = authorized ? await listProspectsWithStats(env.DB) : [];
+const leadCandidates = authorized ? await listLeadCandidates(env.DB) : [];
 
 const realItems = items.filter((item) => !isSandboxDemoSlug(item.prospect.slug));
 const sandboxItems = items.filter((item) => isSandboxDemoSlug(item.prospect.slug));
@@ -395,8 +399,158 @@ const statusLabels: Record<string, string> = {
           </form>
         </section>
 
-        {/* Right Column: Human Approval Outreach Queue */}
+        {/* Right Column: Scouted Leads Queue + Human Approval Outreach Queue */}
         <section class="space-y-6 lg:col-span-8">
+          {/* Scouted Leads Staging Queue */}
+          <details
+            id="scouted-queue-panel"
+            open
+            class="glass-panel anisotropic-border rounded-2xl border border-cyan-400/25 p-5"
+          >
+            <summary class="flex cursor-pointer select-none flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2.5">
+                <span class="text-lg font-bold text-white">
+                  Scouted Leads Staging Queue
+                </span>
+                <span
+                  id="scouted-count-badge"
+                  class="rounded-full border border-cyan-400/40 bg-cyan-400/15 px-2.5 py-0.5 text-xs font-bold text-[#00F2FE]"
+                >
+                  {leadCandidates.length} ready
+                </span>
+              </div>
+              <span class="text-xs font-semibold text-[#94A3B8]">
+                Click to collapse / expand
+              </span>
+            </summary>
+
+            <div class="mt-4 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-800 bg-[#0A0C10]/85 px-3.5 py-2.5">
+                <div class="text-xs text-[#94A3B8]">
+                  Run locally to scout 5 fresh leads:
+                  <code
+                    id="scout-cli-snippet"
+                    class="ml-1.5 rounded bg-slate-800/90 px-2 py-0.5 font-mono text-[11px] text-[#00F2FE]"
+                  >
+                    npm run scout -- --city "Gloucester, UK" --country UK
+                  </code>
+                </div>
+                <button
+                  id="copy-scout-cmd-btn"
+                  type="button"
+                  class="rounded-lg border border-slate-700 bg-[#11151E] px-2.5 py-1 text-[11px] font-bold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+                >
+                  Copy CLI
+                </button>
+              </div>
+
+              <div
+                id="scouted-empty-state"
+                class={`rounded-xl border border-dashed border-slate-700 p-5 text-center ${
+                  leadCandidates.length === 0 ? '' : 'hidden'
+                }`}
+              >
+                <p class="text-sm font-semibold text-white">
+                  No scouted leads in staging queue
+                </p>
+                <p class="mt-1 text-xs text-[#94A3B8]">
+                  Run the CLI command above in your terminal to discover, score, and queue 5 local detailing prospects.
+                </p>
+              </div>
+
+              {leadCandidates.length > 0 && (
+                <div id="scouted-candidates-list" class="space-y-3">
+                  {leadCandidates.map((candidate) => (
+                    <article
+                      class="candidate-card rounded-xl border border-slate-800 bg-[#0A0C10]/85 p-4"
+                      data-candidate-card={candidate.id}
+                    >
+                      <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div class="min-w-0 flex-1">
+                          <div class="flex flex-wrap items-center gap-2">
+                            <h3 class="text-base font-bold text-white">
+                              {candidate.businessName}
+                            </h3>
+                            <span class="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-slate-200">
+                              {candidate.city} ({candidate.country})
+                            </span>
+                            <span class="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
+                              {candidate.fitScore}% Fit
+                            </span>
+                            <span class="text-xs font-semibold text-amber-200">
+                              {candidate.ratingScore} stars ({candidate.reviewCount} reviews)
+                            </span>
+                          </div>
+
+                          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#94A3B8]">
+                            <span>
+                              Handle: <strong class="text-slate-200">{candidate.instagramHandle}</strong>
+                            </span>
+                            <span>
+                              Phone: <strong class="text-slate-200">{candidate.phoneDisplay || 'DM / Social Only'}</strong>
+                            </span>
+                            {candidate.websiteUrl && (
+                              <a
+                                href={candidate.websiteUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="font-semibold text-[#00F2FE] underline underline-offset-2 hover:text-white"
+                              >
+                                Visit Website
+                              </a>
+                            )}
+                          </div>
+
+                          {candidate.fitSignals.length > 0 && (
+                            <div class="mt-2.5 flex flex-wrap gap-1.5">
+                              {candidate.fitSignals.map((sig) => (
+                                <span class="rounded-md border border-slate-700 bg-[#11151E] px-2 py-0.5 text-[11px] font-medium text-cyan-200">
+                                  {sig}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          <p class="mt-2.5 rounded-lg border border-slate-800/80 bg-[#11151E]/80 px-3 py-2 text-xs leading-relaxed text-slate-200">
+                            {candidate.personalizationNote}
+                          </p>
+                        </div>
+
+                        <div class="flex shrink-0 flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            data-candidate={JSON.stringify({
+                              id: candidate.id,
+                              businessName: candidate.businessName,
+                              city: candidate.city,
+                              country: candidate.country,
+                              serviceArea: candidate.serviceArea,
+                              phoneDisplay: candidate.phoneDisplay,
+                              instagramHandle: candidate.instagramHandle,
+                              ratingScore: candidate.ratingScore,
+                              reviewCount: candidate.reviewCount,
+                              personalizationNote: candidate.personalizationNote,
+                            })}
+                            class="load-candidate-btn rounded-xl bg-[#00F2FE] px-3 py-2 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+                          >
+                            Load into Studio Form
+                          </button>
+                          <button
+                            type="button"
+                            data-candidate-id={candidate.id}
+                            class="dismiss-candidate-btn rounded-xl border border-slate-700 bg-[#11151E] px-3 py-2 text-xs font-bold text-slate-300 transition-colors hover:border-red-400/50 hover:text-red-200"
+                          >
+                            Dismiss
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
+          </details>
+
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 class="text-xl font-bold text-white">
@@ -888,6 +1042,16 @@ const statusLabels: Record<string, string> = {
             return;
           }
 
+          const candidateId = form.dataset.candidateId;
+          if (candidateId) {
+            await fetch('/api/candidates', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: candidateId, status: 'promoted' }),
+            }).catch(() => null);
+            delete form.dataset.candidateId;
+          }
+
           okBox.textContent = `Preview created! Reloading queue with ${data.previewUrl}...`;
           okBox.classList.remove('hidden');
           window.location.reload();
@@ -898,6 +1062,99 @@ const statusLabels: Record<string, string> = {
           createBtn.disabled = false;
           createBtn.textContent = original;
         }
+      });
+
+      const copyScoutBtn = document.getElementById('copy-scout-cmd-btn');
+      const scoutSnippet = document.getElementById('scout-cli-snippet');
+      copyScoutBtn?.addEventListener('click', async () => {
+        const text = scoutSnippet?.textContent?.trim();
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast('Scout CLI command copied');
+        } catch {
+          showToast('Copy failed - copy manually from box', 'warn');
+        }
+      });
+
+      function updateCandidateQueueCount() {
+        const remaining = document.querySelectorAll('.candidate-card').length;
+        const badge = document.getElementById('scouted-count-badge');
+        const emptyState = document.getElementById('scouted-empty-state');
+        if (badge) {
+          badge.textContent = `${remaining} ready`;
+        }
+        if (emptyState) {
+          if (remaining === 0) {
+            emptyState.classList.remove('hidden');
+          } else {
+            emptyState.classList.add('hidden');
+          }
+        }
+      }
+
+      document.querySelectorAll('.load-candidate-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const raw = btn.getAttribute('data-candidate');
+          if (!raw || !form) return;
+          try {
+            const candidate = JSON.parse(raw);
+            const setValue = (id, val) => {
+              const el = document.getElementById(id);
+              if (el) el.value = val ?? '';
+            };
+            setValue('businessName', candidate.businessName);
+            setValue('city', candidate.city);
+            setValue('country', candidate.country || 'US');
+            setValue('serviceArea', candidate.serviceArea);
+            setValue('phoneDisplay', candidate.phoneDisplay || '');
+            setValue('instagramHandle', candidate.instagramHandle);
+            setValue('ratingScore', candidate.ratingScore || '4.9');
+            setValue('reviewCount', String(candidate.reviewCount || 45));
+            setValue('personalizationNote', candidate.personalizationNote);
+            setValue('slug', '');
+            form.dataset.candidateId = candidate.id;
+
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showToast('Loaded into form! Review and click Create Preview.');
+          } catch {
+            showToast('Could not parse candidate data.', 'error');
+          }
+        });
+      });
+
+      document.querySelectorAll('.dismiss-candidate-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const candidateId = btn.getAttribute('data-candidate-id');
+          if (!candidateId) return;
+
+          btn.setAttribute('disabled', 'true');
+          const orig = btn.textContent;
+          btn.textContent = 'Dismissing...';
+
+          try {
+            const res = await fetch('/api/candidates', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: candidateId, status: 'dismissed' }),
+            });
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.ok) {
+              const card = document.querySelector(`[data-candidate-card="${candidateId}"]`);
+              card?.remove();
+              updateCandidateQueueCount();
+              showToast('Candidate dismissed');
+            } else {
+              showToast(data?.error || 'Could not dismiss candidate.', 'error');
+              btn.removeAttribute('disabled');
+              btn.textContent = orig;
+            }
+          } catch {
+            showToast('Network error dismissing candidate.', 'error');
+            btn.removeAttribute('disabled');
+            btn.textContent = orig;
+          }
+        });
       });
 
       document.querySelectorAll('.draft-action-btn').forEach((btn) => {
