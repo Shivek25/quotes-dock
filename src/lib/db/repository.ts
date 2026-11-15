@@ -3,16 +3,20 @@ import { drizzle } from 'drizzle-orm/d1';
 
 export type D1Database = Parameters<typeof drizzle>[0];
 import {
+  leadCandidates,
   outreachDrafts,
   prospects,
   quoteRequests,
+  type CandidateStatus,
   type ConditionLevel,
   type CountryCode,
   type DetailingAddon,
   type DetailingPackage,
   type JobProofItem,
+  type LeadCandidateRow,
   type OutreachApprovalStatus,
   type OutreachDraftRow,
+  type ParsedLeadCandidate,
   type ParsedProspect,
   type ProspectMode,
   type ProspectRow,
@@ -196,6 +200,26 @@ export async function ensureSchemaAndSeed(d1: D1Database): Promise<void> {
           updated_at TEXT NOT NULL
         )`),
         d1.prepare(`CREATE INDEX IF NOT EXISTS idx_outreach_drafts_prospect_status ON outreach_drafts (prospect_id, approval_status)`),
+        d1.prepare(`CREATE TABLE IF NOT EXISTS lead_candidates (
+          id TEXT PRIMARY KEY NOT NULL,
+          dedupe_key TEXT NOT NULL UNIQUE,
+          business_name TEXT NOT NULL,
+          city TEXT NOT NULL,
+          country TEXT NOT NULL DEFAULT 'US',
+          service_area TEXT NOT NULL,
+          phone_display TEXT NOT NULL DEFAULT '',
+          instagram_handle TEXT NOT NULL,
+          website_url TEXT NOT NULL DEFAULT '',
+          rating_score TEXT NOT NULL DEFAULT '4.9',
+          review_count INTEGER NOT NULL DEFAULT 35,
+          fit_score INTEGER NOT NULL DEFAULT 75,
+          fit_signals_json TEXT NOT NULL DEFAULT '[]',
+          has_instant_quote INTEGER NOT NULL DEFAULT 0,
+          personalization_note TEXT NOT NULL,
+          status TEXT NOT NULL DEFAULT 'new',
+          scouted_at TEXT NOT NULL
+        )`),
+        d1.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_lead_candidates_dedupe ON lead_candidates (dedupe_key)`),
       ]);
 
       const db = drizzle(d1);
@@ -613,6 +637,159 @@ export async function deleteProspectById(
     d1.prepare('DELETE FROM outreach_drafts WHERE prospect_id = ?').bind(prospectId),
     d1.prepare('DELETE FROM prospects WHERE id = ?').bind(prospectId),
   ]);
+
+  return true;
+}
+
+export function buildCandidateDedupeKey(businessName: string, city: string): string {
+  const cleanName = businessName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+  const primaryCity = (city.split(',')[0] ?? city)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+  return `${cleanName}__${primaryCity}`.slice(0, 96);
+}
+
+export function parseLeadCandidateRow(row: LeadCandidateRow): ParsedLeadCandidate {
+  const status: CandidateStatus =
+    row.status === 'promoted'
+      ? 'promoted'
+      : row.status === 'dismissed'
+        ? 'dismissed'
+        : 'new';
+
+  return {
+    id: row.id,
+    dedupeKey: row.dedupeKey,
+    businessName: row.businessName,
+    city: row.city,
+    country: (row.country === 'UK' ? 'UK' : 'US') as CountryCode,
+    serviceArea: row.serviceArea,
+    phoneDisplay: row.phoneDisplay,
+    instagramHandle: row.instagramHandle,
+    websiteUrl: row.websiteUrl,
+    ratingScore: row.ratingScore,
+    reviewCount: row.reviewCount,
+    fitScore: row.fitScore,
+    fitSignals: safeParseJson<string[]>(row.fitSignalsJson, []),
+    hasInstantQuote: row.hasInstantQuote === 1,
+    personalizationNote: row.personalizationNote,
+    status,
+    scoutedAt: row.scoutedAt,
+  };
+}
+
+export interface UpsertCandidateInput {
+  businessName: string;
+  city: string;
+  country: CountryCode;
+  serviceArea: string;
+  phoneDisplay: string;
+  instagramHandle: string;
+  websiteUrl: string;
+  ratingScore: string;
+  reviewCount: number;
+  fitScore: number;
+  fitSignals: string[];
+  hasInstantQuote: boolean;
+  personalizationNote: string;
+}
+
+export async function listLeadCandidates(
+  d1: D1Database
+): Promise<ParsedLeadCandidate[]> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  const rows = await db
+    .select()
+    .from(leadCandidates)
+    .where(eq(leadCandidates.status, 'new'))
+    .orderBy(desc(leadCandidates.fitScore), desc(leadCandidates.scoutedAt))
+    .limit(25);
+
+  return rows.map(parseLeadCandidateRow);
+}
+
+export async function upsertLeadCandidatesBatch(
+  d1: D1Database,
+  items: UpsertCandidateInput[]
+): Promise<{ count: number }> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  const nowIso = new Date().toISOString();
+
+  for (const item of items) {
+    const dedupeKey = buildCandidateDedupeKey(item.businessName, item.city);
+    const id = `cand_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`;
+    const normalizedHandle = normalizeInstagramHandle(item.instagramHandle);
+
+    await db
+      .insert(leadCandidates)
+      .values({
+        id,
+        dedupeKey,
+        businessName: item.businessName,
+        city: item.city,
+        country: item.country,
+        serviceArea: item.serviceArea,
+        phoneDisplay: item.phoneDisplay,
+        instagramHandle: normalizedHandle,
+        websiteUrl: item.websiteUrl,
+        ratingScore: item.ratingScore,
+        reviewCount: item.reviewCount,
+        fitScore: item.fitScore,
+        fitSignalsJson: JSON.stringify(item.fitSignals),
+        hasInstantQuote: item.hasInstantQuote ? 1 : 0,
+        personalizationNote: item.personalizationNote,
+        status: 'new',
+        scoutedAt: nowIso,
+      })
+      .onConflictDoUpdate({
+        target: leadCandidates.dedupeKey,
+        set: {
+          businessName: item.businessName,
+          city: item.city,
+          country: item.country,
+          serviceArea: item.serviceArea,
+          phoneDisplay: item.phoneDisplay,
+          instagramHandle: normalizedHandle,
+          websiteUrl: item.websiteUrl,
+          ratingScore: item.ratingScore,
+          reviewCount: item.reviewCount,
+          fitScore: item.fitScore,
+          fitSignalsJson: JSON.stringify(item.fitSignals),
+          hasInstantQuote: item.hasInstantQuote ? 1 : 0,
+          personalizationNote: item.personalizationNote,
+          scoutedAt: nowIso,
+          status: sql`CASE WHEN ${leadCandidates.status} = 'promoted' THEN 'promoted' ELSE 'new' END`,
+        },
+      });
+  }
+
+  return { count: items.length };
+}
+
+export async function updateLeadCandidateStatus(
+  d1: D1Database,
+  id: string,
+  status: CandidateStatus
+): Promise<boolean> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+
+  const existing = await db
+    .select({ id: leadCandidates.id })
+    .from(leadCandidates)
+    .where(eq(leadCandidates.id, id))
+    .limit(1);
+
+  if (existing.length === 0) return false;
+
+  await db
+    .update(leadCandidates)
+    .set({ status })
+    .where(eq(leadCandidates.id, id));
 
   return true;
 }

@@ -115,3 +115,37 @@ export interface ParsedProspect extends Omit<
   gallery: JobProofItem[];
   trustPoints: string[];
 }
+
+export type CandidateStatus = 'new' | 'promoted' | 'dismissed';
+
+export const leadCandidates = sqliteTable('lead_candidates', {
+  id: text('id').primaryKey(),
+  dedupeKey: text('dedupe_key').notNull().unique(),
+  businessName: text('business_name').notNull(),
+  city: text('city').notNull(),
+  country: text('country').notNull().default('US'),
+  serviceArea: text('service_area').notNull(),
+  phoneDisplay: text('phone_display').notNull().default(''),
+  instagramHandle: text('instagram_handle').notNull(),
+  websiteUrl: text('website_url').notNull().default(''),
+  ratingScore: text('rating_score').notNull().default('4.9'),
+  reviewCount: integer('review_count').notNull().default(35),
+  fitScore: integer('fit_score').notNull().default(75),
+  fitSignalsJson: text('fit_signals_json').notNull().default('[]'),
+  hasInstantQuote: integer('has_instant_quote').notNull().default(0),
+  personalizationNote: text('personalization_note').notNull(),
+  status: text('status').notNull().default('new'),
+  scoutedAt: text('scouted_at').notNull(),
+});
+
+export type LeadCandidateRow = typeof leadCandidates.$inferSelect;
+
+export interface ParsedLeadCandidate extends Omit<
+  LeadCandidateRow,
+  'country' | 'fitSignalsJson' | 'hasInstantQuote' | 'status'
+> {
+  country: CountryCode;
+  fitSignals: string[];
+  hasInstantQuote: boolean;
+  status: CandidateStatus;
+}
