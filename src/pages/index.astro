@@ -1,19 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { listProspectsWithStats } from '../lib/db/repository';
+import { INITIAL_SEED_PROSPECTS } from '../lib/db/seed-data';
 
-const d1 = Astro.locals.runtime.env.DB;
-const items = await listProspectsWithStats(d1);
+const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
 ---
 
 <BaseLayout
-  title="QuotesDock | Preview-First Quote & Job-Proof Pages for Mobile Car Detailers"
-  description="Live mobile-first 60-second quote calculators and job-proof landing pages for US and UK mobile car detailers."
+  title="QuotesDock | 60-Second Driveway Quote Pages for Mobile Car Detailers"
+  description="Turn Instagram and Google profile clicks into pre-qualified detailing bookings with a 60-second quote configurator built for US and UK mobile car detailers."
 >
   <nav class="sticky top-0 z-40 border-b border-slate-800/80 bg-[#0A0C10]/85 backdrop-blur-xl">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
-      <div class="flex items-center gap-3">
-        <div class="flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-400/10 text-[#00F2FE] cyan-glow-sm">
+      <div class="flex min-w-0 items-center gap-3">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-400/10 text-[#00F2FE] cyan-glow-sm">
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M12 2L20 6.5V17.5L12 22L4 17.5V6.5L12 2Z" />
             <path d="M12 7L16 9.5V14.5L12 17L8 14.5V9.5L12 7Z" />
@@ -23,28 +22,40 @@ const items = await listProspectsWithStats(d1);
           QuotesDock
         </span>
         <span class="hidden rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#00F2FE] sm:inline-flex">
-          Mobile Detailing Edition
+          For Mobile Detailers &amp; Valeters
         </span>
       </div>
 
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-4 sm:gap-6">
         <a
-          href="#workflow"
-          class="hidden text-xs font-semibold text-[#94A3B8] transition-colors hover:text-white sm:inline"
+          href="#why-it-works"
+          class="hidden text-xs font-semibold text-[#94A3B8] transition-colors hover:text-white md:inline"
         >
-          How It Works
+          Why It Works
+        </a>
+        <a
+          href="#how-it-works"
+          class="hidden text-xs font-semibold text-[#94A3B8] transition-colors hover:text-white lg:inline"
+        >
+          24-Hour Setup
         </a>
         <a
           href="#demos"
-          class="text-xs font-semibold text-[#94A3B8] transition-colors hover:text-white sm:text-sm"
+          class="hidden text-xs font-semibold text-[#94A3B8] transition-colors hover:text-white sm:inline sm:text-sm"
         >
-          Live Demos
+          Live Samples
         </a>
         <a
-          href="/studio"
+          href="#pricing"
+          class="text-xs font-semibold text-[#94A3B8] transition-colors hover:text-white sm:text-sm"
+        >
+          Pricing
+        </a>
+        <a
+          href="/p/apex-gloss-austin"
           class="rounded-xl bg-[#00F2FE] px-4 py-2 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm sm:text-sm"
         >
-          Open Founder Studio
+          Try Sample Quote Page
         </a>
       </div>
     </div>
@@ -61,23 +72,23 @@ const items = await listProspectsWithStats(d1);
               <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-75" />
               <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
             </span>
-            <span>Built on Cloudflare Workers + D1 ($0/mo Fixed Cost)</span>
+            <span>Built for US &amp; UK Mobile Car Detailers</span>
           </div>
 
           <h1 class="mt-5 max-w-[19ch] text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[54px]">
-            Turn Local Detailers Into 60-Second Quote Bookings
+            Turn Instagram &amp; Google Clicks Into 60-Second Driveway Quotes
           </h1>
 
           <p class="mt-4 max-w-xl text-base leading-relaxed text-[#94A3B8] sm:text-lg">
-            Instead of pitching vague websites, send US and UK mobile car detailers a live, interactive quote configurator pre-built for their business.
+            Stop losing busy car owners in endless "How much for an SUV?" DMs. Give your customers a fast, mobile-first quote configurator where they tap their vehicle size, pick your package, see your starting price range, and send their driveway details in 60 seconds.
           </p>
 
           <div class="mt-7 flex flex-wrap gap-3.5">
             <a
-              href="/studio"
+              href="/p/apex-gloss-austin"
               class="group inline-flex items-center gap-2 rounded-xl bg-[#00F2FE] px-6 py-4 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow sm:text-base"
             >
-              <span>Generate a New Preview</span>
+              <span>Try Live Sample Quote Page</span>
               <svg
                 class="h-4 w-4 transition-transform group-hover:translate-x-1"
                 viewBox="0 0 20 20"
@@ -92,15 +103,15 @@ const items = await listProspectsWithStats(d1);
               </svg>
             </a>
             <a
-              href="/p/apex-gloss-austin"
+              href="#pricing"
               class="rounded-xl border border-slate-700 bg-slate-900/75 px-5 py-4 text-sm font-semibold text-slate-100 transition-colors hover:border-cyan-400/50 hover:text-white sm:text-base"
             >
-              Try Sample Quote Page
+              View Founding Offer ($50 Setup)
             </a>
           </div>
         </div>
 
-        <div class="reveal-up is-visible stagger-1 lg:col-span-5">
+        <div class="reveal-up is-visible stagger-1 min-w-0 lg:col-span-5">
           <div class="glass-panel anisotropic-border overflow-hidden rounded-2xl p-2">
             <div class="relative aspect-[16/10] overflow-hidden rounded-xl bg-[#070A0F]">
               <img
@@ -112,37 +123,37 @@ const items = await listProspectsWithStats(d1);
                 class="pointer-events-none absolute inset-0"
                 style="background: linear-gradient(125deg, rgba(10,12,16,0.92) 0%, rgba(10,12,16,0.4) 50%, rgba(10,12,16,0.12) 100%), linear-gradient(to top, rgba(10,12,16,0.94) 0%, transparent 55%);"
               />
-              <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/85 px-4 py-2.5 backdrop-blur-md">
-                <div>
+              <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 rounded-xl border border-slate-700/80 bg-[#0A0C10]/85 px-4 py-2.5 backdrop-blur-md">
+                <div class="min-w-0">
                   <div class="text-[11px] font-bold uppercase tracking-wider text-[#00F2FE]">
-                    Founding Client Scope
+                    Founding Detailer Offer
                   </div>
-                  <div class="font-display tabular-nums text-xl font-bold text-white">
+                  <div class="font-display tabular-nums text-lg font-bold text-white sm:text-xl">
                     $50 setup + $15/mo
                   </div>
                 </div>
-                <span class="rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-semibold text-emerald-300 ring-1 ring-emerald-400/30">
-                  First 5 Clients
+                <span class="shrink-0 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-semibold text-emerald-300 ring-1 ring-emerald-400/30">
+                  First 5 Shops
                 </span>
               </div>
             </div>
 
             <div class="grid gap-2.5 p-4 text-xs text-slate-200 sm:grid-cols-2">
               <div class="flex items-center gap-2 rounded-lg bg-[#0A0C10]/70 px-3 py-2">
-                <span class="font-bold text-[#00F2FE]">✓</span>
-                <span>1 dynamic quote page (/p/slug)</span>
+                <span class="shrink-0 font-bold text-[#00F2FE]">✓</span>
+                <span>Custom Sedan / SUV / Truck price configurator</span>
               </div>
               <div class="flex items-center gap-2 rounded-lg bg-[#0A0C10]/70 px-3 py-2">
-                <span class="font-bold text-[#00F2FE]">✓</span>
-                <span>Up to 6 owner job photos</span>
+                <span class="shrink-0 font-bold text-[#00F2FE]">✓</span>
+                <span>Showcases up to 6 of your real job photos</span>
               </div>
               <div class="flex items-center gap-2 rounded-lg bg-[#0A0C10]/70 px-3 py-2">
-                <span class="font-bold text-[#00F2FE]">✓</span>
-                <span>Live vehicle size configurator</span>
+                <span class="shrink-0 font-bold text-[#00F2FE]">✓</span>
+                <span>Instant customer quote alerts to your phone</span>
               </div>
               <div class="flex items-center gap-2 rounded-lg bg-[#0A0C10]/70 px-3 py-2">
-                <span class="font-bold text-[#00F2FE]">✓</span>
-                <span>Human-approved outreach only</span>
+                <span class="shrink-0 font-bold text-[#00F2FE]">✓</span>
+                <span>Done-for-you setup in 24 hours</span>
               </div>
             </div>
           </div>
@@ -152,65 +163,103 @@ const items = await listProspectsWithStats(d1);
   </header>
 
   <main class="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-    {/* 3-Step Workflow Strip */}
-    <section id="workflow" class="reveal-up mb-16">
+    {/* Why Detailers Use QuotesDock */}
+    <section id="why-it-works" class="reveal-up mb-16">
       <div class="max-w-2xl">
         <span class="inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
-          Preview-First Sales System
+          Built to Convert Mobile Traffic
         </span>
         <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-          How You Close Founding Clients Without Hard Selling
+          Why Mobile Detailers Switch from Generic Links to QuotesDock
+        </h2>
+      </div>
+
+      <div class="mt-6 grid gap-5 md:grid-cols-3">
+        <div class="glass-panel anisotropic-border rounded-2xl p-6">
+          <div class="font-mono text-xs font-bold text-[#00F2FE]">01 / PRE-QUALIFIED LEADS</div>
+          <h3 class="mt-2 text-lg font-bold text-white">End "How Much?" DM Tag</h3>
+          <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+            Car owners see your Sedan, SUV, and 3-Row Truck starting ranges upfront before submitting, filtering out tire-kickers automatically.
+          </p>
+        </div>
+
+        <div class="glass-panel anisotropic-border rounded-2xl p-6">
+          <div class="font-mono text-xs font-bold text-[#00F2FE]">02 / THUMB-FIRST MOBILE UX</div>
+          <h3 class="mt-2 text-lg font-bold text-white">Built for Instagram Bio &amp; Google Links</h3>
+          <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+            Loads in under a second on mobile with interactive vehicle silhouettes, condition upgrades, and a sticky quote bar.
+          </p>
+        </div>
+
+        <div class="glass-panel anisotropic-border rounded-2xl p-6">
+          <div class="font-mono text-xs font-bold text-[#00F2FE]">03 / VERIFIED JOB PROOF</div>
+          <h3 class="mt-2 text-lg font-bold text-white">Show Your Gloss &amp; Rig Specs</h3>
+          <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+            Display 6 of your real before-and-after details plus your onboard deionized water and power specs right above the booking form.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {/* 24-Hour Setup Workflow */}
+    <section id="how-it-works" class="reveal-up mb-16">
+      <div class="max-w-2xl">
+        <span class="inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+          Fast 24-Hour Onboarding
+        </span>
+        <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          How Your Detailer Page Goes Live Without Any Tech Headache
         </h2>
       </div>
 
       <div class="mt-6 grid gap-5 md:grid-cols-3">
         <div class="glass-panel anisotropic-border rounded-2xl p-6">
           <div class="font-mono text-xs font-bold text-[#00F2FE]">STEP 01</div>
-          <h3 class="mt-2 text-lg font-bold text-white">Generate Link in 60s</h3>
+          <h3 class="mt-2 text-lg font-bold text-white">Test Your Custom Preview Link</h3>
           <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
-            Enter a detailer's public name, city, and Instagram handle in Founder Studio. Zero scraping, zero coding.
+            If we sent you a preview link for your detailing business, tap through the vehicle sizes and submit a test quote to see how your customer alerts work.
           </p>
         </div>
 
         <div class="glass-panel anisotropic-border rounded-2xl p-6">
           <div class="font-mono text-xs font-bold text-[#00F2FE]">STEP 02</div>
-          <h3 class="mt-2 text-lg font-bold text-white">Owner Tests Their Form</h3>
+          <h3 class="mt-2 text-lg font-bold text-white">Send 6 Job Photos &amp; Confirm Prices</h3>
           <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
-            Send ~10 human-approved messages per day. When they test the quote form, they see the live SMS alert simulator and your Studio flags them warm.
+            Tell us any package price adjustments you want and send up to 6 photos of your best interior/exterior work.
           </p>
         </div>
 
         <div class="glass-panel anisotropic-border rounded-2xl p-6">
           <div class="font-mono text-xs font-bold text-[#00F2FE]">STEP 03</div>
-          <h3 class="mt-2 text-lg font-bold text-white">Swap 6 Photos & Go Live</h3>
+          <h3 class="mt-2 text-lg font-bold text-white">Drop the Link in Your Bio &amp; Get Bookings</h3>
           <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
-            Once they pay the $50 setup + $15/mo founding fee, toggle Live Mode and drop in their 6 best job photos.
+            We switch your page to Live Mode within 24 hours so you can paste it into your Instagram, Facebook, and Google profiles.
           </p>
         </div>
       </div>
     </section>
 
-    {/* Active Previews Grid */}
-    <section id="demos" class="reveal-up">
+    {/* Live Sample Pages */}
+    <section id="demos" class="reveal-up mb-16">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            Active Detailing Previews ({items.length})
+            Live Sample Quote Pages ({demoProspects.length})
           </h2>
           <p class="mt-1.5 text-sm text-[#94A3B8]">
-            Open any preview on mobile or desktop to test the 60-second configurator and owner alert simulator.
+            Open any sample on desktop or mobile to try the Sedan / SUV / Truck configurator in US ($) or UK (£).
           </p>
         </div>
         <a
-          href="/studio"
+          href="#pricing"
           class="text-sm font-bold text-[#00F2FE] transition-colors hover:text-[#4FACFE]"
         >
-          Manage in Founder Studio
+          See Founding Pricing
         </a>
       </div>
 
       <div class="mt-7 grid gap-5 md:grid-cols-3">
-        {items.map(({ prospect, previewTestQuotes }) => {
+        {demoProspects.map((prospect) => {
           const basePkg =
             prospect.packages.find((p) => p.popular) ?? prospect.packages[0];
           const startPrice = basePkg
@@ -218,20 +267,14 @@ const items = await listProspectsWithStats(d1);
             : '';
 
           return (
-            <article class="glass-panel interactive-card anisotropic-border flex flex-col justify-between rounded-2xl p-6 hover:border-cyan-400/50">
+            <article class="glass-panel interactive-card anisotropic-border flex min-w-0 flex-col justify-between rounded-2xl p-6 hover:border-cyan-400/50">
               <div>
                 <div class="flex items-center justify-between gap-2">
                   <span class="rounded-md border border-slate-700 bg-[#0A0C10] px-2.5 py-0.5 text-xs font-semibold text-slate-200">
                     {prospect.city} ({prospect.country})
                   </span>
-                  <span
-                    class={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
-                      prospect.mode === 'live'
-                        ? 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30'
-                        : 'bg-cyan-400/15 text-[#00F2FE] ring-1 ring-cyan-400/30'
-                    }`}
-                  >
-                    {prospect.mode === 'live' ? 'Live Client' : 'Preview'}
+                  <span class="rounded-full bg-cyan-400/15 px-2.5 py-0.5 text-[11px] font-bold text-[#00F2FE] ring-1 ring-cyan-400/30">
+                    Live Sample
                   </span>
                 </div>
 
@@ -244,10 +287,10 @@ const items = await listProspectsWithStats(d1);
 
                 <div class="mt-5 flex items-center justify-between border-t border-slate-800 pt-3.5 text-xs">
                   <span class="text-slate-300">
-                    <strong class="text-amber-400">★ {prospect.ratingScore}</strong> ({prospect.reviewCount})
+                    <strong class="text-amber-400">★ {prospect.ratingScore}</strong> ({prospect.reviewCount} reviews)
                   </span>
                   <span class="font-display tabular-nums font-bold text-[#00F2FE]">
-                    From {startPrice} · {previewTestQuotes} test{previewTestQuotes === 1 ? '' : 's'}
+                    Packages from {startPrice}
                   </span>
                 </div>
               </div>
@@ -256,12 +299,148 @@ const items = await listProspectsWithStats(d1);
                 href={`/p/${prospect.slug}`}
                 class="mt-5 inline-flex items-center justify-center rounded-xl bg-[#00F2FE] px-4 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
               >
-                Open Live Preview
+                Test Live Quote Page
               </a>
             </article>
           );
         })}
       </div>
     </section>
+
+    {/* Founding Pricing Comparison */}
+    <section id="pricing" class="reveal-up">
+      <div class="max-w-2xl">
+        <span class="inline-flex rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+          Simple Transparent Pricing
+        </span>
+        <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          Lock In Our Founding Detailer Rate
+        </h2>
+        <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+          No bloated agency retainers or 6-month lock-ins. Start with a focused 1-page quote machine built to pay for itself with a single ceramic or full-detail booking.
+        </p>
+      </div>
+
+      <div class="mt-7 grid gap-6 md:grid-cols-2">
+        <div class="glass-panel anisotropic-border relative flex min-w-0 flex-col justify-between rounded-2xl border-cyan-400/50 p-7">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#00F2FE]">
+                Founding Launch Offer
+              </span>
+              <span class="rounded-full bg-emerald-500/15 px-3 py-0.5 text-[11px] font-bold text-emerald-300 ring-1 ring-emerald-400/30">
+                First 5 Clients Only
+              </span>
+            </div>
+
+            <h3 class="mt-3 text-xl font-bold text-white">Founding Detailer Plan</h3>
+            <div class="mt-3 flex flex-wrap items-baseline gap-2">
+              <span class="font-display tabular-nums text-4xl font-bold text-[#00F2FE]">
+                $50
+              </span>
+              <span class="text-sm text-slate-300">one-time setup</span>
+              <span class="text-slate-500">+</span>
+              <span class="font-display tabular-nums text-2xl font-bold text-white">
+                $15/mo
+              </span>
+            </div>
+
+            <ul class="mt-6 space-y-2.5 text-sm text-slate-200">
+              <li class="flex items-start gap-2.5">
+                <span class="font-bold text-[#00F2FE]">✓</span>
+                <span>1 dedicated 60-second quote page (/p/your-shop)</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="font-bold text-[#00F2FE]">✓</span>
+                <span>Up to 6 of your real before-and-after job photos swapped in</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="font-bold text-[#00F2FE]">✓</span>
+                <span>Custom Sedan, Mid-Size SUV &amp; 3-Row Truck pricing matrix</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="font-bold text-[#00F2FE]">✓</span>
+                <span>1 round of copy &amp; price edits + instant lead notifications</span>
+              </li>
+            </ul>
+          </div>
+
+          <a
+            href="/p/apex-gloss-austin"
+            class="mt-7 inline-flex items-center justify-center rounded-xl bg-[#00F2FE] px-5 py-3 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+          >
+            Test Sample Before You Decide
+          </a>
+        </div>
+
+        <div class="glass-panel flex min-w-0 flex-col justify-between rounded-2xl border-slate-800 p-7">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
+                After Founding Spots Fill
+              </span>
+              <span class="rounded-full border border-slate-700 bg-slate-900 px-3 py-0.5 text-[11px] font-semibold text-slate-300">
+                Standard Rate
+              </span>
+            </div>
+
+            <h3 class="mt-3 text-xl font-bold text-white">Standard Shop Plan</h3>
+            <div class="mt-3 flex flex-wrap items-baseline gap-2">
+              <span class="font-display tabular-nums text-4xl font-bold text-white">
+                $150
+              </span>
+              <span class="text-sm text-slate-400">setup</span>
+              <span class="text-slate-600">+</span>
+              <span class="font-display tabular-nums text-2xl font-bold text-slate-200">
+                $29/mo
+              </span>
+            </div>
+
+            <ul class="mt-6 space-y-2.5 text-sm text-[#94A3B8]">
+              <li class="flex items-start gap-2.5">
+                <span class="font-bold text-slate-400">✓</span>
+                <span>Same fast 60-second driveway quote engine</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="font-bold text-slate-400">✓</span>
+                <span>Dedicated mobile URL for Instagram, Facebook &amp; Google</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="font-bold text-slate-400">✓</span>
+                <span>US ($) or UK (£) regional formatting</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <span class="font-bold text-slate-400">✓</span>
+                <span>Zero-maintenance hosting &amp; security updates included</span>
+              </li>
+            </ul>
+          </div>
+
+          <a
+            href="#demos"
+            class="mt-7 inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900/75 px-5 py-3 text-sm font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+          >
+            Inspect Live Samples Above
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer class="border-t border-slate-800/80 bg-[#07090D] px-4 py-8 sm:px-6">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 text-xs text-[#94A3B8]">
+      <div>
+        <span class="font-display font-bold text-white">QuotesDock</span>
+        <span class="mx-2 text-slate-700">|</span>
+        <span>60-second driveway quote &amp; job-proof pages for mobile car detailers.</span>
+      </div>
+      <div class="flex items-center gap-5">
+        <a href="#demos" class="transition-colors hover:text-white">Live Samples</a>
+        <a href="#pricing" class="transition-colors hover:text-white">Pricing</a>
+        <a href="/studio" class="text-slate-500 transition-colors hover:text-slate-300">
+          Operator Studio
+        </a>
+      </div>
+    </div>
+  </footer>
 </BaseLayout>
