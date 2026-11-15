@@ -65,8 +65,8 @@ const channelLabels: Record<string, string> = {
 };
 
 const statusBadgeClasses: Record<string, string> = {
-  draft: 'bg-slate-800 text-slate-300 border-slate-600',
-  approved: 'bg-cyan-400/15 text-[#00F2FE] border-cyan-400/40',
+  draft: 'bg-slate-800 text-slate-200 border-slate-600',
+  approved: 'bg-sky-400/15 text-[#7DD3FC] border-sky-400/40',
   sent_manually: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/40',
   replied: 'bg-amber-400/15 text-amber-200 border-amber-400/40',
 };
@@ -84,24 +84,24 @@ const statusLabels: Record<string, string> = {
   description="Create mobile detailer previews in 60 seconds and manage your human-approved daily outreach queue."
   noindex={true}
 >
-  <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-[#0A0C10]/90 backdrop-blur-xl">
+  <header class="sticky top-0 z-40 border-b border-slate-800/90 bg-[#0C1017]/92 backdrop-blur-xl">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
       <div class="flex items-center gap-3">
-        <a href="/" class="flex items-center gap-2.5 text-lg font-bold tracking-tight text-white">
-          <span class="flex h-8 w-8 items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-400/10 text-[#00F2FE]">
+        <a href="/" class="flex items-center gap-2.5 text-lg font-bold tracking-tight text-slate-50">
+          <span class="flex h-8 w-8 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-400/10 text-[#38BDF8]">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M12 2L20 6.5V17.5L12 22L4 17.5V6.5L12 2Z" />
             </svg>
           </span>
           <span class="font-display">QuotesDock</span>
         </a>
-        <span class="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2.5 py-0.5 text-xs font-semibold text-[#00F2FE]">
+        <span class="rounded-full border border-sky-400/30 bg-sky-400/10 px-2.5 py-0.5 text-xs font-semibold text-[#7DD3FC]">
           Founder Studio
         </span>
       </div>
 
       <div class="flex items-center gap-3 text-xs sm:text-sm">
-        <span class="hidden rounded-lg border border-slate-800 bg-[#11151E] px-3 py-1.5 text-xs text-[#94A3B8] lg:inline">
+        <span class="hidden rounded-lg border border-slate-700/80 bg-[#151D2A] px-3 py-1.5 text-xs text-[#CBD5E1] lg:inline">
           Safety Rule: Human approval required (~10/day manual sends)
         </span>
         {authorized && configuredKey && (
@@ -114,7 +114,7 @@ const statusLabels: Record<string, string> = {
         )}
         <a
           href="/"
-          class="rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+          class="rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2 text-xs font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
         >
           View Brand Home
         </a>
@@ -126,11 +126,11 @@ const statusLabels: Record<string, string> = {
     <main class="carbon-mesh mx-auto flex min-h-[78vh] items-center justify-center px-4 py-12">
       {!configuredKey ? (
         <div class="glass-panel anisotropic-border w-full max-w-lg rounded-2xl border-amber-400/40 p-6 sm:p-7">
-          <h1 class="text-xl font-bold text-white">
+          <h1 class="text-xl font-bold text-slate-50">
             Studio Locked on Public Domain
           </h1>
-          <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
-            For security, passwordless access only works on <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#00F2FE]">localhost</code>. Configure <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#00F2FE]">ADMIN_STUDIO_KEY</code> in your Cloudflare Pages / Workers secrets and redeploy to unlock Founder Studio online.
+          <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
+            For security, passwordless access only works on <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#7DD3FC]">localhost</code>. Configure <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#7DD3FC]">ADMIN_STUDIO_KEY</code> in your Cloudflare Pages / Workers secrets and redeploy to unlock Founder Studio online.
           </p>
         </div>
       ) : (
@@ -138,11 +138,11 @@ const statusLabels: Record<string, string> = {
           method="POST"
           class="glass-panel anisotropic-border w-full max-w-md rounded-2xl p-6 sm:p-7"
         >
-          <h1 class="text-xl font-bold text-white">
+          <h1 class="text-xl font-bold text-slate-50">
             Unlock Founder Studio
           </h1>
-          <p class="mt-1.5 text-sm text-[#94A3B8]">
-            Enter your configured <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#00F2FE]">ADMIN_STUDIO_KEY</code> to manage prospects and outreach drafts.
+          <p class="mt-1.5 text-sm text-[#CBD5E1]">
+            Enter your configured <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#7DD3FC]">ADMIN_STUDIO_KEY</code> to manage prospects and outreach drafts.
           </p>
 
           {authError && (
@@ -151,7 +151,7 @@ const statusLabels: Record<string, string> = {
             </div>
           )}
 
-          <label for="studioKey" class="mt-5 block text-xs font-bold uppercase tracking-wider text-slate-300">
+          <label for="studioKey" class="mt-5 block text-xs font-bold uppercase tracking-wider text-slate-200">
             Studio Access Key
           </label>
           <input
@@ -159,11 +159,11 @@ const statusLabels: Record<string, string> = {
             name="studioKey"
             type="password"
             required
-            class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3.5 py-2.5 text-sm text-white"
+            class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3.5 py-2.5 text-sm text-slate-50"
           />
           <button
             type="submit"
-            class="mt-4 w-full rounded-xl bg-[#00F2FE] px-4 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+            class="mt-4 w-full rounded-xl bg-[#38BDF8] px-4 py-2.5 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
           >
             Unlock Studio
           </button>
@@ -175,40 +175,40 @@ const statusLabels: Record<string, string> = {
       {/* Metrics Strip (Real Prospects Only) */}
       <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div class="glass-panel anisotropic-border rounded-2xl p-4">
-          <div class="text-xs font-semibold text-[#94A3B8]">
+          <div class="text-xs font-semibold text-[#CBD5E1]">
             Real Pitched Prospects
           </div>
-          <div class="font-display tabular-nums mt-1 text-3xl font-bold text-white">
+          <div class="font-display tabular-nums mt-1 text-3xl font-bold text-slate-50">
             {totalPreviews}
           </div>
-          <div class="mt-0.5 text-[11px] text-slate-400">
+          <div class="mt-0.5 text-[11px] text-slate-300">
             + {sandboxItems.length} built-in sandbox demos
           </div>
         </div>
         <div class="glass-panel anisotropic-border rounded-2xl border-t-emerald-400/40 p-4">
-          <div class="text-xs font-semibold text-[#94A3B8]">
+          <div class="text-xs font-semibold text-[#CBD5E1]">
             Owners Who Tested Quote Form
           </div>
-          <div id="kpi-hot-tested" class="font-display tabular-nums mt-1 text-3xl font-bold text-emerald-400">
+          <div id="kpi-hot-tested" class="font-display tabular-nums mt-1 text-3xl font-bold text-emerald-300">
             {hotTestedCount}
           </div>
-          <div class="mt-0.5 text-[11px] text-slate-400">
+          <div class="mt-0.5 text-[11px] text-slate-300">
             Excludes ?founder=1 self-tests &amp; sandboxes
           </div>
         </div>
-        <div class="glass-panel anisotropic-border rounded-2xl border-t-cyan-400/40 p-4">
-          <div class="text-xs font-semibold text-[#94A3B8]">
+        <div class="glass-panel anisotropic-border rounded-2xl border-t-sky-400/40 p-4">
+          <div class="text-xs font-semibold text-[#CBD5E1]">
             Approved / Sent Drafts
           </div>
-          <div class="font-display tabular-nums mt-1 text-3xl font-bold text-[#00F2FE]">
+          <div class="font-display tabular-nums mt-1 text-3xl font-bold text-[#38BDF8]">
             {approvedOrSentCount}
           </div>
         </div>
         <div class="glass-panel anisotropic-border rounded-2xl p-4">
-          <div class="text-xs font-semibold text-[#94A3B8]">
+          <div class="text-xs font-semibold text-[#CBD5E1]">
             Live Founding Clients
           </div>
-          <div class="font-display tabular-nums mt-1 text-3xl font-bold text-white">
+          <div class="font-display tabular-nums mt-1 text-3xl font-bold text-slate-50">
             {liveClientsCount}
           </div>
         </div>
@@ -217,16 +217,16 @@ const statusLabels: Record<string, string> = {
       <div class="mt-8 grid items-start gap-8 lg:grid-cols-12">
         {/* Left Column: New Prospect Generator */}
         <section class="glass-panel anisotropic-border rounded-2xl p-5 lg:sticky lg:top-20 lg:col-span-4">
-          <h1 class="text-lg font-bold text-white">
+          <h1 class="text-lg font-bold text-slate-50">
             1. Add New Detailer Preview
           </h1>
-          <p class="mt-1 text-xs leading-relaxed text-[#94A3B8]">
-            Enter public details from Instagram or Facebook (never scrape photos or reviews). Creates a live <code class="rounded bg-slate-800 px-1 text-[#00F2FE]">/p/[slug]</code> link + 3 outreach drafts.
+          <p class="mt-1 text-xs leading-relaxed text-[#CBD5E1]">
+            Enter public details from Instagram or Facebook (never scrape photos or reviews). Creates a live <code class="rounded bg-slate-800 px-1 text-[#7DD3FC]">/p/[slug]</code> link + 3 outreach drafts.
           </p>
 
           <form id="new-prospect-form" class="mt-5 space-y-3.5">
             <div>
-              <label for="businessName" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label for="businessName" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                 Business Name *
               </label>
               <input
@@ -235,13 +235,13 @@ const statusLabels: Record<string, string> = {
                 type="text"
                 required
                 placeholder="Pacific Shine Mobile Detail"
-                class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-sm text-white placeholder:text-slate-500"
+                class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
               />
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label for="city" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <label for="city" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                   City *
                 </label>
                 <input
@@ -250,18 +250,18 @@ const statusLabels: Record<string, string> = {
                   type="text"
                   required
                   placeholder="San Diego, CA"
-                  class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-sm text-white placeholder:text-slate-500"
+                  class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
                 />
               </div>
 
               <div>
-                <label for="country" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <label for="country" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                   Region / Currency
                 </label>
                 <select
                   id="country"
                   name="country"
-                  class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-sm text-white"
+                  class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-sm text-slate-50"
                 >
                   <option value="US">US ($ / Zip Code)</option>
                   <option value="UK">UK (£ / Postcode)</option>
@@ -270,7 +270,7 @@ const statusLabels: Record<string, string> = {
             </div>
 
             <div>
-              <label for="serviceArea" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label for="serviceArea" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                 Service Area Suburbs *
               </label>
               <input
@@ -279,13 +279,13 @@ const statusLabels: Record<string, string> = {
                 type="text"
                 required
                 placeholder="La Jolla, Pacific Beach, Del Mar"
-                class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-sm text-white placeholder:text-slate-500"
+                class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
               />
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label for="phoneDisplay" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <label for="phoneDisplay" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                   Public Phone (Optional)
                 </label>
                 <input
@@ -293,11 +293,11 @@ const statusLabels: Record<string, string> = {
                   name="phoneDisplay"
                   type="text"
                   placeholder="Leave blank if IG-only"
-                  class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-sm text-white placeholder:text-slate-500"
+                  class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
                 />
               </div>
               <div>
-                <label for="instagramHandle" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <label for="instagramHandle" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                   IG / FB Handle or URL *
                 </label>
                 <input
@@ -306,14 +306,14 @@ const statusLabels: Record<string, string> = {
                   type="text"
                   required
                   placeholder="@pacificshine.sd"
-                  class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-sm text-white placeholder:text-slate-500"
+                  class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
                 />
               </div>
             </div>
 
             <div class="grid grid-cols-3 gap-2.5">
               <div>
-                <label for="ratingScore" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <label for="ratingScore" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                   Rating
                 </label>
                 <input
@@ -321,11 +321,11 @@ const statusLabels: Record<string, string> = {
                   name="ratingScore"
                   type="text"
                   value="4.9"
-                  class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-2.5 py-2 text-sm text-white"
+                  class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-2.5 py-2 text-sm text-slate-50"
                 />
               </div>
               <div>
-                <label for="reviewCount" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <label for="reviewCount" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                   Reviews
                 </label>
                 <input
@@ -334,11 +334,11 @@ const statusLabels: Record<string, string> = {
                   type="number"
                   min="1"
                   value="45"
-                  class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-2.5 py-2 text-sm text-white"
+                  class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-2.5 py-2 text-sm text-slate-50"
                 />
               </div>
               <div>
-                <label for="baseSedanPrice" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <label for="baseSedanPrice" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                   Full Detail
                 </label>
                 <input
@@ -347,13 +347,13 @@ const statusLabels: Record<string, string> = {
                   type="number"
                   min="45"
                   placeholder="145"
-                  class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-2.5 py-2 text-sm text-white placeholder:text-slate-500"
+                  class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-2.5 py-2 text-sm text-slate-50 placeholder:text-slate-400"
                 />
               </div>
             </div>
 
             <div>
-              <label for="personalizationNote" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label for="personalizationNote" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                 1-Line Personalization Note *
               </label>
               <textarea
@@ -362,12 +362,12 @@ const statusLabels: Record<string, string> = {
                 rows="2"
                 required
                 placeholder="Saw your black Bronco paint correction reel on IG, noticed no quote link in your bio"
-                class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-xs text-white placeholder:text-slate-500"
+                class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
               />
             </div>
 
             <div>
-              <label for="slug" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <label for="slug" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                 Custom URL Slug (Optional)
               </label>
               <input
@@ -375,7 +375,7 @@ const statusLabels: Record<string, string> = {
                 name="slug"
                 type="text"
                 placeholder="auto-generated if blank"
-                class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-xs text-white placeholder:text-slate-500"
+                class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
               />
             </div>
 
@@ -392,7 +392,7 @@ const statusLabels: Record<string, string> = {
             <button
               id="create-prospect-btn"
               type="submit"
-              class="w-full rounded-xl bg-[#00F2FE] px-4 py-3 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm disabled:opacity-60"
+              class="w-full rounded-xl bg-[#38BDF8] px-4 py-3 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm disabled:opacity-60"
             >
               Create Preview &amp; Draft Outreach
             </button>
@@ -405,32 +405,32 @@ const statusLabels: Record<string, string> = {
           <details
             id="scouted-queue-panel"
             open
-            class="glass-panel anisotropic-border rounded-2xl border border-cyan-400/25 p-5"
+            class="glass-panel anisotropic-border rounded-2xl border border-sky-400/25 p-5"
           >
             <summary class="flex cursor-pointer select-none flex-wrap items-center justify-between gap-2">
               <div class="flex flex-wrap items-center gap-2.5">
-                <span class="text-lg font-bold text-white">
+                <span class="text-lg font-bold text-slate-50">
                   Scouted Leads Staging Queue
                 </span>
                 <span
                   id="scouted-count-badge"
-                  class="rounded-full border border-cyan-400/40 bg-cyan-400/15 px-2.5 py-0.5 text-xs font-bold text-[#00F2FE]"
+                  class="rounded-full border border-sky-400/40 bg-sky-400/15 px-2.5 py-0.5 text-xs font-bold text-[#7DD3FC]"
                 >
                   {leadCandidates.length} ready
                 </span>
               </div>
-              <span class="text-xs font-semibold text-[#94A3B8]">
+              <span class="text-xs font-semibold text-[#CBD5E1]">
                 Click to collapse / expand
               </span>
             </summary>
 
             <div class="mt-4 space-y-4">
-              <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-800 bg-[#0A0C10]/85 px-3.5 py-2.5">
-                <div class="text-xs text-[#94A3B8]">
+              <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-800 bg-[#0C1017]/90 px-3.5 py-2.5">
+                <div class="text-xs text-[#CBD5E1]">
                   Run locally to scout 5 fresh leads:
                   <code
                     id="scout-cli-snippet"
-                    class="ml-1.5 rounded bg-slate-800/90 px-2 py-0.5 font-mono text-[11px] text-[#00F2FE]"
+                    class="ml-1.5 rounded bg-slate-800/90 px-2 py-0.5 font-mono text-[11px] text-[#7DD3FC]"
                   >
                     npm run scout -- --city "Gloucester, UK" --country UK
                   </code>
@@ -438,7 +438,7 @@ const statusLabels: Record<string, string> = {
                 <button
                   id="copy-scout-cmd-btn"
                   type="button"
-                  class="rounded-lg border border-slate-700 bg-[#11151E] px-2.5 py-1 text-[11px] font-bold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+                  class="rounded-lg border border-slate-600/80 bg-[#151D2A] px-2.5 py-1 text-[11px] font-bold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
                 >
                   Copy CLI
                 </button>
@@ -450,10 +450,10 @@ const statusLabels: Record<string, string> = {
                   leadCandidates.length === 0 ? '' : 'hidden'
                 }`}
               >
-                <p class="text-sm font-semibold text-white">
+                <p class="text-sm font-semibold text-slate-50">
                   No scouted leads in staging queue
                 </p>
-                <p class="mt-1 text-xs text-[#94A3B8]">
+                <p class="mt-1 text-xs text-[#CBD5E1]">
                   Run the CLI command above in your terminal to discover, score, and queue 5 local detailing prospects.
                 </p>
               </div>
@@ -462,13 +462,13 @@ const statusLabels: Record<string, string> = {
                 <div id="scouted-candidates-list" class="space-y-3">
                   {leadCandidates.map((candidate) => (
                     <article
-                      class="candidate-card rounded-xl border border-slate-800 bg-[#0A0C10]/85 p-4"
+                      class="candidate-card rounded-xl border border-slate-700/80 bg-[#0C1017]/90 p-4"
                       data-candidate-card={candidate.id}
                     >
                       <div class="flex flex-wrap items-start justify-between gap-3">
                         <div class="min-w-0 flex-1">
                           <div class="flex flex-wrap items-center gap-2">
-                            <h3 class="text-base font-bold text-white">
+                            <h3 class="text-base font-bold text-slate-50">
                               {candidate.businessName}
                             </h3>
                             <span class="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-slate-200">
@@ -482,19 +482,19 @@ const statusLabels: Record<string, string> = {
                             </span>
                           </div>
 
-                          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#94A3B8]">
+                          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#CBD5E1]">
                             <span>
-                              Handle: <strong class="text-slate-200">{candidate.instagramHandle}</strong>
+                              Handle: <strong class="text-slate-100">{candidate.instagramHandle}</strong>
                             </span>
                             <span>
-                              Phone: <strong class="text-slate-200">{candidate.phoneDisplay || 'DM / Social Only'}</strong>
+                              Phone: <strong class="text-slate-100">{candidate.phoneDisplay || 'DM / Social Only'}</strong>
                             </span>
                             {candidate.websiteUrl ? (
                               <a
                                 href={candidate.websiteUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="font-semibold text-[#00F2FE] underline underline-offset-2 hover:text-white"
+                                class="font-semibold text-[#7DD3FC] underline underline-offset-2 hover:text-white"
                               >
                                 {/instagram\.com|instagr\.am|facebook\.com|fb\.com|linktr\.ee|tiktok\.com/i.test(
                                   candidate.websiteUrl
@@ -512,14 +512,14 @@ const statusLabels: Record<string, string> = {
                           {candidate.fitSignals.length > 0 && (
                             <div class="mt-2.5 flex flex-wrap gap-1.5">
                               {candidate.fitSignals.map((sig) => (
-                                <span class="rounded-md border border-slate-700 bg-[#11151E] px-2 py-0.5 text-[11px] font-medium text-cyan-200">
+                                <span class="rounded-md border border-slate-700 bg-[#151D2A] px-2 py-0.5 text-[11px] font-medium text-sky-200">
                                   {sig}
                                 </span>
                               ))}
                             </div>
                           )}
 
-                          <p class="mt-2.5 rounded-lg border border-slate-800/80 bg-[#11151E]/80 px-3 py-2 text-xs leading-relaxed text-slate-200">
+                          <p class="mt-2.5 rounded-lg border border-slate-800/80 bg-[#151D2A]/90 px-3 py-2 text-xs leading-relaxed text-slate-200">
                             {candidate.personalizationNote}
                           </p>
                         </div>
@@ -539,14 +539,14 @@ const statusLabels: Record<string, string> = {
                               reviewCount: candidate.reviewCount,
                               personalizationNote: candidate.personalizationNote,
                             })}
-                            class="load-candidate-btn rounded-xl bg-[#00F2FE] px-3 py-2 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+                            class="load-candidate-btn rounded-xl bg-[#38BDF8] px-3 py-2 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
                           >
                             Load into Studio Form
                           </button>
                           <button
                             type="button"
                             data-candidate-id={candidate.id}
-                            class="dismiss-candidate-btn rounded-xl border border-slate-700 bg-[#11151E] px-3 py-2 text-xs font-bold text-slate-300 transition-colors hover:border-red-400/50 hover:text-red-200"
+                            class="dismiss-candidate-btn rounded-xl border border-slate-600/80 bg-[#151D2A] px-3 py-2 text-xs font-bold text-slate-200 transition-colors hover:border-red-400/50 hover:text-red-200"
                           >
                             Dismiss
                           </button>
@@ -561,24 +561,24 @@ const statusLabels: Record<string, string> = {
 
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 class="text-xl font-bold text-white">
+              <h2 class="text-xl font-bold text-slate-50">
                 2. Human Approval Outreach Queue
               </h2>
-              <p class="mt-0.5 text-xs text-[#94A3B8]">
+              <p class="mt-0.5 text-xs text-[#CBD5E1]">
                 Review, edit, approve, and copy ~10 manual messages/day. Self-testing uses ?founder=1 so your KPIs stay clean.
               </p>
             </div>
           </div>
 
           {/* Public Share Domain Bar */}
-          <div class="glass-panel rounded-2xl border border-slate-800 p-4">
+          <div class="glass-panel rounded-2xl border border-slate-700/80 p-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="min-w-0 flex-1">
-                <label for="public-domain-input" class="block text-xs font-bold uppercase tracking-wider text-[#00F2FE]">
+                <label for="public-domain-input" class="block text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
                   Public Share Domain Used When Copying DMs
                 </label>
-                <p class="mt-0.5 text-[11px] text-[#94A3B8]">
-                  When deployed, set your live Cloudflare domain (for example <code class="text-slate-200">https://quotesdock.pages.dev</code>) so copied DMs never contain <code class="text-slate-200">localhost</code>.
+                <p class="mt-0.5 text-[11px] text-[#CBD5E1]">
+                  When deployed, set your live Cloudflare domain (for example <code class="text-slate-100">https://quotesdock.pages.dev</code>) so copied DMs never contain <code class="text-slate-100">localhost</code>.
                 </p>
               </div>
               <div class="flex w-full items-center gap-2 sm:w-auto">
@@ -586,12 +586,12 @@ const statusLabels: Record<string, string> = {
                   id="public-domain-input"
                   type="url"
                   placeholder="https://your-site.pages.dev"
-                  class="w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-xs text-white sm:w-64"
+                  class="w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs text-slate-50 sm:w-64"
                 />
                 <button
                   id="reset-domain-btn"
                   type="button"
-                  class="shrink-0 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-300 hover:border-cyan-400/50 hover:text-white"
+                  class="shrink-0 rounded-xl border border-slate-600/80 bg-[#151D2A] px-3 py-2 text-xs font-semibold text-slate-200 hover:border-sky-400/50 hover:text-white"
                 >
                   Use Current
                 </button>
@@ -602,10 +602,10 @@ const statusLabels: Record<string, string> = {
           {/* Real Pitched Prospects */}
           {realItems.length === 0 ? (
             <div class="glass-panel rounded-2xl border border-dashed border-slate-700 p-8 text-center">
-              <p class="text-sm font-semibold text-white">
+              <p class="text-sm font-semibold text-slate-50">
                 No custom prospects pitched yet
               </p>
-              <p class="mt-1 text-xs text-[#94A3B8]">
+              <p class="mt-1 text-xs text-[#CBD5E1]">
                 Fill out the form on the left to create your first real detailing prospect preview and outreach drafts.
               </p>
             </div>
@@ -623,7 +623,7 @@ const statusLabels: Record<string, string> = {
                     <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-800 pb-4">
                       <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2">
-                          <h3 class="text-lg font-bold text-white">
+                          <h3 class="text-lg font-bold text-slate-50">
                             {prospect.businessName}
                           </h3>
                           <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-200">
@@ -633,7 +633,7 @@ const statusLabels: Record<string, string> = {
                             class={`mode-pill rounded-full px-2.5 py-0.5 text-xs font-bold ${
                               prospect.mode === 'live'
                                 ? 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30'
-                                : 'bg-cyan-400/15 text-[#00F2FE] ring-1 ring-cyan-400/30'
+                                : 'bg-sky-400/15 text-[#7DD3FC] ring-1 ring-sky-400/30'
                             }`}
                           >
                             {prospect.mode === 'live' ? 'Live Client Mode' : 'Preview Mode'}
@@ -643,22 +643,22 @@ const statusLabels: Record<string, string> = {
                               Owner Tested Quote Form ({previewTestQuotes} test{previewTestQuotes > 1 ? 's' : ''})
                             </span>
                           ) : (
-                            <span class="rounded-full bg-slate-800/80 px-2.5 py-0.5 text-xs font-medium text-[#94A3B8]">
+                            <span class="rounded-full bg-slate-800/80 px-2.5 py-0.5 text-xs font-medium text-[#CBD5E1]">
                               Awaiting first owner test ({totalQuotes} total)
                             </span>
                           )}
                         </div>
 
-                        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#94A3B8]">
-                          <span>Handle: <strong class="text-slate-200">{prospect.instagramHandle}</strong></span>
-                          <span>Phone: <strong class="text-slate-200">{prospect.phoneDisplay}</strong></span>
+                        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#CBD5E1]">
+                          <span>Handle: <strong class="text-slate-100">{prospect.instagramHandle}</strong></span>
+                          <span>Phone: <strong class="text-slate-100">{prospect.phoneDisplay}</strong></span>
                           <span>
                             Share Link:{' '}
                             <a
                               href={`/p/${prospect.slug}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              class="font-bold text-[#00F2FE] underline underline-offset-2 hover:text-white"
+                              class="font-bold text-[#7DD3FC] underline underline-offset-2 hover:text-white"
                             >
                               /p/{prospect.slug}
                             </a>
@@ -671,7 +671,7 @@ const statusLabels: Record<string, string> = {
                           href={`/p/${prospect.slug}?founder=1`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          class="rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-xs font-bold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+                          class="rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs font-bold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
                         >
                           Open Preview (Founder Test)
                         </a>
@@ -679,7 +679,7 @@ const statusLabels: Record<string, string> = {
                           type="button"
                           data-toggle-mode={prospect.id}
                           data-current-mode={prospect.mode}
-                          class="toggle-mode-btn rounded-xl border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-bold text-white transition-colors hover:border-[#00F2FE] hover:text-[#00F2FE]"
+                          class="toggle-mode-btn rounded-xl border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-bold text-slate-100 transition-colors hover:border-[#38BDF8] hover:text-[#7DD3FC]"
                         >
                           {prospect.mode === 'live' ? 'Switch to Preview' : 'Mark Paid & Go Live'}
                         </button>
@@ -687,8 +687,8 @@ const statusLabels: Record<string, string> = {
                     </div>
 
                     {/* Client Details, Pricing & 6 Photos Editor Drawer */}
-                    <details class="mt-4 rounded-xl border border-slate-800 bg-[#0A0C10]/65 p-3.5">
-                      <summary class="cursor-pointer select-none text-xs font-bold text-cyan-200 hover:text-[#00F2FE]">
+                    <details class="mt-4 rounded-xl border border-slate-800 bg-[#0C1017]/80 p-3.5">
+                      <summary class="cursor-pointer select-none text-xs font-bold text-sky-200 hover:text-[#7DD3FC]">
                         Edit Client Details, Pricing &amp; 6 Job Photos
                       </summary>
 
@@ -698,7 +698,7 @@ const statusLabels: Record<string, string> = {
                       >
                         <div class="grid gap-3 sm:grid-cols-2">
                           <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200">
                               Owner Alert Email
                             </label>
                             <input
@@ -706,11 +706,11 @@ const statusLabels: Record<string, string> = {
                               type="email"
                               value={prospect.ownerEmail ?? ''}
                               placeholder="owner@detailshop.com"
-                              class="mt-1 w-full rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs text-white"
+                              class="mt-1 w-full rounded-lg border border-slate-600/80 bg-[#151D2A] px-3 py-1.5 text-xs text-slate-50"
                             />
                           </div>
                           <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200">
                               Public Phone (SMS/Call)
                             </label>
                             <input
@@ -718,22 +718,22 @@ const statusLabels: Record<string, string> = {
                               type="text"
                               value={prospect.phoneDisplay === 'Direct Text / DM' ? '' : prospect.phoneDisplay}
                               placeholder="Leave blank if DM-only"
-                              class="mt-1 w-full rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs text-white"
+                              class="mt-1 w-full rounded-lg border border-slate-600/80 bg-[#151D2A] px-3 py-1.5 text-xs text-slate-50"
                             />
                           </div>
                           <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200">
                               Service Area
                             </label>
                             <input
                               name="serviceArea"
                               type="text"
                               value={prospect.serviceArea}
-                              class="mt-1 w-full rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs text-white"
+                              class="mt-1 w-full rounded-lg border border-slate-600/80 bg-[#151D2A] px-3 py-1.5 text-xs text-slate-50"
                             />
                           </div>
                           <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200">
                               Base Full Detail Price ({prospect.currencySymbol})
                             </label>
                             <input
@@ -741,13 +741,13 @@ const statusLabels: Record<string, string> = {
                               type="number"
                               min="45"
                               value={currentBasePrice}
-                              class="mt-1 w-full rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs text-white"
+                              class="mt-1 w-full rounded-lg border border-slate-600/80 bg-[#151D2A] px-3 py-1.5 text-xs text-slate-50"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-200">
                             Swap Up to 6 Real Owner Job Photo URLs
                           </div>
                           <div class="mt-1.5 grid gap-2 sm:grid-cols-2">
@@ -757,7 +757,7 @@ const statusLabels: Record<string, string> = {
                                 type="text"
                                 value={slot.imageUrl ?? ''}
                                 placeholder={`Photo #${idx + 1} (${slot.title})`}
-                                class="w-full rounded-lg border border-slate-700 bg-[#11151E] px-2.5 py-1.5 text-xs text-white placeholder:text-slate-500"
+                                class="w-full rounded-lg border border-slate-600/80 bg-[#151D2A] px-2.5 py-1.5 text-xs text-slate-50 placeholder:text-slate-400"
                               />
                             ))}
                           </div>
@@ -767,14 +767,14 @@ const statusLabels: Record<string, string> = {
                           <div class="flex flex-wrap items-center gap-2">
                             <button
                               type="submit"
-                              class="save-details-btn rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-bold text-white ring-1 ring-slate-600 hover:border-[#00F2FE] hover:text-[#00F2FE]"
+                              class="save-details-btn rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-100 ring-1 ring-slate-600 hover:border-[#38BDF8] hover:text-[#7DD3FC]"
                             >
                               Save Client Changes
                             </button>
                             <button
                               type="button"
                               data-save-live={prospect.id}
-                              class="save-and-live-btn rounded-lg bg-[#00F2FE] px-3 py-1.5 text-xs font-bold text-[#06121A] hover:bg-[#4FACFE]"
+                              class="save-and-live-btn rounded-lg bg-[#38BDF8] px-3 py-1.5 text-xs font-bold text-[#06131F] hover:bg-[#7DD3FC]"
                             >
                               Save &amp; Go Live
                             </button>
@@ -799,11 +799,11 @@ const statusLabels: Record<string, string> = {
                         </div>
                         <ul class="mt-2 space-y-1.5 text-xs text-slate-200">
                           {recentQuotes.map((q) => (
-                            <li class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#0A0C10]/85 px-3 py-2">
+                            <li class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#0C1017]/90 px-3 py-2">
                               <span>
-                                <strong class="text-white">{q.customerName}</strong> ({q.customerPhone}) · {q.vehicleSize.toUpperCase()} · {q.packageName}
+                                <strong class="text-slate-50">{q.customerName}</strong> ({q.customerPhone}) · {q.vehicleSize.toUpperCase()} · {q.packageName}
                               </span>
-                              <span class="font-display tabular-nums font-bold text-[#00F2FE]">
+                              <span class="font-display tabular-nums font-bold text-[#38BDF8]">
                                 {prospect.currencySymbol}{q.estimatedMin} - {prospect.currencySymbol}{q.estimatedMax}
                               </span>
                             </li>
@@ -816,15 +816,15 @@ const statusLabels: Record<string, string> = {
                     <div class="mt-4 space-y-4">
                       {drafts.map((draft) => (
                         <div
-                          class="rounded-xl border border-slate-800 bg-[#0A0C10]/85 p-4"
+                          class="rounded-xl border border-slate-800 bg-[#0C1017]/90 p-4"
                           data-draft-box={draft.id}
                         >
                           <div class="flex flex-wrap items-center justify-between gap-2">
                             <div class="flex items-center gap-2">
-                              <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-bold text-[#00F2FE]">
+                              <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-bold text-[#7DD3FC]">
                                 {channelLabels[draft.channel] || draft.channel}
                               </span>
-                              <span class="text-xs text-[#94A3B8]">
+                              <span class="text-xs text-[#CBD5E1]">
                                 to {draft.recipientHandle}
                               </span>
                             </div>
@@ -841,7 +841,7 @@ const statusLabels: Record<string, string> = {
                           <textarea
                             rows="4"
                             data-draft-textarea={draft.id}
-                            class="mt-2.5 w-full rounded-xl border border-slate-700/80 bg-[#11151E] p-3 text-xs leading-relaxed text-slate-100"
+                            class="mt-2.5 w-full rounded-xl border border-slate-700/80 bg-[#151D2A] p-3 text-xs leading-relaxed text-slate-100"
                           >{draft.messageBody}</textarea>
 
                           <div class="mt-2.5 flex flex-wrap items-center justify-between gap-2">
@@ -851,7 +851,7 @@ const statusLabels: Record<string, string> = {
                                 data-draft-save={draft.id}
                                 data-prospect-id={prospect.id}
                                 data-status="approved"
-                                class="draft-action-btn rounded-lg bg-[#00F2FE] px-3 py-1.5 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE]"
+                                class="draft-action-btn rounded-lg bg-[#38BDF8] px-3 py-1.5 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC]"
                               >
                                 Save &amp; Approve
                               </button>
@@ -879,7 +879,7 @@ const statusLabels: Record<string, string> = {
                               type="button"
                               data-copy-draft={draft.id}
                               data-slug={prospect.slug}
-                              class="copy-draft-btn rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs font-bold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+                              class="copy-draft-btn rounded-lg border border-slate-600/80 bg-[#151D2A] px-3 py-1.5 text-xs font-bold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
                             >
                               Copy Message
                             </button>
@@ -895,54 +895,54 @@ const statusLabels: Record<string, string> = {
 
           {/* Built-in Sandbox Demos (Collapsible so real prospect KPIs stay pure) */}
           {sandboxItems.length > 0 && (
-            <details class="glass-panel rounded-2xl border border-slate-800 p-5">
-              <summary class="cursor-pointer select-none text-sm font-bold text-slate-200 hover:text-[#00F2FE]">
+            <details class="glass-panel rounded-2xl border border-slate-700/80 p-5">
+              <summary class="cursor-pointer select-none text-sm font-bold text-slate-100 hover:text-[#7DD3FC]">
                 Built-in Sandbox Demos ({sandboxItems.length}) - Isolated from Owner-Tested KPIs
               </summary>
               <div class="mt-5 space-y-5">
                 {sandboxItems.map(({ prospect, drafts, recentQuotes }) => (
                   <article
-                    class="rounded-2xl border border-slate-800 bg-[#0A0C10]/70 p-4"
+                    class="rounded-2xl border border-slate-800 bg-[#0C1017]/80 p-4"
                     data-prospect-card={prospect.id}
                   >
                     <div class="flex flex-wrap items-center justify-between gap-3">
                       <div>
                         <div class="flex flex-wrap items-center gap-2">
-                          <h3 class="text-base font-bold text-white">
+                          <h3 class="text-base font-bold text-slate-50">
                             {prospect.businessName}
                           </h3>
-                          <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-300">
+                          <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-200">
                             {prospect.city} ({prospect.country})
                           </span>
-                          <span class="rounded-full bg-cyan-400/15 px-2.5 py-0.5 text-[11px] font-bold text-[#00F2FE] ring-1 ring-cyan-400/30">
+                          <span class="rounded-full bg-sky-400/15 px-2.5 py-0.5 text-[11px] font-bold text-[#7DD3FC] ring-1 ring-sky-400/30">
                             Sandbox Demo
                           </span>
                         </div>
-                        <div class="mt-1 text-xs text-[#94A3B8]">
-                          Link: <code class="text-[#00F2FE]">/p/{prospect.slug}</code> · {recentQuotes.length} sandbox submission(s)
+                        <div class="mt-1 text-xs text-[#CBD5E1]">
+                          Link: <code class="text-[#7DD3FC]">/p/{prospect.slug}</code> · {recentQuotes.length} sandbox submission(s)
                         </div>
                       </div>
                       <a
                         href={`/p/${prospect.slug}?founder=1`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="rounded-xl border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs font-bold text-slate-200 hover:border-cyan-400/50 hover:text-white"
+                        class="rounded-xl border border-slate-600/80 bg-[#151D2A] px-3 py-1.5 text-xs font-bold text-slate-100 hover:border-sky-400/50 hover:text-white"
                       >
                         Open Sandbox
                       </a>
                     </div>
 
                     {drafts[0] && (
-                      <div class="mt-3 rounded-xl border border-slate-800 bg-[#11151E]/60 p-3" data-draft-box={drafts[0].id}>
+                      <div class="mt-3 rounded-xl border border-slate-800 bg-[#151D2A]/75 p-3" data-draft-box={drafts[0].id}>
                         <div class="flex flex-wrap items-center justify-between gap-2">
-                          <span class="text-xs font-bold text-[#00F2FE]">
+                          <span class="text-xs font-bold text-[#7DD3FC]">
                             Sample {channelLabels[drafts[0].channel] || drafts[0].channel} Draft
                           </span>
                           <button
                             type="button"
                             data-copy-draft={drafts[0].id}
                             data-slug={prospect.slug}
-                            class="copy-draft-btn rounded-lg border border-slate-700 bg-[#0A0C10] px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:border-cyan-400/50 hover:text-white"
+                            class="copy-draft-btn rounded-lg border border-slate-600/80 bg-[#0C1017] px-2.5 py-1 text-[11px] font-bold text-slate-100 hover:border-sky-400/50 hover:text-white"
                           >
                             Copy Sample
                           </button>
@@ -950,7 +950,7 @@ const statusLabels: Record<string, string> = {
                         <textarea
                           rows="2"
                           data-draft-textarea={drafts[0].id}
-                          class="mt-2 w-full rounded-lg border border-slate-800 bg-[#0A0C10] p-2.5 text-xs text-slate-300"
+                          class="mt-2 w-full rounded-lg border border-slate-800 bg-[#0C1017] p-2.5 text-xs text-slate-200"
                         >{drafts[0].messageBody}</textarea>
                       </div>
                     )}
@@ -967,7 +967,7 @@ const statusLabels: Record<string, string> = {
   <div
     id="studio-toast"
     role="status"
-    class="pointer-events-none fixed bottom-5 right-5 z-50 hidden rounded-xl border border-cyan-400/40 bg-[#11151E] px-4 py-2.5 text-xs font-bold text-[#00F2FE] shadow-xl cyan-glow-sm"
+    class="pointer-events-none fixed bottom-5 right-5 z-50 hidden rounded-xl border border-sky-400/40 bg-[#151D2A] px-4 py-2.5 text-xs font-bold text-[#7DD3FC] shadow-xl cyan-glow-sm"
   />
 
   <script is:inline>
@@ -1004,7 +1004,7 @@ const statusLabels: Record<string, string> = {
             ? 'pointer-events-none fixed bottom-5 right-5 z-50 rounded-xl border border-amber-400/50 bg-[#1C1608] px-4 py-2.5 text-xs font-bold text-amber-200 shadow-xl'
             : variant === 'error'
               ? 'pointer-events-none fixed bottom-5 right-5 z-50 rounded-xl border border-red-400/50 bg-red-950 px-4 py-2.5 text-xs font-bold text-red-200 shadow-xl'
-              : 'pointer-events-none fixed bottom-5 right-5 z-50 rounded-xl border border-cyan-400/40 bg-[#11151E] px-4 py-2.5 text-xs font-bold text-[#00F2FE] shadow-xl cyan-glow-sm';
+              : 'pointer-events-none fixed bottom-5 right-5 z-50 rounded-xl border border-sky-400/40 bg-[#151D2A] px-4 py-2.5 text-xs font-bold text-[#7DD3FC] shadow-xl cyan-glow-sm';
         setTimeout(() => {
           toastEl.classList.add('hidden');
         }, variant === 'warn' ? 3600 : 2200);
@@ -1202,8 +1202,8 @@ const statusLabels: Record<string, string> = {
                 replied: 'Owner Replied',
               };
               const classMap = {
-                draft: 'bg-slate-800 text-slate-300 border-slate-600',
-                approved: 'bg-cyan-400/15 text-[#00F2FE] border-cyan-400/40',
+                draft: 'bg-slate-800 text-slate-200 border-slate-600',
+                approved: 'bg-sky-400/15 text-[#7DD3FC] border-sky-400/40',
                 sent_manually: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/40',
                 replied: 'bg-amber-400/15 text-amber-200 border-amber-400/40',
               };
