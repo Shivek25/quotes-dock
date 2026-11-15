@@ -1,13 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { INITIAL_SEED_PROSPECTS } from '../lib/db/seed-data';
-
-const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
 ---
 
 <BaseLayout
-  title="QuotesDock | 60-Second Driveway Quote Pages for Mobile Car Detailers"
-  description="Turn Instagram and Google profile clicks into pre-qualified detailing bookings with a 60-second quote configurator built for US and UK mobile car detailers."
+  title="QuotesDock | Dedicated 60-Second Driveway Quote Pages for Mobile Car Detailers"
+  description="Turn Instagram and Google profile clicks into private, pre-qualified detailing bookings with a 60-second quote configurator built for US and UK mobile car detailers."
 >
   <nav class="sticky top-0 z-40 border-b border-slate-800/80 bg-[#0A0C10]/85 backdrop-blur-xl">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
@@ -40,10 +37,10 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
           24-Hour Setup
         </a>
         <a
-          href="#demos"
+          href="#demo"
           class="hidden text-xs font-semibold text-[#94A3B8] transition-colors hover:text-white sm:inline sm:text-sm"
         >
-          Live Samples
+          Interactive Demo
         </a>
         <a
           href="#pricing"
@@ -80,7 +77,7 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
           </h1>
 
           <p class="mt-4 max-w-xl text-base leading-relaxed text-[#94A3B8] sm:text-lg">
-            Stop losing busy car owners in endless "How much for an SUV?" DMs. Give your customers a fast, mobile-first quote configurator where they tap their vehicle size, pick your package, see your starting price range, and send their driveway details in 60 seconds.
+            Stop losing busy car owners in endless "How much for an SUV?" DMs. Give your customers a private, mobile-first quote configurator dedicated strictly to your shop, where they tap their vehicle size, pick your package, and request a booking in 60 seconds.
           </p>
 
           <div class="mt-7 flex flex-wrap gap-3.5">
@@ -88,7 +85,7 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
               href="/p/apex-gloss-austin"
               class="group inline-flex items-center gap-2 rounded-xl bg-[#00F2FE] px-6 py-4 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow sm:text-base"
             >
-              <span>Try Live Sample Quote Page</span>
+              <span>Try Interactive Quote Demo</span>
               <svg
                 class="h-4 w-4 transition-transform group-hover:translate-x-1"
                 viewBox="0 0 20 20"
@@ -141,15 +138,15 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
             <div class="grid gap-2.5 p-4 text-xs text-slate-200 sm:grid-cols-2">
               <div class="flex items-center gap-2 rounded-lg bg-[#0A0C10]/70 px-3 py-2">
                 <span class="shrink-0 font-bold text-[#00F2FE]">✓</span>
+                <span>100% isolated shop page - zero rival links</span>
+              </div>
+              <div class="flex items-center gap-2 rounded-lg bg-[#0A0C10]/70 px-3 py-2">
+                <span class="shrink-0 font-bold text-[#00F2FE]">✓</span>
                 <span>Custom Sedan / SUV / Truck price configurator</span>
               </div>
               <div class="flex items-center gap-2 rounded-lg bg-[#0A0C10]/70 px-3 py-2">
                 <span class="shrink-0 font-bold text-[#00F2FE]">✓</span>
                 <span>Showcases up to 6 of your real job photos</span>
-              </div>
-              <div class="flex items-center gap-2 rounded-lg bg-[#0A0C10]/70 px-3 py-2">
-                <span class="shrink-0 font-bold text-[#00F2FE]">✓</span>
-                <span>Instant customer quote alerts to your phone</span>
               </div>
               <div class="flex items-center gap-2 rounded-lg bg-[#0A0C10]/70 px-3 py-2">
                 <span class="shrink-0 font-bold text-[#00F2FE]">✓</span>
@@ -167,16 +164,24 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
     <section id="why-it-works" class="reveal-up mb-16">
       <div class="max-w-2xl">
         <span class="inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
-          Built to Convert Mobile Traffic
+          Built to Protect Your Brand &amp; Convert Traffic
         </span>
         <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
           Why Mobile Detailers Switch from Generic Links to QuotesDock
         </h2>
       </div>
 
-      <div class="mt-6 grid gap-5 md:grid-cols-3">
+      <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="glass-panel anisotropic-border rounded-2xl border-cyan-400/35 p-6">
+          <div class="font-mono text-xs font-bold text-[#00F2FE]">01 / PRIVATE BRANDING</div>
+          <h3 class="mt-2 text-lg font-bold text-white">100% Private &amp; Isolated (Never a Marketplace)</h3>
+          <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+            Zero competitor listings, zero shared leads, and zero cross-promotion of other shops. When customers tap your link, they only see your detailing business.
+          </p>
+        </div>
+
         <div class="glass-panel anisotropic-border rounded-2xl p-6">
-          <div class="font-mono text-xs font-bold text-[#00F2FE]">01 / PRE-QUALIFIED LEADS</div>
+          <div class="font-mono text-xs font-bold text-[#00F2FE]">02 / PRE-QUALIFIED LEADS</div>
           <h3 class="mt-2 text-lg font-bold text-white">End "How Much?" DM Tag</h3>
           <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
             Car owners see your Sedan, SUV, and 3-Row Truck starting ranges upfront before submitting, filtering out tire-kickers automatically.
@@ -184,7 +189,7 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
         </div>
 
         <div class="glass-panel anisotropic-border rounded-2xl p-6">
-          <div class="font-mono text-xs font-bold text-[#00F2FE]">02 / THUMB-FIRST MOBILE UX</div>
+          <div class="font-mono text-xs font-bold text-[#00F2FE]">03 / THUMB-FIRST MOBILE UX</div>
           <h3 class="mt-2 text-lg font-bold text-white">Built for Instagram Bio &amp; Google Links</h3>
           <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
             Loads in under a second on mobile with interactive vehicle silhouettes, condition upgrades, and a sticky quote bar.
@@ -192,7 +197,7 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
         </div>
 
         <div class="glass-panel anisotropic-border rounded-2xl p-6">
-          <div class="font-mono text-xs font-bold text-[#00F2FE]">03 / VERIFIED JOB PROOF</div>
+          <div class="font-mono text-xs font-bold text-[#00F2FE]">04 / VERIFIED JOB PROOF</div>
           <h3 class="mt-2 text-lg font-bold text-white">Show Your Gloss &amp; Rig Specs</h3>
           <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
             Display 6 of your real before-and-after details plus your onboard deionized water and power specs right above the booking form.
@@ -239,71 +244,63 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
       </div>
     </section>
 
-    {/* Live Sample Pages */}
-    <section id="demos" class="reveal-up mb-16">
-      <div class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            Live Sample Quote Pages ({demoProspects.length})
-          </h2>
-          <p class="mt-1.5 text-sm text-[#94A3B8]">
-            Open any sample on desktop or mobile to try the Sedan / SUV / Truck configurator in US ($) or UK (£).
-          </p>
-        </div>
-        <a
-          href="#pricing"
-          class="text-sm font-bold text-[#00F2FE] transition-colors hover:text-[#4FACFE]"
-        >
-          See Founding Pricing
-        </a>
-      </div>
+    {/* Single Fictional Template Sandbox (Zero Competitor Directory) */}
+    <section id="demo" class="reveal-up mb-16">
+      <div class="glass-panel anisotropic-border rounded-2xl border-cyan-400/40 p-6 sm:p-10">
+        <div class="grid items-center gap-8 lg:grid-cols-12">
+          <div class="min-w-0 lg:col-span-7">
+            <div class="inline-flex flex-wrap items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+              Fictional Software Demo (Not a Business Directory)
+            </div>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Interactive Template Sandbox
+            </h2>
+            <p class="mt-2.5 max-w-2xl text-sm leading-relaxed text-[#94A3B8] sm:text-base">
+              Preview the exact 60-second configurator your customers tap through on mobile and desktop. Every paying detailer receives an isolated private quote page with zero links to other detailers.
+            </p>
 
-      <div class="mt-7 grid gap-5 md:grid-cols-3">
-        {demoProspects.map((prospect) => {
-          const basePkg =
-            prospect.packages.find((p) => p.popular) ?? prospect.packages[0];
-          const startPrice = basePkg
-            ? `${prospect.currencySymbol}${basePkg.prices.sedan}`
-            : '';
-
-          return (
-            <article class="glass-panel interactive-card anisotropic-border flex min-w-0 flex-col justify-between rounded-2xl p-6 hover:border-cyan-400/50">
-              <div>
-                <div class="flex items-center justify-between gap-2">
-                  <span class="rounded-md border border-slate-700 bg-[#0A0C10] px-2.5 py-0.5 text-xs font-semibold text-slate-200">
-                    {prospect.city} ({prospect.country})
-                  </span>
-                  <span class="rounded-full bg-cyan-400/15 px-2.5 py-0.5 text-[11px] font-bold text-[#00F2FE] ring-1 ring-cyan-400/30">
-                    Live Sample
-                  </span>
-                </div>
-
-                <h3 class="mt-4 text-lg font-bold text-white">
-                  {prospect.businessName}
-                </h3>
-                <p class="mt-1.5 text-xs leading-relaxed text-[#94A3B8]">
-                  {prospect.tagline}
-                </p>
-
-                <div class="mt-5 flex items-center justify-between border-t border-slate-800 pt-3.5 text-xs">
-                  <span class="text-slate-300">
-                    <strong class="text-amber-400">★ {prospect.ratingScore}</strong> ({prospect.reviewCount} reviews)
-                  </span>
-                  <span class="font-display tabular-nums font-bold text-[#00F2FE]">
-                    Packages from {startPrice}
-                  </span>
-                </div>
-              </div>
-
+            <div class="mt-6 flex flex-wrap gap-3.5">
               <a
-                href={`/p/${prospect.slug}`}
-                class="mt-5 inline-flex items-center justify-center rounded-xl bg-[#00F2FE] px-4 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+                href="/p/apex-gloss-austin"
+                class="inline-flex items-center justify-center rounded-xl bg-[#00F2FE] px-5 py-3 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
               >
-                Test Live Quote Page
+                Launch US ($) Sandbox Demo
               </a>
-            </article>
-          );
-        })}
+              <a
+                href="/p/cotswold-valet-uk"
+                class="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900/80 px-5 py-3 text-sm font-semibold text-slate-100 transition-colors hover:border-cyan-400/50 hover:text-white"
+              >
+                Launch UK (£) Sandbox Demo
+              </a>
+            </div>
+          </div>
+
+          <div class="min-w-0 lg:col-span-5">
+            <div class="rounded-xl border border-slate-800 bg-[#0A0C10]/85 p-5">
+              <div class="font-mono text-xs font-bold uppercase tracking-wider text-[#00F2FE]">
+                Inside Every Private Client Page
+              </div>
+              <ul class="mt-4 space-y-3 text-xs text-slate-200 sm:text-sm">
+                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#11151E]/80 px-3.5 py-2.5">
+                  <span class="font-mono font-bold text-[#00F2FE]">01</span>
+                  <span>Interactive Sedan / Mid-Size SUV / 3-Row Truck SVG silhouettes</span>
+                </li>
+                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#11151E]/80 px-3.5 py-2.5">
+                  <span class="font-mono font-bold text-[#00F2FE]">02</span>
+                  <span>Dynamic 3-tier detailing package pricing matrix</span>
+                </li>
+                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#11151E]/80 px-3.5 py-2.5">
+                  <span class="font-mono font-bold text-[#00F2FE]">03</span>
+                  <span>Condition upgrades + interactive Before/After gloss proof</span>
+                </li>
+                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#11151E]/80 px-3.5 py-2.5">
+                  <span class="font-mono font-bold text-[#00F2FE]">04</span>
+                  <span>60-second driveway request form + instant owner lead alert</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -348,7 +345,7 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
             <ul class="mt-6 space-y-2.5 text-sm text-slate-200">
               <li class="flex items-start gap-2.5">
                 <span class="font-bold text-[#00F2FE]">✓</span>
-                <span>1 dedicated 60-second quote page (/p/your-shop)</span>
+                <span>1 dedicated 60-second quote page (/p/your-shop) with zero rival links</span>
               </li>
               <li class="flex items-start gap-2.5">
                 <span class="font-bold text-[#00F2FE]">✓</span>
@@ -369,7 +366,7 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
             href="/p/apex-gloss-austin"
             class="mt-7 inline-flex items-center justify-center rounded-xl bg-[#00F2FE] px-5 py-3 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
           >
-            Test Sample Before You Decide
+            Test Sandbox Demo Before You Decide
           </a>
         </div>
 
@@ -403,7 +400,7 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
               </li>
               <li class="flex items-start gap-2.5">
                 <span class="font-bold text-slate-400">✓</span>
-                <span>Dedicated mobile URL for Instagram, Facebook &amp; Google</span>
+                <span>Supports dedicated custom domain / subdomain isolation (quotes.yourshop.com or yourshop.com)</span>
               </li>
               <li class="flex items-start gap-2.5">
                 <span class="font-bold text-slate-400">✓</span>
@@ -417,10 +414,10 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
           </div>
 
           <a
-            href="#demos"
+            href="#demo"
             class="mt-7 inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900/75 px-5 py-3 text-sm font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
           >
-            Inspect Live Samples Above
+            Inspect Interactive Sandbox Above
           </a>
         </div>
       </div>
@@ -432,10 +429,10 @@ const demoProspects = INITIAL_SEED_PROSPECTS.map((bundle) => bundle.prospect);
       <div>
         <span class="font-display font-bold text-white">QuotesDock</span>
         <span class="mx-2 text-slate-700">|</span>
-        <span>60-second driveway quote &amp; job-proof pages for mobile car detailers.</span>
+        <span>Dedicated 60-second driveway quote &amp; job-proof pages for mobile car detailers.</span>
       </div>
       <div class="flex items-center gap-5">
-        <a href="#demos" class="transition-colors hover:text-white">Live Samples</a>
+        <a href="#demo" class="transition-colors hover:text-white">Interactive Demo</a>
         <a href="#pricing" class="transition-colors hover:text-white">Pricing</a>
         <a href="/studio" class="text-slate-500 transition-colors hover:text-slate-300">
           Operator Studio
