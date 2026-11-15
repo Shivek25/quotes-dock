@@ -47,19 +47,19 @@ const glossReadings = [
     >
       <main class="carbon-mesh mx-auto flex min-h-screen flex-col items-center justify-center px-6 py-16 text-center">
         <div class="glass-panel w-full max-w-lg rounded-2xl p-8">
-          <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
             QuotesDock
           </span>
-          <h1 class="mt-4 text-2xl font-bold text-white">
+          <h1 class="mt-4 text-2xl font-bold text-slate-50">
             This detailing quote link is not active
           </h1>
-          <p class="mt-3 text-sm leading-relaxed text-[#94A3B8]">
+          <p class="mt-3 text-sm leading-relaxed text-[#CBD5E1]">
             Check the link address with your mobile detailer, or visit the QuotesDock homepage to explore our 60-second driveway quote template.
           </p>
           <div class="mt-6 flex flex-wrap justify-center gap-3">
             <a
               href="/"
-              class="rounded-xl bg-[#00F2FE] px-5 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE]"
+              class="rounded-xl bg-[#38BDF8] px-5 py-2.5 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC]"
             >
               Return to QuotesDock
             </a>
@@ -74,15 +74,14 @@ const glossReadings = [
       noindex={isPreview}
     >
       {isPreview && (
-        <div class="border-b border-cyan-400/30 bg-[#061A26] px-4 py-2 text-xs text-cyan-50 sm:text-sm">
+        <div class="border-b border-sky-400/30 bg-[#0F1B2B] px-4 py-2 text-xs text-sky-50 sm:text-sm">
           <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2">
             <div class="flex min-w-0 max-w-full flex-1 items-start gap-2.5 sm:items-center">
               <span class="relative mt-1 flex h-2 w-2 shrink-0 sm:mt-0">
-                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-75" />
-                <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-[#38BDF8]" />
               </span>
               <span class="leading-snug">
-                <strong class="text-[#00F2FE]">
+                <strong class="text-[#7DD3FC]">
                   {isFounderSelfTest ? 'Founder Test Mode' : 'Live Custom Preview'}
                 </strong>{' '}
                 prepared for <strong>{prospect.businessName}</strong> ({prospect.city}) - sample prices shown for demonstration until confirmed by owner
@@ -90,7 +89,7 @@ const glossReadings = [
             </div>
             <a
               href="#quote-calculator"
-              class="shrink-0 font-semibold text-[#00F2FE] underline decoration-cyan-400/50 underline-offset-4 hover:text-white"
+              class="shrink-0 font-semibold text-[#7DD3FC] underline decoration-sky-400/50 underline-offset-4 hover:text-white"
             >
               Run Quote Test
             </a>
@@ -99,10 +98,10 @@ const glossReadings = [
       )}
 
       {/* Sticky Glass Navigation Bar */}
-      <nav class="sticky top-0 z-40 border-b border-slate-800/80 bg-[#0A0C10]/85 backdrop-blur-xl">
+      <nav class="sticky top-0 z-40 border-b border-slate-800/90 bg-[#0C1017]/92 backdrop-blur-xl">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <div class="flex min-w-0 items-center gap-3.5">
-            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-400/10 text-[#00F2FE] cyan-glow-sm">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-400/10 text-[#38BDF8] cyan-glow-sm">
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M12 2L20 6.5V17.5L12 22L4 17.5V6.5L12 2Z" />
                 <path d="M12 7L16 9.5V14.5L12 17L8 14.5V9.5L12 7Z" />
@@ -110,19 +109,19 @@ const glossReadings = [
             </div>
             <div class="min-w-0">
               <div class="flex items-center gap-2">
-                <span class="font-display truncate text-base font-bold tracking-tight text-white sm:text-lg">
+                <span class="font-display truncate text-base font-bold tracking-tight text-slate-50 sm:text-lg">
                   {prospect.businessName}
                 </span>
               </div>
-              <div class="flex items-center gap-1.5 text-[11px] text-[#94A3B8]">
+              <div class="flex items-center gap-1.5 text-[11px] text-[#CBD5E1]">
                 <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
                 <span class="truncate">Mobile Unit: {prospect.city}</span>
               </div>
             </div>
           </div>
 
-          <div class="hidden items-center gap-7 text-xs font-semibold tracking-wide text-[#94A3B8] lg:flex">
-            <a href="#quote-calculator" class="text-[#00F2FE] transition-colors hover:text-white">
+          <div class="hidden items-center gap-7 text-xs font-semibold tracking-wide text-[#CBD5E1] lg:flex">
+            <a href="#quote-calculator" class="text-[#7DD3FC] transition-colors hover:text-white">
               Configurator
             </a>
             <a href="#job-proof" class="transition-colors hover:text-white">
@@ -140,18 +139,18 @@ const glossReadings = [
             {hasDialablePhone ? (
               <a
                 href={telHref}
-                class="hidden rounded-lg border border-slate-700/80 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white sm:inline-flex"
+                class="hidden rounded-lg border border-slate-600/80 bg-[#151D2A] px-3.5 py-2 text-xs font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white sm:inline-flex"
               >
                 {prospect.phoneDisplay}
               </a>
             ) : (
-              <span class="hidden rounded-lg border border-slate-700/80 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-300 sm:inline-flex">
+              <span class="hidden rounded-lg border border-slate-600/80 bg-[#151D2A] px-3.5 py-2 text-xs font-semibold text-slate-200 sm:inline-flex">
                 Direct DM / Text Dispatch
               </span>
             )}
             <a
               href="#quote-calculator"
-              class="rounded-lg bg-[#00F2FE] px-4 py-2 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm sm:text-sm"
+              class="rounded-lg bg-[#38BDF8] px-4 py-2 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm sm:text-sm"
             >
               Get 60s Quote
             </a>
@@ -160,38 +159,37 @@ const glossReadings = [
       </nav>
 
       {/* Atmospheric Wet-Bay Studio Hero */}
-      <header class="carbon-mesh relative overflow-hidden border-b border-slate-800/80">
-        <div class="tunnel-ambient pointer-events-none absolute -top-32 left-1/2 h-80 w-[90vw] max-w-[720px] -translate-x-1/2 rounded-full bg-[#00F2FE]/10 blur-[120px]" />
+      <header class="carbon-mesh relative overflow-hidden border-b border-slate-800/90">
+        <div class="tunnel-ambient pointer-events-none absolute -top-32 left-1/2 h-80 w-[90vw] max-w-[720px] -translate-x-1/2 rounded-full bg-sky-400/10 blur-[120px]" />
 
         <div class="mx-auto max-w-7xl px-4 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-14">
           <div class="grid items-center gap-10 lg:grid-cols-12">
             {/* Left Copy & Metrics */}
             <div class="reveal-up is-visible min-w-0 lg:col-span-7">
-              <div class="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-1.5 text-xs">
+              <div class="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-3.5 py-1.5 text-xs">
                 <span class="relative flex h-2 w-2">
-                  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-75" />
-                  <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
+                  <span class="relative inline-flex h-2 w-2 rounded-full bg-[#38BDF8]" />
                 </span>
-                <span class="font-semibold text-white">{prospect.turnaroundBadge}</span>
+                <span class="font-semibold text-slate-50">{prospect.turnaroundBadge}</span>
                 <span class="text-slate-500">|</span>
-                <span class="font-bold text-amber-400">★ {prospect.ratingScore}</span>
-                <span class="text-slate-300">({prospect.reviewCount}+ public reviews)</span>
+                <span class="font-bold text-amber-300">★ {prospect.ratingScore}</span>
+                <span class="text-slate-200">({prospect.reviewCount}+ public reviews)</span>
                 <span class="text-slate-500">|</span>
-                <span class="text-[#00F2FE]">{prospect.instagramHandle}</span>
+                <span class="text-[#7DD3FC]">{prospect.instagramHandle}</span>
               </div>
 
-              <h1 class="mt-5 max-w-[20ch] text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[54px]">
+              <h1 class="mt-5 max-w-[20ch] text-3xl font-bold leading-[1.12] tracking-tight text-slate-50 sm:text-5xl lg:text-[52px]">
                 {prospect.heroHeadline}
               </h1>
 
-              <p class="mt-4 max-w-2xl text-base leading-relaxed text-[#94A3B8] sm:text-lg">
+              <p class="mt-4 max-w-2xl text-base leading-relaxed text-[#CBD5E1] sm:text-lg">
                 {prospect.heroSubheadline}
               </p>
 
               <div class="mt-7 flex flex-wrap items-center gap-4">
                 <a
                   href="#quote-calculator"
-                  class="group inline-flex items-center gap-2.5 rounded-xl bg-[#00F2FE] px-6 py-4 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow sm:text-base"
+                  class="group inline-flex items-center gap-2.5 rounded-xl bg-[#38BDF8] px-6 py-4 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow sm:text-base"
                 >
                   <span>Configure Driveway Quote</span>
                   <svg
@@ -209,43 +207,43 @@ const glossReadings = [
                 </a>
                 <a
                   href="#job-proof"
-                  class="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/70 px-5 py-4 text-sm font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+                  class="inline-flex items-center gap-2 rounded-xl border border-slate-600/80 bg-[#151D2A] px-5 py-4 text-sm font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
                 >
                   Inspect Gloss Proof
                 </a>
               </div>
 
               {/* 4-Card Telemetry Strip */}
-              <div class="mt-8 grid grid-cols-2 gap-3 border-t border-slate-800/80 pt-6 sm:grid-cols-4">
+              <div class="mt-8 grid grid-cols-2 gap-3 border-t border-slate-800/90 pt-6 sm:grid-cols-4">
                 <div class="glass-panel rounded-xl p-3.5">
-                  <div class="font-display tabular-nums text-lg font-bold text-[#00F2FE]">
+                  <div class="font-display tabular-nums text-lg font-bold text-[#38BDF8]">
                     ★ {prospect.ratingScore}
                   </div>
-                  <div class="mt-0.5 text-[11px] font-medium text-[#94A3B8]">
+                  <div class="mt-0.5 text-[11px] font-medium text-[#CBD5E1]">
                     {prospect.reviewCount}+ Public Reviews
                   </div>
                 </div>
                 <div class="glass-panel rounded-xl p-3.5">
-                  <div class="font-display tabular-nums text-lg font-bold text-white">
+                  <div class="font-display tabular-nums text-lg font-bold text-slate-50">
                     0 PPM
                   </div>
-                  <div class="mt-0.5 text-[11px] font-medium text-[#94A3B8]">
+                  <div class="mt-0.5 text-[11px] font-medium text-[#CBD5E1]">
                     Spot-Free Pure Rinse
                   </div>
                 </div>
                 <div class="glass-panel rounded-xl p-3.5">
-                  <div class="font-display tabular-nums text-lg font-bold text-[#00F2FE]">
+                  <div class="font-display tabular-nums text-lg font-bold text-[#38BDF8]">
                     98+ GU
                   </div>
-                  <div class="mt-0.5 text-[11px] font-medium text-[#94A3B8]">
+                  <div class="mt-0.5 text-[11px] font-medium text-[#CBD5E1]">
                     Target Gloss Depth
                   </div>
                 </div>
                 <div class="glass-panel rounded-xl p-3.5">
-                  <div class="font-display text-lg font-bold text-emerald-400">
+                  <div class="font-display text-lg font-bold text-emerald-300">
                     60 Sec
                   </div>
-                  <div class="mt-0.5 text-[11px] font-medium text-[#94A3B8]">
+                  <div class="mt-0.5 text-[11px] font-medium text-[#CBD5E1]">
                     Instant Quote Flow
                   </div>
                 </div>
@@ -255,7 +253,7 @@ const glossReadings = [
             {/* Right Optical Bay Frame */}
             <div class="reveal-up is-visible stagger-1 lg:col-span-5">
               <div class="glass-panel anisotropic-border relative overflow-hidden rounded-2xl p-2">
-                <div class="relative aspect-[4/3] overflow-hidden rounded-xl bg-[#070A0F]">
+                <div class="relative aspect-[4/3] overflow-hidden rounded-xl bg-[#090D13]">
                   <img
                     src="/images/hero-wetbay.jpg"
                     alt={`${prospect.businessName} wet-bay detailing showcase`}
@@ -264,24 +262,24 @@ const glossReadings = [
                   {/* Mask upper-left background wall cleanly so image works for every city */}
                   <div
                     class="pointer-events-none absolute inset-0"
-                    style="background: linear-gradient(125deg, rgba(10,12,16,0.92) 0%, rgba(10,12,16,0.42) 45%, rgba(10,12,16,0.08) 100%), linear-gradient(to top, rgba(10,12,16,0.94) 0%, transparent 52%);"
+                    style="background: linear-gradient(125deg, rgba(12,16,23,0.9) 0%, rgba(12,16,23,0.42) 45%, rgba(12,16,23,0.08) 100%), linear-gradient(to top, rgba(12,16,23,0.94) 0%, transparent 52%);"
                   />
 
-                  <div class="absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 rounded-xl border border-slate-700/70 bg-[#0A0C10]/85 px-4 py-3 backdrop-blur-md">
+                  <div class="absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 rounded-xl border border-slate-700/80 bg-[#0C1017]/90 px-4 py-3 backdrop-blur-md">
                     <div class="min-w-0">
-                      <div class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#00F2FE]">
-                        <span class="h-1.5 w-1.5 rounded-full bg-[#00F2FE]" />
+                      <div class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#7DD3FC]">
+                        <span class="h-1.5 w-1.5 rounded-full bg-[#38BDF8]" />
                         Autonomous Mobile Unit
                       </div>
-                      <div class="mt-0.5 truncate text-xs text-slate-300">
+                      <div class="mt-0.5 truncate text-xs text-slate-200">
                         Serving {prospect.serviceArea}
                       </div>
                     </div>
                     <div class="shrink-0 text-right">
-                      <div class="font-display tabular-nums text-base font-bold text-white">
+                      <div class="font-display tabular-nums text-base font-bold text-slate-50">
                         {prospect.currencySymbol}{initialMin}+
                       </div>
-                      <div class="text-[10px] uppercase tracking-wider text-[#94A3B8]">
+                      <div class="text-[10px] uppercase tracking-wider text-[#CBD5E1]">
                         Base Reset
                       </div>
                     </div>
@@ -302,28 +300,28 @@ const glossReadings = [
         >
           <div class="flex flex-wrap items-start justify-between gap-6 border-b border-slate-800 pb-6">
             <div>
-              <div class="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+              <div class="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
                 Real-Time Driveway Estimator
               </div>
-              <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
                 60-Second Driveway Quote Configurator
               </h2>
-              <p class="mt-1.5 text-sm text-[#94A3B8]">
+              <p class="mt-1.5 text-sm text-[#CBD5E1]">
                 Tap your vehicle class, detailing tier, and condition for an instant {prospect.city} estimate.
               </p>
             </div>
 
-            <div class="rounded-xl border border-cyan-400/35 bg-[#0A0C10]/90 px-5 py-3.5 cyan-glow-sm">
-              <div class="text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">
+            <div class="rounded-xl border border-sky-400/35 bg-[#0C1017]/90 px-5 py-3.5 cyan-glow-sm">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-[#CBD5E1]">
                 Live Estimated Range
               </div>
               <div
                 id="calc-top-estimate"
-                class="font-display tabular-nums mt-0.5 text-2xl font-bold text-[#00F2FE] sm:text-3xl"
+                class="font-display tabular-nums mt-0.5 text-2xl font-bold text-[#38BDF8] sm:text-3xl"
               >
                 {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
               </div>
-              <div id="calc-top-duration" class="mt-0.5 text-xs text-slate-300">
+              <div id="calc-top-duration" class="mt-0.5 text-xs text-slate-200">
                 {defaultPkg?.durationLabel}
               </div>
             </div>
@@ -347,14 +345,14 @@ const glossReadings = [
             <div>
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-3">
-                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#06121A]">
+                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#38BDF8] text-xs font-bold text-[#06131F]">
                     01
                   </span>
-                  <h3 class="text-base font-bold text-white sm:text-lg">
+                  <h3 class="text-base font-bold text-slate-50 sm:text-lg">
                     Select Vehicle Class
                   </h3>
                 </div>
-                <span class="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+                <span class="text-xs font-semibold uppercase tracking-wider text-[#CBD5E1]">
                   Step 1 of 4
                 </span>
               </div>
@@ -371,25 +369,25 @@ const glossReadings = [
                   data-vehicle-label="Coupe / Sedan"
                   aria-checked="true"
                   role="radio"
-                  class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 p-5 text-left cyan-glow-sm"
+                  class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 p-5 text-left cyan-glow-sm"
                 >
                   <div class="flex w-full items-start justify-between gap-3">
                     {/* Sedan SVG Silhouette */}
-                    <svg class="h-10 w-24 text-[#00F2FE]" viewBox="0 0 120 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg class="h-10 w-24 text-[#38BDF8]" viewBox="0 0 120 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M10 30H22M40 30H82M100 30H110L112 24L104 20L82 18L66 10H36L20 18L10 21V30Z" />
                       <circle cx="31" cy="30" r="7" />
                       <circle cx="91" cy="30" r="7" />
                     </svg>
-                    <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-[#00F2FE] bg-[#00F2FE]" />
+                    <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-[#38BDF8] bg-[#38BDF8]" />
                   </div>
                   <div class="mt-3">
-                    <div class="font-display text-base font-bold text-white">
+                    <div class="font-display text-base font-bold text-slate-50">
                       Coupe / Sedan
                     </div>
-                    <p class="mt-1 text-xs text-[#94A3B8]">
+                    <p class="mt-1 text-xs text-[#CBD5E1]">
                       2-door or 4-door cars (Civic, Model 3, BMW 3 Series)
                     </p>
-                    <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-[#00F2FE]">
+                    <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-[#7DD3FC]">
                       Standard Baseline Scale
                     </div>
                   </div>
@@ -401,7 +399,7 @@ const glossReadings = [
                   data-vehicle-label="Mid-Size SUV"
                   aria-checked="false"
                   role="radio"
-                  class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-5 text-left hover:border-cyan-400/50"
+                  class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-5 text-left hover:border-sky-400/50"
                 >
                   <div class="flex w-full items-start justify-between gap-3">
                     {/* Mid-Size SUV SVG Silhouette */}
@@ -410,16 +408,16 @@ const glossReadings = [
                       <circle cx="31" cy="30" r="7.5" />
                       <circle cx="91" cy="30" r="7.5" />
                     </svg>
-                    <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-slate-600" />
+                    <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-slate-500" />
                   </div>
                   <div class="mt-3">
-                    <div class="font-display text-base font-bold text-white">
+                    <div class="font-display text-base font-bold text-slate-50">
                       Mid-Size SUV / Crossover
                     </div>
-                    <p class="mt-1 text-xs text-[#94A3B8]">
+                    <p class="mt-1 text-xs text-[#CBD5E1]">
                       2-row SUVs & wagons (RAV4, CR-V, Model Y, Porsche Macan)
                     </p>
-                    <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+                    <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-slate-300">
                       +Mid-Size Surface Area
                     </div>
                   </div>
@@ -431,7 +429,7 @@ const glossReadings = [
                   data-vehicle-label="3-Row SUV / Pickup"
                   aria-checked="false"
                   role="radio"
-                  class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-5 text-left hover:border-cyan-400/50"
+                  class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-5 text-left hover:border-sky-400/50"
                 >
                   <div class="flex w-full items-start justify-between gap-3">
                     {/* Pickup / Full-Size Truck SVG Silhouette */}
@@ -440,16 +438,16 @@ const glossReadings = [
                       <circle cx="30" cy="30" r="8" />
                       <circle cx="92" cy="30" r="8" />
                     </svg>
-                    <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-slate-600" />
+                    <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-slate-500" />
                   </div>
                   <div class="mt-3">
-                    <div class="font-display text-base font-bold text-white">
+                    <div class="font-display text-base font-bold text-slate-50">
                       3-Row SUV / Pickup Truck
                     </div>
-                    <p class="mt-1 text-xs text-[#94A3B8]">
+                    <p class="mt-1 text-xs text-[#CBD5E1]">
                       Full-size trucks, minivans & XL SUVs (F-150, Tahoe, Range Rover)
                     </p>
-                    <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+                    <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-slate-300">
                       +Full-Size Rig Scale
                     </div>
                   </div>
@@ -461,14 +459,14 @@ const glossReadings = [
             <div>
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-3">
-                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#06121A]">
+                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#38BDF8] text-xs font-bold text-[#06131F]">
                     02
                   </span>
-                  <h3 class="text-base font-bold text-white sm:text-lg">
+                  <h3 class="text-base font-bold text-slate-50 sm:text-lg">
                     Choose Preservation Package
                   </h3>
                 </div>
-                <span class="text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+                <span class="text-xs font-semibold uppercase tracking-wider text-[#CBD5E1]">
                   Step 2 of 4
                 </span>
               </div>
@@ -488,36 +486,36 @@ const glossReadings = [
                       aria-pressed={isDefault ? 'true' : 'false'}
                       class={`package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl p-6 text-left ${
                         isDefault
-                          ? 'border-2 border-[#00F2FE] bg-[#00F2FE]/8 cyan-glow-sm'
-                          : 'border border-slate-700/80 bg-[#0A0C10]/65 hover:border-cyan-400/50'
+                          ? 'border-2 border-[#38BDF8] bg-[#38BDF8]/10 cyan-glow-sm'
+                          : 'border border-slate-700/80 bg-[#0C1017]/80 hover:border-sky-400/50'
                       }`}
                     >
                       {pkg.popular && (
-                        <span class="absolute -top-3 right-5 rounded-full bg-[#00F2FE] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-[#06121A]">
+                        <span class="absolute -top-3 right-5 rounded-full bg-[#38BDF8] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-[#06131F]">
                           Most Booked
                         </span>
                       )}
 
                       <div>
                         <div class="flex items-start justify-between gap-2">
-                          <span class="font-display text-lg font-bold text-white">
+                          <span class="font-display text-lg font-bold text-slate-50">
                             {pkg.name}
                           </span>
                           <span
                             class={`pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 ${
                               isDefault
-                                ? 'border-[#00F2FE] bg-[#00F2FE]'
-                                : 'border-slate-600'
+                                ? 'border-[#38BDF8] bg-[#38BDF8]'
+                                : 'border-slate-500'
                             }`}
                           />
                         </div>
-                        <p class="mt-1 text-xs text-[#94A3B8]">{pkg.tagline}</p>
+                        <p class="mt-1 text-xs text-[#CBD5E1]">{pkg.tagline}</p>
 
                         <div class="mt-4 flex items-baseline gap-2 border-b border-slate-800 pb-4">
-                          <span class="pkg-price-display font-display tabular-nums text-3xl font-bold text-[#00F2FE]">
+                          <span class="pkg-price-display font-display tabular-nums text-3xl font-bold text-[#38BDF8]">
                             {prospect.currencySymbol}{pkg.prices.sedan}
                           </span>
-                          <span class="text-xs text-[#94A3B8]">
+                          <span class="text-xs text-[#CBD5E1]">
                             ({pkg.durationLabel})
                           </span>
                         </div>
@@ -525,7 +523,7 @@ const glossReadings = [
                         <ul class="mt-4 space-y-2.5">
                           {pkg.features.map((feat) => (
                             <li class="flex items-start gap-2.5 text-xs leading-relaxed text-slate-200">
-                              <span class="mt-0.5 font-bold text-[#00F2FE]">✓</span>
+                              <span class="mt-0.5 font-bold text-[#38BDF8]">✓</span>
                               <span>{feat}</span>
                             </li>
                           ))}
@@ -541,10 +539,10 @@ const glossReadings = [
             <div class="grid gap-8 lg:grid-cols-12">
               <div class="lg:col-span-6">
                 <div class="flex items-center gap-3">
-                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#06121A]">
+                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#38BDF8] text-xs font-bold text-[#06131F]">
                     03
                   </span>
-                  <h3 class="text-base font-bold text-white sm:text-lg">
+                  <h3 class="text-base font-bold text-slate-50 sm:text-lg">
                     Vehicle Condition & Extras
                   </h3>
                 </div>
@@ -553,33 +551,33 @@ const glossReadings = [
                   <button
                     type="button"
                     data-condition="standard"
-                    class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 px-4 py-3.5 text-left"
+                    class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 px-4 py-3.5 text-left"
                   >
                     <div>
-                      <div class="text-sm font-bold text-white">
+                      <div class="text-sm font-bold text-slate-50">
                         Standard Daily Condition
                       </div>
-                      <div class="text-xs text-[#94A3B8]">
+                      <div class="text-xs text-[#CBD5E1]">
                         Normal road dust & everyday tidy cabin
                       </div>
                     </div>
-                    <span class="text-xs font-bold text-emerald-400">Included</span>
+                    <span class="text-xs font-bold text-emerald-300">Included</span>
                   </button>
 
                   <button
                     type="button"
                     data-condition="pet_hair"
-                    class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 px-4 py-3.5 text-left hover:border-cyan-400/50"
+                    class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 px-4 py-3.5 text-left hover:border-sky-400/50"
                   >
                     <div>
-                      <div class="text-sm font-bold text-white">
+                      <div class="text-sm font-bold text-slate-50">
                         Pet Hair Removal Needed
                       </div>
-                      <div class="text-xs text-[#94A3B8]">
+                      <div class="text-xs text-[#CBD5E1]">
                         Woven dog/cat hair in seats or cargo carpet
                       </div>
                     </div>
-                    <span class="tabular-nums text-xs font-bold text-[#00F2FE]">
+                    <span class="tabular-nums text-xs font-bold text-[#7DD3FC]">
                       +{prospect.currencySymbol}25 to +{prospect.currencySymbol}45
                     </span>
                   </button>
@@ -587,17 +585,17 @@ const glossReadings = [
                   <button
                     type="button"
                     data-condition="heavy_soil"
-                    class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 px-4 py-3.5 text-left hover:border-cyan-400/50"
+                    class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 px-4 py-3.5 text-left hover:border-sky-400/50"
                   >
                     <div>
-                      <div class="text-sm font-bold text-white">
+                      <div class="text-sm font-bold text-slate-50">
                         Heavy Mud, Spills, or Work Rig
                       </div>
-                      <div class="text-xs text-[#94A3B8]">
+                      <div class="text-xs text-[#CBD5E1]">
                         Deep stain extraction, salt crust, or heavy grime
                       </div>
                     </div>
-                    <span class="tabular-nums text-xs font-bold text-[#00F2FE]">
+                    <span class="tabular-nums text-xs font-bold text-[#7DD3FC]">
                       +{prospect.currencySymbol}35 to +{prospect.currencySymbol}65
                     </span>
                   </button>
@@ -605,27 +603,27 @@ const glossReadings = [
               </div>
 
               <div class="lg:col-span-6">
-                <div class="text-sm font-bold text-white sm:pt-1">
+                <div class="text-sm font-bold text-slate-50 sm:pt-1">
                   Optional Technical Upgrades
                 </div>
                 <div class="mt-4 grid gap-3 sm:grid-cols-2">
                   {prospect.addons.map((addon) => (
-                    <label class="addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-3.5 hover:border-cyan-400/50">
+                    <label class="addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-3.5 hover:border-sky-400/50">
                       <input
                         type="checkbox"
                         name="addonsSelected"
                         value={addon.id}
                         data-addon-price={addon.price}
-                        class="addon-checkbox mt-0.5 h-4 w-4 rounded border-slate-600 bg-[#0A0C10] text-[#00F2FE]"
+                        class="addon-checkbox mt-0.5 h-4 w-4 rounded border-slate-500 bg-[#0C1017] text-[#38BDF8]"
                       />
                       <span class="min-w-0 flex-1">
-                        <span class="flex items-center justify-between gap-2 text-xs font-bold text-white">
+                        <span class="flex items-center justify-between gap-2 text-xs font-bold text-slate-50">
                           <span class="truncate">{addon.name}</span>
-                          <span class="tabular-nums shrink-0 text-[#00F2FE]">
+                          <span class="tabular-nums shrink-0 text-[#7DD3FC]">
                             +{prospect.currencySymbol}{addon.price}
                           </span>
                         </span>
-                        <span class="mt-1 block text-[11px] leading-snug text-[#94A3B8]">
+                        <span class="mt-1 block text-[11px] leading-snug text-[#CBD5E1]">
                           {addon.description}
                         </span>
                       </span>
@@ -636,27 +634,27 @@ const glossReadings = [
             </div>
 
             {/* Step 04: Driveway Dispatch Form */}
-            <div class="rounded-2xl border border-slate-700/80 bg-[#0A0C10]/85 p-5 sm:p-7">
+            <div class="rounded-2xl border border-slate-700/80 bg-[#0C1017]/90 p-5 sm:p-7">
               <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
                 <div class="flex items-center gap-3">
-                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#06121A]">
+                  <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#38BDF8] text-xs font-bold text-[#06131F]">
                     04
                   </span>
                   <div>
-                    <h3 class="text-base font-bold text-white">
+                    <h3 class="text-base font-bold text-slate-50">
                       Where should {prospect.businessName} send your quote?
                     </h3>
-                    <p class="mt-0.5 text-xs text-[#94A3B8]">
+                    <p class="mt-0.5 text-xs text-[#CBD5E1]">
                       Zero card required today. Exact arrival slot confirmed by text.
                     </p>
                   </div>
                 </div>
 
-                <div class="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2">
-                  <span class="text-xs text-slate-300">Estimated Total: </span>
+                <div class="rounded-xl border border-sky-400/30 bg-sky-400/10 px-4 py-2">
+                  <span class="text-xs text-slate-200">Estimated Total: </span>
                   <span
                     id="calc-form-estimate"
-                    class="font-display tabular-nums text-lg font-bold text-[#00F2FE]"
+                    class="font-display tabular-nums text-lg font-bold text-[#38BDF8]"
                   >
                     {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
                   </span>
@@ -665,7 +663,7 @@ const glossReadings = [
 
               <div class="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label for="customerName" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <label for="customerName" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                     Your Name *
                   </label>
                   <input
@@ -674,12 +672,12 @@ const glossReadings = [
                     type="text"
                     required
                     placeholder="Alex Rivera"
-                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500"
+                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                   />
                 </div>
 
                 <div>
-                  <label for="customerPhone" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <label for="customerPhone" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                     Mobile Number (for text confirmation) *
                   </label>
                   <input
@@ -688,12 +686,12 @@ const glossReadings = [
                     type="tel"
                     required
                     placeholder={prospect.country === 'UK' ? '07700 900123' : '(512) 555-0199'}
-                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500"
+                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                   />
                 </div>
 
                 <div>
-                  <label for="customerPostal" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <label for="customerPostal" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                     Driveway {prospect.postalLabel} *
                   </label>
                   <input
@@ -702,18 +700,18 @@ const glossReadings = [
                     type="text"
                     required
                     placeholder={prospect.country === 'UK' ? 'GL50 2AA' : '78704'}
-                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500"
+                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                   />
                 </div>
 
                 <div>
-                  <label for="preferredTiming" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <label for="preferredTiming" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                     Preferred Timing
                   </label>
                   <select
                     id="preferredTiming"
                     name="preferredTiming"
-                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white"
+                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50"
                   >
                     <option value="this_week">This Week (Earliest Open Slot)</option>
                     <option value="next_week">Next Week</option>
@@ -722,7 +720,7 @@ const glossReadings = [
                 </div>
 
                 <div class="sm:col-span-2">
-                  <label for="notes" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <label for="notes" class="block text-xs font-semibold uppercase tracking-wider text-slate-200">
                     Vehicle Make/Model & Driveway Notes (Optional)
                   </label>
                   <input
@@ -730,7 +728,7 @@ const glossReadings = [
                     name="notes"
                     type="text"
                     placeholder="e.g. 2023 White Toyota RAV4, parked in private driveway"
-                    class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#11151E] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500"
+                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -742,7 +740,7 @@ const glossReadings = [
               />
 
               <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-xs text-[#94A3B8]">
+                <p class="text-xs text-[#CBD5E1]">
                   {isPreview
                     ? 'Preview Mode Safety: Submitting runs a live test without sending emails.'
                     : `Dispatched straight to ${prospect.businessName} for rapid confirmation.`}
@@ -750,7 +748,7 @@ const glossReadings = [
                 <button
                   id="submit-quote-btn"
                   type="submit"
-                  class="inline-flex items-center justify-center rounded-xl bg-[#00F2FE] px-7 py-3.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
+                  class="inline-flex items-center justify-center rounded-xl bg-[#38BDF8] px-7 py-3.5 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
                 >
                   Get My 60-Second Quote
                 </button>
@@ -763,13 +761,13 @@ const glossReadings = [
         <section id="job-proof" class="reveal-up mt-16">
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
                 Optical Gloss Verification
               </span>
-              <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
                 Recent Work & Paint-Correction Telemetry
               </h2>
-              <p class="mt-1.5 text-sm text-[#94A3B8]">
+              <p class="mt-1.5 text-sm text-[#CBD5E1]">
                 Toggle each inspection card to compare arrival condition against finished results in {prospect.city}.
               </p>
             </div>
@@ -790,7 +788,7 @@ const glossReadings = [
                 >
                   <div>
                     {item.imageUrl && (
-                      <div class="mb-4 aspect-[16/10] overflow-hidden rounded-xl border border-slate-800 bg-[#070A0F]">
+                      <div class="mb-4 aspect-[16/10] overflow-hidden rounded-xl border border-slate-800 bg-[#090D13]">
                         <img
                           src={item.imageUrl}
                           alt={item.title}
@@ -800,30 +798,30 @@ const glossReadings = [
                       </div>
                     )}
                     <div class="flex items-center justify-between gap-2">
-                      <span class="text-xs font-bold uppercase tracking-wider text-[#00F2FE]">
+                      <span class="text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
                         Job Proof #0{index + 1}
                       </span>
-                      <span class="rounded-md border border-slate-700 bg-[#0A0C10] px-2.5 py-0.5 text-[11px] font-semibold text-slate-200">
+                      <span class="rounded-md border border-slate-700 bg-[#0C1017] px-2.5 py-0.5 text-[11px] font-semibold text-slate-200">
                         {item.vehicleLabel}
                       </span>
                     </div>
 
-                    <h3 class="mt-3 text-lg font-bold text-white">
+                    <h3 class="mt-3 text-lg font-bold text-slate-50">
                       {item.title}
                     </h3>
                     <p class="mt-0.5 text-xs font-semibold text-sky-300">
                       {item.servicePerformed}
                     </p>
-                    <p class="mt-2.5 text-xs leading-relaxed text-[#94A3B8]">
+                    <p class="mt-2.5 text-xs leading-relaxed text-[#CBD5E1]">
                       {item.resultSummary}
                     </p>
                   </div>
 
                   {/* Horiba 60° Gloss Unit Telemetry & Interactive Before/After Switch */}
-                  <div class="mt-5 space-y-3 rounded-xl border border-slate-800 bg-[#0A0C10]/85 p-4">
+                  <div class="mt-5 space-y-3 rounded-xl border border-slate-800 bg-[#0C1017]/90 p-4">
                     <div class="space-y-1.5">
                       <div class="flex justify-between font-mono text-[11px]">
-                        <span class="text-[#94A3B8]">Arrival Reading</span>
+                        <span class="text-[#CBD5E1]">Arrival Reading</span>
                         <span class="font-bold text-amber-300">{reading.before} GU</span>
                       </div>
                       <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
@@ -833,11 +831,11 @@ const glossReadings = [
 
                     <div class="space-y-1.5">
                       <div class="flex justify-between font-mono text-[11px]">
-                        <span class="font-semibold text-white">Cured Finish</span>
-                        <span class="font-bold text-[#00F2FE]">{reading.after} GU ({reading.delta})</span>
+                        <span class="font-semibold text-slate-100">Cured Finish</span>
+                        <span class="font-bold text-[#38BDF8]">{reading.after} GU ({reading.delta})</span>
                       </div>
                       <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
-                        <div class="h-full rounded-full bg-[#00F2FE]" style={`width: ${reading.afterWidth};`} />
+                        <div class="h-full rounded-full bg-[#38BDF8]" style={`width: ${reading.afterWidth};`} />
                       </div>
                     </div>
 
@@ -846,14 +844,14 @@ const glossReadings = [
                         <button
                           type="button"
                           data-toggle-proof="after"
-                          class="proof-tab-btn rounded-lg bg-[#00F2FE]/15 px-2.5 py-1 text-[11px] font-bold text-[#00F2FE] ring-1 ring-cyan-400/40"
+                          class="proof-tab-btn rounded-lg bg-[#38BDF8]/15 px-2.5 py-1 text-[11px] font-bold text-[#7DD3FC] ring-1 ring-sky-400/40"
                         >
                           After Finish
                         </button>
                         <button
                           type="button"
                           data-toggle-proof="before"
-                          class="proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#94A3B8] hover:text-white"
+                          class="proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#CBD5E1] hover:text-white"
                         >
                           Before Arrival
                         </button>
@@ -876,13 +874,13 @@ const glossReadings = [
         {/* Autonomous Rig Capabilities */}
         <section id="rig-specs" class="reveal-up mt-16">
           <div class="max-w-2xl">
-            <span class="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
+            <span class="inline-flex items-center rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
               Autonomous Driveway Rig
             </span>
-            <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
               Zero House Hookups Required
             </h2>
-            <p class="mt-1.5 text-sm text-[#94A3B8]">
+            <p class="mt-1.5 text-sm text-[#CBD5E1]">
               Serving <strong>{prospect.serviceArea}</strong> with self-contained spot-free water and quiet studio power.
             </p>
           </div>
@@ -890,10 +888,10 @@ const glossReadings = [
           <div class="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {prospect.trustPoints.map((point, idx) => (
               <div class="glass-panel anisotropic-border rounded-2xl p-5">
-                <div class="font-mono text-xs font-bold text-[#00F2FE]">
+                <div class="font-mono text-xs font-bold text-[#7DD3FC]">
                   SPEC 0{idx + 1}
                 </div>
-                <div class="mt-2 text-base font-bold text-white">
+                <div class="mt-2 text-base font-bold text-slate-50">
                   {point}
                 </div>
               </div>
@@ -904,18 +902,18 @@ const glossReadings = [
         {/* FAQ Section */}
         <section id="faq" class="reveal-up mt-16 grid gap-6 md:grid-cols-2">
           <div class="glass-panel rounded-2xl p-6">
-            <h3 class="text-base font-bold text-white">
+            <h3 class="text-base font-bold text-slate-50">
               Do I pay anything online when submitting a quote?
             </h3>
-            <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+            <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
               Never. You pick your vehicle class and package to see a transparent price range right away. We confirm your arrival window by text and you pay only after inspecting your car.
             </p>
           </div>
           <div class="glass-panel rounded-2xl p-6">
-            <h3 class="text-base font-bold text-white">
+            <h3 class="text-base font-bold text-slate-50">
               Can you detail at my office or apartment lot?
             </h3>
-            <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+            <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
               Yes, as long as there is safe space next to your vehicle for our mobile unit (and property management permits mobile service), we bring all water and power on board.
             </p>
           </div>
@@ -923,21 +921,21 @@ const glossReadings = [
       </main>
 
       {/* Persistent Sticky Live Quote Dock */}
-      <aside class="fixed inset-x-0 bottom-0 z-40 border-t border-cyan-400/25 bg-[#0A0C10]/92 px-4 py-3 backdrop-blur-xl sm:px-6">
+      <aside class="fixed inset-x-0 bottom-0 z-40 border-t border-sky-400/25 bg-[#0C1017]/95 px-4 py-3 backdrop-blur-xl sm:px-6">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <div class="hidden items-center gap-3 md:flex">
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-400/35 bg-cyan-400/10 text-[#00F2FE]">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-400/10 text-[#38BDF8]">
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </div>
             <div>
               <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
-                <span id="dock-vehicle-label" class="text-white">Coupe / Sedan</span>
-                <span class="text-slate-600">·</span>
-                <span id="dock-package-label" class="text-[#00F2FE]">{defaultPkg?.name}</span>
+                <span id="dock-vehicle-label" class="text-slate-50">Coupe / Sedan</span>
+                <span class="text-slate-500">·</span>
+                <span id="dock-package-label" class="text-[#7DD3FC]">{defaultPkg?.name}</span>
               </div>
-              <div id="dock-duration-label" class="text-xs text-[#94A3B8]">
+              <div id="dock-duration-label" class="text-xs text-[#CBD5E1]">
                 {defaultPkg?.durationLabel} · Zero upfront payment
               </div>
             </div>
@@ -945,12 +943,12 @@ const glossReadings = [
 
           <div class="flex w-full items-center justify-between gap-4 md:w-auto md:justify-end">
             <div>
-              <div class="text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-[#CBD5E1]">
                 Estimated Driveway Total
               </div>
               <div
                 id="mobile-sticky-estimate"
-                class="font-display tabular-nums text-xl font-bold text-[#00F2FE] sm:text-2xl"
+                class="font-display tabular-nums text-xl font-bold text-[#38BDF8] sm:text-2xl"
               >
                 {prospect.currencySymbol}{initialMin} - {prospect.currencySymbol}{initialMax}
               </div>
@@ -958,7 +956,7 @@ const glossReadings = [
             <a
               href="#customerName"
               id="dock-cta-btn"
-              class="rounded-xl bg-[#00F2FE] px-5 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+              class="rounded-xl bg-[#38BDF8] px-5 py-2.5 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
             >
               Lock In Quote
             </a>
@@ -974,19 +972,19 @@ const glossReadings = [
         aria-modal="true"
         aria-labelledby="modal-heading"
       >
-        <div class="glass-panel cyan-glow max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-cyan-400/40 bg-[#11151E] p-6">
+        <div class="glass-panel cyan-glow max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-sky-400/40 bg-[#151D2A] p-6">
           <div class="flex items-start justify-between gap-4">
             <div class="flex items-center gap-3">
-              <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20 font-bold text-emerald-400 ring-1 ring-emerald-400/40">
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20 font-bold text-emerald-300 ring-1 ring-emerald-400/40">
                 ✓
               </span>
               <div>
-                <h3 id="modal-heading" class="text-lg font-bold text-white">
+                <h3 id="modal-heading" class="text-lg font-bold text-slate-50">
                   {isPreview
                     ? 'Test Quote Logged (Preview Simulator)'
                     : `Quote Request Sent to ${prospect.businessName}`}
                 </h3>
-                <p class="text-xs text-[#94A3B8]">
+                <p class="text-xs text-[#CBD5E1]">
                   {isPreview
                     ? `${prospect.businessName} (${prospect.city})`
                     : 'We received your vehicle details and will text or call you shortly to confirm your driveway slot.'}
@@ -996,7 +994,7 @@ const glossReadings = [
             <button
               id="close-modal-btn"
               type="button"
-              class="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-cyan-400/40 hover:text-white"
+              class="rounded-lg border border-slate-600/80 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-sky-400/40 hover:text-white"
             >
               Close
             </button>
@@ -1004,14 +1002,14 @@ const glossReadings = [
 
           <div
             id="modal-customer-summary"
-            class="mt-5 rounded-xl border border-slate-700/80 bg-[#0A0C10] p-4 text-sm text-white"
+            class="mt-5 rounded-xl border border-slate-700/80 bg-[#0C1017] p-4 text-sm text-slate-100"
           />
 
           {isPreview ? (
             <>
               <div class="mt-5">
                 <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold text-[#00F2FE]">
+                  <span class="text-xs font-bold text-[#7DD3FC]">
                     What the Business Owner Receives Instantly:
                   </span>
                   <span class="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 ring-1 ring-emerald-400/30">
@@ -1020,7 +1018,7 @@ const glossReadings = [
                 </div>
                 <pre
                   id="modal-owner-sms"
-                  class="mt-2 whitespace-pre-wrap rounded-xl border border-slate-800 bg-[#06080C] p-4 font-mono text-xs leading-relaxed text-cyan-100"
+                  class="mt-2 whitespace-pre-wrap rounded-xl border border-slate-800 bg-[#090D13] p-4 font-mono text-xs leading-relaxed text-sky-100"
                 />
               </div>
 
@@ -1029,25 +1027,25 @@ const glossReadings = [
               </div>
             </>
           ) : (
-            <div class="mt-5 rounded-xl border border-cyan-400/30 bg-[#0A0C10] p-4">
-              <div class="text-xs font-bold uppercase tracking-wider text-[#00F2FE]">
+            <div class="mt-5 rounded-xl border border-sky-400/30 bg-[#0C1017] p-4">
+              <div class="text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
                 Want Priority Dispatch? Text Your Quote Directly
               </div>
-              <p class="mt-1.5 text-xs leading-relaxed text-[#94A3B8]">
+              <p class="mt-1.5 text-xs leading-relaxed text-[#CBD5E1]">
                 Zero upfront payment is due today. Tap below to open a pre-filled text message directly to {prospect.businessName}{!hasDialablePhone ? ` or DM ${prospect.instagramHandle}` : ''}.
               </p>
               <div class="mt-3.5 flex flex-wrap gap-2.5">
                 <a
                   id="modal-live-sms-link"
                   href="#"
-                  class="inline-flex items-center justify-center rounded-xl bg-[#00F2FE] px-4 py-2.5 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+                  class="inline-flex items-center justify-center rounded-xl bg-[#38BDF8] px-4 py-2.5 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
                 >
                   Text My Quote to {prospect.businessName} Now
                 </a>
                 {hasDialablePhone && (
                   <a
                     href={telHref}
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-xs font-semibold text-slate-100 transition-colors hover:border-cyan-400/50 hover:text-white"
+                    class="inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#151D2A] px-4 py-2.5 text-xs font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
                   >
                     Call {prospect.phoneDisplay}
                   </a>
@@ -1060,7 +1058,7 @@ const glossReadings = [
             <button
               id="done-modal-btn"
               type="button"
-              class="rounded-xl bg-[#00F2FE] px-5 py-2.5 text-sm font-bold text-[#06121A] hover:bg-[#4FACFE]"
+              class="rounded-xl bg-[#38BDF8] px-5 py-2.5 text-sm font-bold text-[#06131F] hover:bg-[#7DD3FC]"
             >
               Done
             </button>
@@ -1181,17 +1179,17 @@ const glossReadings = [
               const active = btn.getAttribute('data-vehicle') === size;
               btn.setAttribute('aria-checked', active ? 'true' : 'false');
               btn.className = active
-                ? 'vehicle-btn interactive-card flex flex-col justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 p-5 text-left cyan-glow-sm'
-                : 'vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-5 text-left hover:border-cyan-400/50';
+                ? 'vehicle-btn interactive-card flex flex-col justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 p-5 text-left cyan-glow-sm'
+                : 'vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-5 text-left hover:border-sky-400/50';
               const svg = btn.querySelector('svg');
               const dot = btn.querySelector('.vehicle-dot');
               if (svg) {
-                svg.setAttribute('class', active ? 'h-10 w-24 text-[#00F2FE]' : 'h-10 w-24 text-slate-300');
+                svg.setAttribute('class', active ? 'h-10 w-24 text-[#38BDF8]' : 'h-10 w-24 text-slate-300');
               }
               if (dot) {
                 dot.className = active
-                  ? 'vehicle-dot h-4 w-4 rounded-full border-2 border-[#00F2FE] bg-[#00F2FE]'
-                  : 'vehicle-dot h-4 w-4 rounded-full border-2 border-slate-600';
+                  ? 'vehicle-dot h-4 w-4 rounded-full border-2 border-[#38BDF8] bg-[#38BDF8]'
+                  : 'vehicle-dot h-4 w-4 rounded-full border-2 border-slate-500';
               }
             });
             updatePricingDisplay();
@@ -1204,13 +1202,13 @@ const glossReadings = [
               const active = btn.getAttribute('data-package-id') === pkgId;
               btn.setAttribute('aria-pressed', active ? 'true' : 'false');
               btn.className = active
-                ? 'package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 p-6 text-left cyan-glow-sm'
-                : 'package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-6 text-left hover:border-cyan-400/50';
+                ? 'package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 p-6 text-left cyan-glow-sm'
+                : 'package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-6 text-left hover:border-sky-400/50';
               const dot = btn.querySelector('.pkg-dot');
               if (dot) {
                 dot.className = active
-                  ? 'pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-[#00F2FE] bg-[#00F2FE]'
-                  : 'pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-slate-600';
+                  ? 'pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-[#38BDF8] bg-[#38BDF8]'
+                  : 'pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-slate-500';
               }
             });
             updatePricingDisplay();
@@ -1221,8 +1219,8 @@ const glossReadings = [
             conditionButtons.forEach((btn) => {
               const active = btn.getAttribute('data-condition') === cond;
               btn.className = active
-                ? 'condition-btn interactive-card flex w-full items-center justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 px-4 py-3.5 text-left'
-                : 'condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 px-4 py-3.5 text-left hover:border-cyan-400/50';
+                ? 'condition-btn interactive-card flex w-full items-center justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 px-4 py-3.5 text-left'
+                : 'condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 px-4 py-3.5 text-left hover:border-sky-400/50';
             });
             updatePricingDisplay();
           }
@@ -1255,8 +1253,8 @@ const glossReadings = [
               const parentLabel = cb.closest('.addon-label');
               if (parentLabel) {
                 parentLabel.className = cb.checked
-                  ? 'addon-label interactive-card flex cursor-pointer items-start gap-3 rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/8 p-3.5'
-                  : 'addon-label interactive-card flex cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-3.5 hover:border-cyan-400/50';
+                  ? 'addon-label interactive-card flex cursor-pointer items-start gap-3 rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 p-3.5'
+                  : 'addon-label interactive-card flex cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-3.5 hover:border-sky-400/50';
               }
               updatePricingDisplay();
             });
@@ -1274,8 +1272,8 @@ const glossReadings = [
                 buttons.forEach((b) => {
                   const isActive = b === btn;
                   b.className = isActive
-                    ? 'proof-tab-btn rounded-lg bg-[#00F2FE]/15 px-2.5 py-1 text-[11px] font-bold text-[#00F2FE] ring-1 ring-cyan-400/40'
-                    : 'proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#94A3B8] hover:text-white';
+                    ? 'proof-tab-btn rounded-lg bg-[#38BDF8]/15 px-2.5 py-1 text-[11px] font-bold text-[#7DD3FC] ring-1 ring-sky-400/40'
+                    : 'proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#CBD5E1] hover:text-white';
                 });
                 if (mode === 'before') {
                   noteEl.textContent = noteEl.getAttribute('data-before-text') || '';
@@ -1366,11 +1364,11 @@ const glossReadings = [
                 line1.textContent = `${result.quote.vehicleLabel} · ${result.quote.packageName}`;
 
                 const line2 = document.createElement('div');
-                line2.className = 'mt-1 text-xs text-[#00F2FE] font-semibold';
+                line2.className = 'mt-1 text-xs text-[#7DD3FC] font-semibold';
                 line2.textContent = `Estimated Range: ${result.quote.priceRange} (${result.quote.durationLabel})`;
 
                 const line3 = document.createElement('div');
-                line3.className = 'mt-1 text-xs text-[#94A3B8]';
+                line3.className = 'mt-1 text-xs text-[#CBD5E1]';
                 line3.textContent = `Contact: ${result.quote.customerName} (${result.quote.customerPhone}) · ${result.quote.customerPostal}`;
 
                 modalSummary.appendChild(line1);
@@ -1401,7 +1399,7 @@ const glossReadings = [
                   const parentLabel = cb.closest('.addon-label');
                   if (parentLabel) {
                     parentLabel.className =
-                      'addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-3.5 hover:border-cyan-400/50';
+                      'addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-3.5 hover:border-sky-400/50';
                   }
                 });
                 updatePricingDisplay();

@@ -719,6 +719,17 @@ export async function upsertLeadCandidatesBatch(
   const db = drizzle(d1);
   const nowIso = new Date().toISOString();
 
+  // Clear unpromoted 'new' rows for these cities so disqualified leads do not linger in the queue
+  const cities = Array.from(
+    new Set(items.map((item) => item.city.trim()).filter(Boolean))
+  );
+  for (const city of cities) {
+    await d1
+      .prepare("DELETE FROM lead_candidates WHERE lower(city) = lower(?) AND status = 'new'")
+      .bind(city)
+      .run();
+  }
+
   for (const item of items) {
     const dedupeKey = buildCandidateDedupeKey(item.businessName, item.city);
     const id = `cand_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`;
