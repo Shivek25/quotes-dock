@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { listProspectsWithStats } from '../lib/db/repository';
+import { isSandboxDemoSlug } from '../lib/db/seed-data';
 import {
   getConfiguredStudioKey,
   isStudioAuthorized,
@@ -10,6 +11,11 @@ import {
 const env = Astro.locals.runtime.env;
 const configuredKey = getConfiguredStudioKey(env);
 let authError = '';
+
+if (Astro.url.searchParams.get('logout') === '1') {
+  Astro.cookies.delete(STUDIO_COOKIE_NAME, { path: '/' });
+  return Astro.redirect('/studio');
+}
 
 if (Astro.request.method === 'POST' && configuredKey) {
   const formData = await Astro.request.formData().catch(() => null);
@@ -30,10 +36,13 @@ if (Astro.request.method === 'POST' && configuredKey) {
 const authorized = isStudioAuthorized(Astro.request, Astro.cookies, env);
 const items = authorized ? await listProspectsWithStats(env.DB) : [];
 
-const totalPreviews = items.length;
-const hotTestedCount = items.filter((i) => i.previewTestQuotes > 0).length;
-const liveClientsCount = items.filter((i) => i.prospect.mode === 'live').length;
-const approvedOrSentCount = items.reduce(
+const realItems = items.filter((item) => !isSandboxDemoSlug(item.prospect.slug));
+const sandboxItems = items.filter((item) => isSandboxDemoSlug(item.prospect.slug));
+
+const totalPreviews = realItems.length;
+const hotTestedCount = realItems.filter((i) => i.previewTestQuotes > 0).length;
+const liveClientsCount = realItems.filter((i) => i.prospect.mode === 'live').length;
+const approvedOrSentCount = realItems.reduce(
   (acc, i) =>
     acc +
     i.drafts.filter(
@@ -69,6 +78,7 @@ const statusLabels: Record<string, string> = {
 <BaseLayout
   title="Founder Outreach Studio | QuotesDock"
   description="Create mobile detailer previews in 60 seconds and manage your human-approved daily outreach queue."
+  noindex={true}
 >
   <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-[#0A0C10]/90 backdrop-blur-xl">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
@@ -90,11 +100,19 @@ const statusLabels: Record<string, string> = {
         <span class="hidden rounded-lg border border-slate-800 bg-[#11151E] px-3 py-1.5 text-xs text-[#94A3B8] lg:inline">
           Safety Rule: Human approval required (~10/day manual sends)
         </span>
+        {authorized && configuredKey && (
+          <a
+            href="/studio?logout=1"
+            class="rounded-xl border border-amber-400/35 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-200 transition-colors hover:bg-amber-400/20"
+          >
+            Lock Studio
+          </a>
+        )}
         <a
           href="/"
           class="rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
         >
-          View Demo Directory
+          View Brand Home
         </a>
       </div>
     </div>
@@ -102,59 +120,76 @@ const statusLabels: Record<string, string> = {
 
   {!authorized ? (
     <main class="carbon-mesh mx-auto flex min-h-[78vh] items-center justify-center px-4 py-12">
-      <form
-        method="POST"
-        class="glass-panel anisotropic-border w-full max-w-md rounded-2xl p-6 sm:p-7"
-      >
-        <h1 class="text-xl font-bold text-white">
-          Unlock Founder Studio
-        </h1>
-        <p class="mt-1.5 text-sm text-[#94A3B8]">
-          Enter your configured <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#00F2FE]">ADMIN_STUDIO_KEY</code> to manage prospects and outreach drafts.
-        </p>
-
-        {authError && (
-          <div class="mt-4 rounded-xl border border-red-400/40 bg-red-950/60 px-3.5 py-2.5 text-xs font-semibold text-red-200">
-            {authError}
-          </div>
-        )}
-
-        <label for="studioKey" class="mt-5 block text-xs font-bold uppercase tracking-wider text-slate-300">
-          Studio Access Key
-        </label>
-        <input
-          id="studioKey"
-          name="studioKey"
-          type="password"
-          required
-          class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3.5 py-2.5 text-sm text-white"
-        />
-        <button
-          type="submit"
-          class="mt-4 w-full rounded-xl bg-[#00F2FE] px-4 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+      {!configuredKey ? (
+        <div class="glass-panel anisotropic-border w-full max-w-lg rounded-2xl border-amber-400/40 p-6 sm:p-7">
+          <h1 class="text-xl font-bold text-white">
+            Studio Locked on Public Domain
+          </h1>
+          <p class="mt-2 text-sm leading-relaxed text-[#94A3B8]">
+            For security, passwordless access only works on <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#00F2FE]">localhost</code>. Configure <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#00F2FE]">ADMIN_STUDIO_KEY</code> in your Cloudflare Pages / Workers secrets and redeploy to unlock Founder Studio online.
+          </p>
+        </div>
+      ) : (
+        <form
+          method="POST"
+          class="glass-panel anisotropic-border w-full max-w-md rounded-2xl p-6 sm:p-7"
         >
-          Unlock Studio
-        </button>
-      </form>
+          <h1 class="text-xl font-bold text-white">
+            Unlock Founder Studio
+          </h1>
+          <p class="mt-1.5 text-sm text-[#94A3B8]">
+            Enter your configured <code class="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-[#00F2FE]">ADMIN_STUDIO_KEY</code> to manage prospects and outreach drafts.
+          </p>
+
+          {authError && (
+            <div class="mt-4 rounded-xl border border-red-400/40 bg-red-950/60 px-3.5 py-2.5 text-xs font-semibold text-red-200">
+              {authError}
+            </div>
+          )}
+
+          <label for="studioKey" class="mt-5 block text-xs font-bold uppercase tracking-wider text-slate-300">
+            Studio Access Key
+          </label>
+          <input
+            id="studioKey"
+            name="studioKey"
+            type="password"
+            required
+            class="mt-1.5 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3.5 py-2.5 text-sm text-white"
+          />
+          <button
+            type="submit"
+            class="mt-4 w-full rounded-xl bg-[#00F2FE] px-4 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+          >
+            Unlock Studio
+          </button>
+        </form>
+      )}
     </main>
   ) : (
     <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      {/* Metrics Strip */}
+      {/* Metrics Strip (Real Prospects Only) */}
       <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div class="glass-panel anisotropic-border rounded-2xl p-4">
           <div class="text-xs font-semibold text-[#94A3B8]">
-            Active Preview Pages
+            Real Pitched Prospects
           </div>
           <div class="font-display tabular-nums mt-1 text-3xl font-bold text-white">
             {totalPreviews}
+          </div>
+          <div class="mt-0.5 text-[11px] text-slate-400">
+            + {sandboxItems.length} built-in sandbox demos
           </div>
         </div>
         <div class="glass-panel anisotropic-border rounded-2xl border-t-emerald-400/40 p-4">
           <div class="text-xs font-semibold text-[#94A3B8]">
             Owners Who Tested Quote Form
           </div>
-          <div class="font-display tabular-nums mt-1 text-3xl font-bold text-emerald-400">
+          <div id="kpi-hot-tested" class="font-display tabular-nums mt-1 text-3xl font-bold text-emerald-400">
             {hotTestedCount}
+          </div>
+          <div class="mt-0.5 text-[11px] text-slate-400">
+            Excludes ?founder=1 self-tests &amp; sandboxes
           </div>
         </div>
         <div class="glass-panel anisotropic-border rounded-2xl border-t-cyan-400/40 p-4">
@@ -182,7 +217,7 @@ const statusLabels: Record<string, string> = {
             1. Add New Detailer Preview
           </h1>
           <p class="mt-1 text-xs leading-relaxed text-[#94A3B8]">
-            Enter public details from Instagram, Facebook, or Maps (never scrape reviews or photos). Creates a live <code class="rounded bg-slate-800 px-1 text-[#00F2FE]">/p/[slug]</code> link + 3 outreach drafts.
+            Enter public details from Instagram or Facebook (never scrape photos or reviews). Creates a live <code class="rounded bg-slate-800 px-1 text-[#00F2FE]">/p/[slug]</code> link + 3 outreach drafts.
           </p>
 
           <form id="new-prospect-form" class="mt-5 space-y-3.5">
@@ -247,20 +282,19 @@ const statusLabels: Record<string, string> = {
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label for="phoneDisplay" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                  Public Phone *
+                  Public Phone (Optional)
                 </label>
                 <input
                   id="phoneDisplay"
                   name="phoneDisplay"
                   type="text"
-                  required
-                  placeholder="(619) 555-0134"
+                  placeholder="Leave blank if IG-only"
                   class="mt-1 w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-sm text-white placeholder:text-slate-500"
                 />
               </div>
               <div>
                 <label for="instagramHandle" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                  IG / FB Handle *
+                  IG / FB Handle or URL *
                 </label>
                 <input
                   id="instagramHandle"
@@ -356,7 +390,7 @@ const statusLabels: Record<string, string> = {
               type="submit"
               class="w-full rounded-xl bg-[#00F2FE] px-4 py-3 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm disabled:opacity-60"
             >
-              Create Preview & Draft Outreach
+              Create Preview &amp; Draft Outreach
             </button>
           </form>
         </section>
@@ -369,193 +403,399 @@ const statusLabels: Record<string, string> = {
                 2. Human Approval Outreach Queue
               </h2>
               <p class="mt-0.5 text-xs text-[#94A3B8]">
-                Review, edit, approve, and copy ~10 manual messages/day. Copy automatically inserts your full domain URL.
+                Review, edit, approve, and copy ~10 manual messages/day. Self-testing uses ?founder=1 so your KPIs stay clean.
               </p>
             </div>
           </div>
 
-          {items.length === 0 ? (
-            <div class="glass-panel rounded-2xl border border-dashed border-slate-700 p-10 text-center">
+          {/* Public Share Domain Bar */}
+          <div class="glass-panel rounded-2xl border border-slate-800 p-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <label for="public-domain-input" class="block text-xs font-bold uppercase tracking-wider text-[#00F2FE]">
+                  Public Share Domain Used When Copying DMs
+                </label>
+                <p class="mt-0.5 text-[11px] text-[#94A3B8]">
+                  When deployed, set your live Cloudflare domain (for example <code class="text-slate-200">https://quotesdock.pages.dev</code>) so copied DMs never contain <code class="text-slate-200">localhost</code>.
+                </p>
+              </div>
+              <div class="flex w-full items-center gap-2 sm:w-auto">
+                <input
+                  id="public-domain-input"
+                  type="url"
+                  placeholder="https://your-site.pages.dev"
+                  class="w-full rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-xs text-white sm:w-64"
+                />
+                <button
+                  id="reset-domain-btn"
+                  type="button"
+                  class="shrink-0 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-300 hover:border-cyan-400/50 hover:text-white"
+                >
+                  Use Current
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Real Pitched Prospects */}
+          {realItems.length === 0 ? (
+            <div class="glass-panel rounded-2xl border border-dashed border-slate-700 p-8 text-center">
               <p class="text-sm font-semibold text-white">
-                No prospects yet
+                No custom prospects pitched yet
               </p>
               <p class="mt-1 text-xs text-[#94A3B8]">
-                Use the form on the left to generate your first mobile detailing preview.
+                Fill out the form on the left to create your first real detailing prospect preview and outreach drafts.
               </p>
             </div>
           ) : (
             <div class="space-y-6">
-              {items.map(({ prospect, drafts, recentQuotes, previewTestQuotes, totalQuotes }) => (
-                <article
-                  class="glass-panel anisotropic-border rounded-2xl p-5"
-                  data-prospect-card={prospect.id}
-                >
-                  {/* Prospect Header */}
-                  <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-800 pb-4">
-                    <div class="min-w-0 flex-1">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-lg font-bold text-white">
-                          {prospect.businessName}
-                        </h3>
-                        <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-200">
-                          {prospect.city} ({prospect.country})
-                        </span>
-                        <span
-                          class={`mode-pill rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                            prospect.mode === 'live'
-                              ? 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30'
-                              : 'bg-cyan-400/15 text-[#00F2FE] ring-1 ring-cyan-400/30'
-                          }`}
-                        >
-                          {prospect.mode === 'live' ? 'Live Client Mode' : 'Preview Mode'}
-                        </span>
-                        {previewTestQuotes > 0 ? (
-                          <span class="rounded-full bg-amber-400/20 px-2.5 py-0.5 text-xs font-bold text-amber-200 ring-1 ring-amber-400/40">
-                            Owner Tested Quote Form ({previewTestQuotes} test{previewTestQuotes > 1 ? 's' : ''})
+              {realItems.map(({ prospect, drafts, recentQuotes, previewTestQuotes, totalQuotes }) => {
+                const fullPkg = prospect.packages.find((p) => p.id === 'pkg-full') ?? prospect.packages[1] ?? prospect.packages[0];
+                const currentBasePrice = fullPkg ? fullPkg.prices.sedan : 145;
+
+                return (
+                  <article
+                    class="glass-panel anisotropic-border rounded-2xl p-5"
+                    data-prospect-card={prospect.id}
+                  >
+                    <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-800 pb-4">
+                      <div class="min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                          <h3 class="text-lg font-bold text-white">
+                            {prospect.businessName}
+                          </h3>
+                          <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-200">
+                            {prospect.city} ({prospect.country})
                           </span>
-                        ) : (
-                          <span class="rounded-full bg-slate-800/80 px-2.5 py-0.5 text-xs font-medium text-[#94A3B8]">
-                            Awaiting first quote test ({totalQuotes} leads)
-                          </span>
-                        )}
-                      </div>
-
-                      <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#94A3B8]">
-                        <span>Handle: <strong class="text-slate-200">{prospect.instagramHandle}</strong></span>
-                        <span>Phone: <strong class="text-slate-200">{prospect.phoneDisplay}</strong></span>
-                        <span>
-                          Preview:{' '}
-                          <a
-                            href={`/p/${prospect.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="font-bold text-[#00F2FE] underline underline-offset-2 hover:text-white"
-                          >
-                            /p/{prospect.slug}
-                          </a>
-                        </span>
-                      </div>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2">
-                      <a
-                        href={`/p/${prospect.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-xs font-bold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
-                      >
-                        Open Preview
-                      </a>
-                      <button
-                        type="button"
-                        data-toggle-mode={prospect.id}
-                        data-current-mode={prospect.mode}
-                        class="toggle-mode-btn rounded-xl border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-bold text-white transition-colors hover:border-[#00F2FE] hover:text-[#00F2FE]"
-                      >
-                        {prospect.mode === 'live' ? 'Switch to Preview' : 'Mark Paid & Go Live'}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Recent Quotes / Activity */}
-                  {recentQuotes.length > 0 && (
-                    <div class="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3.5">
-                      <div class="text-xs font-bold text-amber-200">
-                        Recent Quote Submissions ({recentQuotes.length} latest)
-                      </div>
-                      <ul class="mt-2 space-y-1.5 text-xs text-slate-200">
-                        {recentQuotes.map((q) => (
-                          <li class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#0A0C10]/85 px-3 py-2">
-                            <span>
-                              <strong class="text-white">{q.customerName}</strong> ({q.customerPhone}) · {q.vehicleSize.toUpperCase()} · {q.packageName}
-                            </span>
-                            <span class="font-display tabular-nums font-bold text-[#00F2FE]">
-                              {prospect.currencySymbol}{q.estimatedMin} - {prospect.currencySymbol}{q.estimatedMax}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Outreach Drafts */}
-                  <div class="mt-4 space-y-4">
-                    {drafts.map((draft) => (
-                      <div
-                        class="rounded-xl border border-slate-800 bg-[#0A0C10]/85 p-4"
-                        data-draft-box={draft.id}
-                      >
-                        <div class="flex flex-wrap items-center justify-between gap-2">
-                          <div class="flex items-center gap-2">
-                            <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-bold text-[#00F2FE]">
-                              {channelLabels[draft.channel] || draft.channel}
-                            </span>
-                            <span class="text-xs text-[#94A3B8]">
-                              to {draft.recipientHandle}
-                            </span>
-                          </div>
-
                           <span
-                            class={`draft-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${
-                              statusBadgeClasses[draft.approvalStatus] || statusBadgeClasses.draft
+                            class={`mode-pill rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                              prospect.mode === 'live'
+                                ? 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30'
+                                : 'bg-cyan-400/15 text-[#00F2FE] ring-1 ring-cyan-400/30'
                             }`}
                           >
-                            {statusLabels[draft.approvalStatus] || draft.approvalStatus}
+                            {prospect.mode === 'live' ? 'Live Client Mode' : 'Preview Mode'}
                           </span>
+                          {previewTestQuotes > 0 ? (
+                            <span class="rounded-full bg-amber-400/20 px-2.5 py-0.5 text-xs font-bold text-amber-200 ring-1 ring-amber-400/40">
+                              Owner Tested Quote Form ({previewTestQuotes} test{previewTestQuotes > 1 ? 's' : ''})
+                            </span>
+                          ) : (
+                            <span class="rounded-full bg-slate-800/80 px-2.5 py-0.5 text-xs font-medium text-[#94A3B8]">
+                              Awaiting first owner test ({totalQuotes} total)
+                            </span>
+                          )}
                         </div>
 
-                        <textarea
-                          rows="4"
-                          data-draft-textarea={draft.id}
-                          class="mt-2.5 w-full rounded-xl border border-slate-700/80 bg-[#11151E] p-3 text-xs leading-relaxed text-slate-100"
-                        >{draft.messageBody}</textarea>
+                        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#94A3B8]">
+                          <span>Handle: <strong class="text-slate-200">{prospect.instagramHandle}</strong></span>
+                          <span>Phone: <strong class="text-slate-200">{prospect.phoneDisplay}</strong></span>
+                          <span>
+                            Share Link:{' '}
+                            <a
+                              href={`/p/${prospect.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="font-bold text-[#00F2FE] underline underline-offset-2 hover:text-white"
+                            >
+                              /p/{prospect.slug}
+                            </a>
+                          </span>
+                        </div>
+                      </div>
 
-                        <div class="mt-2.5 flex flex-wrap items-center justify-between gap-2">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <a
+                          href={`/p/${prospect.slug}?founder=1`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="rounded-xl border border-slate-700 bg-[#0A0C10] px-3 py-2 text-xs font-bold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+                        >
+                          Open Preview (Founder Test)
+                        </a>
+                        <button
+                          type="button"
+                          data-toggle-mode={prospect.id}
+                          data-current-mode={prospect.mode}
+                          class="toggle-mode-btn rounded-xl border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-bold text-white transition-colors hover:border-[#00F2FE] hover:text-[#00F2FE]"
+                        >
+                          {prospect.mode === 'live' ? 'Switch to Preview' : 'Mark Paid & Go Live'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Client Details, Pricing & 6 Photos Editor Drawer */}
+                    <details class="mt-4 rounded-xl border border-slate-800 bg-[#0A0C10]/65 p-3.5">
+                      <summary class="cursor-pointer select-none text-xs font-bold text-cyan-200 hover:text-[#00F2FE]">
+                        Edit Client Details, Pricing &amp; 6 Job Photos
+                      </summary>
+
+                      <form
+                        class="edit-prospect-form mt-4 space-y-3"
+                        data-prospect-id={prospect.id}
+                      >
+                        <div class="grid gap-3 sm:grid-cols-2">
+                          <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                              Owner Alert Email
+                            </label>
+                            <input
+                              name="ownerEmail"
+                              type="email"
+                              value={prospect.ownerEmail ?? ''}
+                              placeholder="owner@detailshop.com"
+                              class="mt-1 w-full rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs text-white"
+                            />
+                          </div>
+                          <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                              Public Phone (SMS/Call)
+                            </label>
+                            <input
+                              name="phoneDisplay"
+                              type="text"
+                              value={prospect.phoneDisplay === 'Direct Text / DM' ? '' : prospect.phoneDisplay}
+                              placeholder="Leave blank if DM-only"
+                              class="mt-1 w-full rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs text-white"
+                            />
+                          </div>
+                          <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                              Service Area
+                            </label>
+                            <input
+                              name="serviceArea"
+                              type="text"
+                              value={prospect.serviceArea}
+                              class="mt-1 w-full rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs text-white"
+                            />
+                          </div>
+                          <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                              Base Full Detail Price ({prospect.currencySymbol})
+                            </label>
+                            <input
+                              name="baseSedanPrice"
+                              type="number"
+                              min="45"
+                              value={currentBasePrice}
+                              class="mt-1 w-full rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs text-white"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-300">
+                            Swap Up to 6 Real Owner Job Photo URLs
+                          </div>
+                          <div class="mt-1.5 grid gap-2 sm:grid-cols-2">
+                            {prospect.gallery.slice(0, 6).map((slot, idx) => (
+                              <input
+                                name={`photoUrl_${idx}`}
+                                type="text"
+                                value={slot.imageUrl ?? ''}
+                                placeholder={`Photo #${idx + 1} (${slot.title})`}
+                                class="w-full rounded-lg border border-slate-700 bg-[#11151E] px-2.5 py-1.5 text-xs text-white placeholder:text-slate-500"
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
                           <div class="flex flex-wrap items-center gap-2">
                             <button
-                              type="button"
-                              data-draft-save={draft.id}
-                              data-prospect-id={prospect.id}
-                              data-status="approved"
-                              class="draft-action-btn rounded-lg bg-[#00F2FE] px-3 py-1.5 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE]"
+                              type="submit"
+                              class="save-details-btn rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-bold text-white ring-1 ring-slate-600 hover:border-[#00F2FE] hover:text-[#00F2FE]"
                             >
-                              Save & Approve
+                              Save Client Changes
                             </button>
                             <button
                               type="button"
-                              data-draft-save={draft.id}
-                              data-prospect-id={prospect.id}
-                              data-status="sent_manually"
-                              class="draft-action-btn rounded-lg border border-emerald-400/40 bg-emerald-500/15 px-3 py-1.5 text-xs font-bold text-emerald-300 transition-colors hover:bg-emerald-500/25"
+                              data-save-live={prospect.id}
+                              class="save-and-live-btn rounded-lg bg-[#00F2FE] px-3 py-1.5 text-xs font-bold text-[#06121A] hover:bg-[#4FACFE]"
                             >
-                              Mark Sent Manually
-                            </button>
-                            <button
-                              type="button"
-                              data-draft-save={draft.id}
-                              data-prospect-id={prospect.id}
-                              data-status="replied"
-                              class="draft-action-btn rounded-lg border border-amber-400/40 bg-amber-400/15 px-3 py-1.5 text-xs font-bold text-amber-200 transition-colors hover:bg-amber-400/25"
-                            >
-                              Owner Replied
+                              Save &amp; Go Live
                             </button>
                           </div>
 
                           <button
                             type="button"
-                            data-copy-draft={draft.id}
-                            data-slug={prospect.slug}
-                            class="copy-draft-btn rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs font-bold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+                            data-delete-prospect={prospect.id}
+                            class="delete-prospect-btn rounded-lg border border-red-400/35 bg-red-950/40 px-3 py-1.5 text-xs font-bold text-red-200 hover:bg-red-900/50"
                           >
-                            Copy Message
+                            Delete Prospect
                           </button>
                         </div>
+                      </form>
+                    </details>
+
+                    {/* Recent Quotes */}
+                    {recentQuotes.length > 0 && (
+                      <div class="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3.5">
+                        <div class="text-xs font-bold text-amber-200">
+                          Recent Quote Submissions ({recentQuotes.length} latest)
+                        </div>
+                        <ul class="mt-2 space-y-1.5 text-xs text-slate-200">
+                          {recentQuotes.map((q) => (
+                            <li class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#0A0C10]/85 px-3 py-2">
+                              <span>
+                                <strong class="text-white">{q.customerName}</strong> ({q.customerPhone}) · {q.vehicleSize.toUpperCase()} · {q.packageName}
+                              </span>
+                              <span class="font-display tabular-nums font-bold text-[#00F2FE]">
+                                {prospect.currencySymbol}{q.estimatedMin} - {prospect.currencySymbol}{q.estimatedMax}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                    ))}
-                  </div>
-                </article>
-              ))}
+                    )}
+
+                    {/* Outreach Drafts */}
+                    <div class="mt-4 space-y-4">
+                      {drafts.map((draft) => (
+                        <div
+                          class="rounded-xl border border-slate-800 bg-[#0A0C10]/85 p-4"
+                          data-draft-box={draft.id}
+                        >
+                          <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                              <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-bold text-[#00F2FE]">
+                                {channelLabels[draft.channel] || draft.channel}
+                              </span>
+                              <span class="text-xs text-[#94A3B8]">
+                                to {draft.recipientHandle}
+                              </span>
+                            </div>
+
+                            <span
+                              class={`draft-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${
+                                statusBadgeClasses[draft.approvalStatus] || statusBadgeClasses.draft
+                              }`}
+                            >
+                              {statusLabels[draft.approvalStatus] || draft.approvalStatus}
+                            </span>
+                          </div>
+
+                          <textarea
+                            rows="4"
+                            data-draft-textarea={draft.id}
+                            class="mt-2.5 w-full rounded-xl border border-slate-700/80 bg-[#11151E] p-3 text-xs leading-relaxed text-slate-100"
+                          >{draft.messageBody}</textarea>
+
+                          <div class="mt-2.5 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                              <button
+                                type="button"
+                                data-draft-save={draft.id}
+                                data-prospect-id={prospect.id}
+                                data-status="approved"
+                                class="draft-action-btn rounded-lg bg-[#00F2FE] px-3 py-1.5 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE]"
+                              >
+                                Save &amp; Approve
+                              </button>
+                              <button
+                                type="button"
+                                data-draft-save={draft.id}
+                                data-prospect-id={prospect.id}
+                                data-status="sent_manually"
+                                class="draft-action-btn rounded-lg border border-emerald-400/40 bg-emerald-500/15 px-3 py-1.5 text-xs font-bold text-emerald-300 transition-colors hover:bg-emerald-500/25"
+                              >
+                                Mark Sent Manually
+                              </button>
+                              <button
+                                type="button"
+                                data-draft-save={draft.id}
+                                data-prospect-id={prospect.id}
+                                data-status="replied"
+                                class="draft-action-btn rounded-lg border border-amber-400/40 bg-amber-400/15 px-3 py-1.5 text-xs font-bold text-amber-200 transition-colors hover:bg-amber-400/25"
+                              >
+                                Owner Replied
+                              </button>
+                            </div>
+
+                            <button
+                              type="button"
+                              data-copy-draft={draft.id}
+                              data-slug={prospect.slug}
+                              class="copy-draft-btn rounded-lg border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs font-bold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+                            >
+                              Copy Message
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
+          )}
+
+          {/* Built-in Sandbox Demos (Collapsible so real prospect KPIs stay pure) */}
+          {sandboxItems.length > 0 && (
+            <details class="glass-panel rounded-2xl border border-slate-800 p-5">
+              <summary class="cursor-pointer select-none text-sm font-bold text-slate-200 hover:text-[#00F2FE]">
+                Built-in Sandbox Demos ({sandboxItems.length}) - Isolated from Owner-Tested KPIs
+              </summary>
+              <div class="mt-5 space-y-5">
+                {sandboxItems.map(({ prospect, drafts, recentQuotes }) => (
+                  <article
+                    class="rounded-2xl border border-slate-800 bg-[#0A0C10]/70 p-4"
+                    data-prospect-card={prospect.id}
+                  >
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                          <h3 class="text-base font-bold text-white">
+                            {prospect.businessName}
+                          </h3>
+                          <span class="rounded bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-300">
+                            {prospect.city} ({prospect.country})
+                          </span>
+                          <span class="rounded-full bg-cyan-400/15 px-2.5 py-0.5 text-[11px] font-bold text-[#00F2FE] ring-1 ring-cyan-400/30">
+                            Sandbox Demo
+                          </span>
+                        </div>
+                        <div class="mt-1 text-xs text-[#94A3B8]">
+                          Link: <code class="text-[#00F2FE]">/p/{prospect.slug}</code> · {recentQuotes.length} sandbox submission(s)
+                        </div>
+                      </div>
+                      <a
+                        href={`/p/${prospect.slug}?founder=1`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="rounded-xl border border-slate-700 bg-[#11151E] px-3 py-1.5 text-xs font-bold text-slate-200 hover:border-cyan-400/50 hover:text-white"
+                      >
+                        Open Sandbox
+                      </a>
+                    </div>
+
+                    {drafts[0] && (
+                      <div class="mt-3 rounded-xl border border-slate-800 bg-[#11151E]/60 p-3" data-draft-box={drafts[0].id}>
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                          <span class="text-xs font-bold text-[#00F2FE]">
+                            Sample {channelLabels[drafts[0].channel] || drafts[0].channel} Draft
+                          </span>
+                          <button
+                            type="button"
+                            data-copy-draft={drafts[0].id}
+                            data-slug={prospect.slug}
+                            class="copy-draft-btn rounded-lg border border-slate-700 bg-[#0A0C10] px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:border-cyan-400/50 hover:text-white"
+                          >
+                            Copy Sample
+                          </button>
+                        </div>
+                        <textarea
+                          rows="2"
+                          data-draft-textarea={drafts[0].id}
+                          class="mt-2 w-full rounded-lg border border-slate-800 bg-[#0A0C10] p-2.5 text-xs text-slate-300"
+                        >{drafts[0].messageBody}</textarea>
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </details>
           )}
         </section>
       </div>
@@ -575,14 +815,37 @@ const statusLabels: Record<string, string> = {
       const errBox = document.getElementById('prospect-error');
       const okBox = document.getElementById('prospect-success');
       const toastEl = document.getElementById('studio-toast');
+      const domainInput = document.getElementById('public-domain-input');
+      const resetDomainBtn = document.getElementById('reset-domain-btn');
+      const DOMAIN_STORAGE_KEY = 'qd_public_domain';
 
-      function showToast(text) {
+      if (domainInput) {
+        const saved = localStorage.getItem(DOMAIN_STORAGE_KEY);
+        domainInput.value = saved || window.location.origin;
+        domainInput.addEventListener('input', () => {
+          localStorage.setItem(DOMAIN_STORAGE_KEY, domainInput.value.trim());
+        });
+      }
+
+      resetDomainBtn?.addEventListener('click', () => {
+        if (!domainInput) return;
+        domainInput.value = window.location.origin;
+        localStorage.removeItem(DOMAIN_STORAGE_KEY);
+        showToast('Share domain set to current origin');
+      });
+
+      function showToast(text, variant) {
         if (!toastEl) return;
         toastEl.textContent = text;
-        toastEl.classList.remove('hidden');
+        toastEl.className =
+          variant === 'warn'
+            ? 'pointer-events-none fixed bottom-5 right-5 z-50 rounded-xl border border-amber-400/50 bg-[#1C1608] px-4 py-2.5 text-xs font-bold text-amber-200 shadow-xl'
+            : variant === 'error'
+              ? 'pointer-events-none fixed bottom-5 right-5 z-50 rounded-xl border border-red-400/50 bg-red-950 px-4 py-2.5 text-xs font-bold text-red-200 shadow-xl'
+              : 'pointer-events-none fixed bottom-5 right-5 z-50 rounded-xl border border-cyan-400/40 bg-[#11151E] px-4 py-2.5 text-xs font-bold text-[#00F2FE] shadow-xl cyan-glow-sm';
         setTimeout(() => {
           toastEl.classList.add('hidden');
-        }, 2000);
+        }, variant === 'warn' ? 3600 : 2200);
       }
 
       form?.addEventListener('submit', async (e) => {
@@ -702,12 +965,22 @@ const statusLabels: Record<string, string> = {
           );
           if (!textarea) return;
 
-          const fullUrl = `${window.location.origin}/p/${slug}`;
+          const configuredOrigin = (domainInput?.value || window.location.origin).replace(/\/+$/, '');
+          const fullUrl = `${configuredOrigin}/p/${slug}`;
           const copyText = textarea.value.replaceAll(`/p/${slug}`, fullUrl);
+          const isLocalUrl =
+            configuredOrigin.includes('localhost') || configuredOrigin.includes('127.0.0.1');
 
           try {
             await navigator.clipboard.writeText(copyText);
-            showToast('Copied outreach draft with full URL');
+            if (isLocalUrl) {
+              showToast(
+                'Copied (Note: set your live domain above before sending to a real business!)',
+                'warn'
+              );
+            } else {
+              showToast('Copied outreach draft with live URL');
+            }
             const prev = btn.textContent;
             btn.textContent = 'Copied!';
             setTimeout(() => {
@@ -742,6 +1015,112 @@ const statusLabels: Record<string, string> = {
             }
           } finally {
             btn.removeAttribute('disabled');
+          }
+        });
+      });
+
+      async function submitEditForm(editForm, nextMode) {
+        const prospectId = editForm.getAttribute('data-prospect-id');
+        if (!prospectId) return;
+
+        const fd = new FormData(editForm);
+        const photoUrls = [];
+        for (let i = 0; i < 6; i += 1) {
+          photoUrls.push(String(fd.get(`photoUrl_${i}`) || '').trim());
+        }
+
+        const payload = {
+          prospectId,
+          ownerEmail: String(fd.get('ownerEmail') || '').trim(),
+          phoneDisplay: String(fd.get('phoneDisplay') || '').trim(),
+          serviceArea: String(fd.get('serviceArea') || '').trim(),
+          baseSedanPrice: fd.get('baseSedanPrice')
+            ? Number(fd.get('baseSedanPrice'))
+            : undefined,
+          photoUrls,
+        };
+        if (nextMode) {
+          payload.mode = nextMode;
+        }
+
+        const res = await fetch('/api/prospects', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          showToast(data.error || 'Could not update client details.', 'error');
+          return;
+        }
+        window.location.reload();
+      }
+
+      document.querySelectorAll('.edit-prospect-form').forEach((editForm) => {
+        editForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = editForm.querySelector('.save-details-btn');
+          if (btn) btn.setAttribute('disabled', 'true');
+          try {
+            await submitEditForm(editForm, null);
+          } finally {
+            if (btn) btn.removeAttribute('disabled');
+          }
+        });
+      });
+
+      document.querySelectorAll('.save-and-live-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const editForm = btn.closest('.edit-prospect-form');
+          if (!editForm) return;
+          btn.setAttribute('disabled', 'true');
+          try {
+            await submitEditForm(editForm, 'live');
+          } finally {
+            btn.removeAttribute('disabled');
+          }
+        });
+      });
+
+      document.querySelectorAll('.delete-prospect-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const prospectId = btn.getAttribute('data-delete-prospect');
+          if (!prospectId) return;
+
+          if (btn.getAttribute('data-armed') !== 'true') {
+            btn.setAttribute('data-armed', 'true');
+            btn.textContent = 'Confirm Delete?';
+            setTimeout(() => {
+              if (btn.isConnected && btn.getAttribute('data-armed') === 'true') {
+                btn.removeAttribute('data-armed');
+                btn.textContent = 'Delete Prospect';
+              }
+            }, 4000);
+            return;
+          }
+
+          btn.setAttribute('disabled', 'true');
+          btn.textContent = 'Deleting...';
+          try {
+            const res = await fetch('/api/prospects', {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prospectId }),
+            });
+            const data = await res.json();
+            if (res.ok && data.ok) {
+              window.location.reload();
+            } else {
+              showToast(data.error || 'Could not delete prospect.', 'error');
+              btn.removeAttribute('disabled');
+              btn.removeAttribute('data-armed');
+              btn.textContent = 'Delete Prospect';
+            }
+          } catch {
+            showToast('Network error deleting prospect.', 'error');
+            btn.removeAttribute('disabled');
+            btn.removeAttribute('data-armed');
+            btn.textContent = 'Delete Prospect';
           }
         });
       });

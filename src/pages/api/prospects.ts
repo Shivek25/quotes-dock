@@ -1,10 +1,12 @@
 import type { APIRoute } from 'astro';
 import {
   createProspectWithDrafts,
+  deleteProspectById,
   updateProspectMode,
 } from '../../lib/db/repository';
 import { isStudioAuthorized } from '../../lib/security/auth';
 import {
+  deleteProspectSchema,
   newProspectSchema,
   updateProspectModeSchema,
 } from '../../lib/validation/schemas';
@@ -93,6 +95,10 @@ export const PATCH: APIRoute = async ({ request, cookies, locals }) => {
       prospectId: parsed.data.prospectId,
       mode: parsed.data.mode,
       ownerEmail: parsed.data.ownerEmail,
+      phoneDisplay: parsed.data.phoneDisplay,
+      serviceArea: parsed.data.serviceArea,
+      baseSedanPrice: parsed.data.baseSedanPrice,
+      photoUrls: parsed.data.photoUrls,
     });
 
     if (!updated) {
@@ -103,7 +109,36 @@ export const PATCH: APIRoute = async ({ request, cookies, locals }) => {
   } catch (err) {
     console.error('Error in PATCH /api/prospects:', err);
     return jsonResponse(
-      { ok: false, error: 'Could not update prospect mode.' },
+      { ok: false, error: 'Could not update prospect details.' },
+      500
+    );
+  }
+};
+
+export const DELETE: APIRoute = async ({ request, cookies, locals }) => {
+  const env = locals.runtime.env;
+  if (!isStudioAuthorized(request, cookies, env)) {
+    return jsonResponse({ ok: false, error: 'Unauthorized studio access.' }, 401);
+  }
+
+  try {
+    const rawBody = await request.json().catch(() => null);
+    const parsed = deleteProspectSchema.safeParse(rawBody);
+
+    if (!parsed.success) {
+      return jsonResponse({ ok: false, error: 'Invalid prospect ID.' }, 400);
+    }
+
+    const deleted = await deleteProspectById(env.DB, parsed.data.prospectId);
+    if (!deleted) {
+      return jsonResponse({ ok: false, error: 'Prospect not found.' }, 404);
+    }
+
+    return jsonResponse({ ok: true });
+  } catch (err) {
+    console.error('Error in DELETE /api/prospects:', err);
+    return jsonResponse(
+      { ok: false, error: 'Could not delete prospect.' },
       500
     );
   }

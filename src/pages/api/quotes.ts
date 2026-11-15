@@ -107,28 +107,33 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const quoteId = `q_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`;
+    const isFounderSelfTest = Boolean(data.isFounderSelfTest);
+    const quoteId = isFounderSelfTest
+      ? 'q_founder_test'
+      : `q_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`;
     const addonNames = estimate.selectedAddons.map((a) => a.name);
 
-    await createQuoteRequest(d1, {
-      id: quoteId,
-      prospectId: prospect.id,
-      slug: prospect.slug,
-      customerName: data.customerName,
-      customerPhone: data.customerPhone,
-      customerPostal: data.customerPostal,
-      vehicleSize: data.vehicleSize,
-      packageId: estimate.packageObj.id,
-      packageName: estimate.packageObj.name,
-      conditionLevel: data.conditionLevel,
-      addonsSelectedNames: addonNames,
-      estimatedMin: estimate.estimatedMin,
-      estimatedMax: estimate.estimatedMax,
-      preferredTiming: data.preferredTiming,
-      notes: data.notes,
-      isPreviewTest: prospect.mode === 'preview',
-      ipHash,
-    });
+    if (!isFounderSelfTest) {
+      await createQuoteRequest(d1, {
+        id: quoteId,
+        prospectId: prospect.id,
+        slug: prospect.slug,
+        customerName: data.customerName,
+        customerPhone: data.customerPhone,
+        customerPostal: data.customerPostal,
+        vehicleSize: data.vehicleSize,
+        packageId: estimate.packageObj.id,
+        packageName: estimate.packageObj.name,
+        conditionLevel: data.conditionLevel,
+        addonsSelectedNames: addonNames,
+        estimatedMin: estimate.estimatedMin,
+        estimatedMax: estimate.estimatedMax,
+        preferredTiming: data.preferredTiming,
+        notes: data.notes,
+        isPreviewTest: prospect.mode === 'preview',
+        ipHash,
+      });
+    }
 
     const priceRange = `${prospect.currencySymbol}${estimate.estimatedMin} - ${prospect.currencySymbol}${estimate.estimatedMax}`;
     const addonsSummary = addonNames.length > 0 ? addonNames.join(', ') : 'None';
@@ -146,9 +151,42 @@ export const POST: APIRoute = async ({ request, locals }) => {
       `Est. Shown: ${priceRange}` +
       (data.notes ? `\nNotes: ${data.notes}` : '');
 
+    const emailSubject = `New ${priceRange} Mobile Detail Lead in ${data.customerPostal} (${data.customerName})`;
+    let emailDispatched = false;
+
+    const resendApiKey = locals.runtime.env.RESEND_API_KEY?.trim();
+    if (
+      prospect.mode === 'live' &&
+      !isFounderSelfTest &&
+      resendApiKey &&
+      prospect.ownerEmail
+    ) {
+      try {
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'QuotesDock Alerts <onboarding@resend.dev>',
+            to: [prospect.ownerEmail],
+            subject: emailSubject,
+            text: smsPreview,
+          }),
+          signal: AbortSignal.timeout(4000),
+        });
+        emailDispatched = res.ok;
+      } catch (emailErr) {
+        console.error('Resend notification failed:', emailErr);
+      }
+    }
+
     return jsonResponse({
       ok: true,
       mode: prospect.mode,
+      isFounderSelfTest,
+      emailDispatched,
       quote: {
         id: quoteId,
         customerName: data.customerName,
@@ -165,10 +203,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
         timingLabel,
         notes: data.notes,
       },
-      ownerPreview: {
-        smsPreview,
-        emailSubject: `New ${priceRange} Mobile Detail Lead in ${data.customerPostal} (${data.customerName})`,
-      },
+      ownerPreview:
+        prospect.mode === 'preview' || isFounderSelfTest
+          ? {
+              smsPreview,
+              emailSubject,
+            }
+          : null,
     });
   } catch (err) {
     console.error('Error in POST /api/quotes:', err);

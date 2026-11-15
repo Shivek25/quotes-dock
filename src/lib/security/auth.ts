@@ -34,6 +34,15 @@ export function getConfiguredStudioKey(env: { ADMIN_STUDIO_KEY?: string } | unde
   return env?.ADMIN_STUDIO_KEY?.trim() || '';
 }
 
+export function isLocalhostRequest(request: Request): boolean {
+  try {
+    const hostname = new URL(request.url).hostname.toLowerCase();
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+  } catch {
+    return false;
+  }
+}
+
 export function isStudioAuthorized(
   request: Request,
   cookies: AstroCookies,
@@ -41,9 +50,9 @@ export function isStudioAuthorized(
 ): boolean {
   const configuredKey = getConfiguredStudioKey(env);
 
-  // In local dev without a production secret configured, allow immediate local access
+  // Fail closed on any public/deployed domain if ADMIN_STUDIO_KEY is missing; only allow passwordless access on localhost
   if (!configuredKey) {
-    return true;
+    return isLocalhostRequest(request);
   }
 
   const headerKey = request.headers.get('x-studio-key')?.trim() || '';

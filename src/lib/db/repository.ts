@@ -21,7 +21,9 @@ import {
 } from './schema';
 import {
   buildDefaultDetailingConfig,
+  buildPackagesForBasePrice,
   INITIAL_SEED_PROSPECTS,
+  normalizeInstagramHandle,
   type SeedProspectBundle,
 } from './seed-data';
 
@@ -445,8 +447,8 @@ export async function createProspectWithDrafts(
     city: input.city,
     country: input.country,
     serviceArea: input.serviceArea,
-    phoneDisplay: input.phoneDisplay,
-    instagramHandle: input.instagramHandle,
+    phoneDisplay: input.phoneDisplay.trim() || 'Direct Text / DM',
+    instagramHandle: normalizeInstagramHandle(input.instagramHandle),
     ratingScore: input.ratingScore,
     reviewCount: input.reviewCount,
     personalizationNote: input.personalizationNote,
@@ -526,8 +528,12 @@ export async function updateProspectMode(
   d1: D1Database,
   input: {
     prospectId: string;
-    mode: ProspectMode;
+    mode?: ProspectMode;
     ownerEmail?: string;
+    phoneDisplay?: string;
+    serviceArea?: string;
+    baseSedanPrice?: number;
+    photoUrls?: string[];
   }
 ): Promise<ParsedProspect | null> {
   await ensureSchemaAndSeed(d1);
@@ -540,17 +546,73 @@ export async function updateProspectMode(
     .limit(1);
 
   if (existing.length === 0) return null;
+  const row = existing[0];
+  const country = (row.country === 'UK' ? 'UK' : 'US') as CountryCode;
+
+  let nextPackagesJson = row.packagesJson;
+  if (input.baseSedanPrice !== undefined) {
+    nextPackagesJson = JSON.stringify(buildPackagesForBasePrice(input.baseSedanPrice, country));
+  }
+
+  let nextGalleryJson = row.galleryJson;
+  if (input.photoUrls !== undefined) {
+    const parsedGallery = safeParseJson<JobProofItem[]>(row.galleryJson, []);
+    const updatedGallery = parsedGallery.map((item, idx) => {
+      const cleaned = input.photoUrls?.[idx]?.trim() || '';
+      return {
+        ...item,
+        imageUrl: cleaned || undefined,
+      };
+    });
+    nextGalleryJson = JSON.stringify(updatedGallery);
+  }
+
+  const nextPhone =
+    input.phoneDisplay !== undefined
+      ? input.phoneDisplay.trim() || 'Direct Text / DM'
+      : row.phoneDisplay;
 
   await db
     .update(prospects)
     .set({
-      mode: input.mode,
+      mode: input.mode ?? row.mode,
       ownerEmail:
         input.ownerEmail !== undefined
-          ? input.ownerEmail || null
-          : existing[0].ownerEmail,
+          ? input.ownerEmail.trim() || null
+          : row.ownerEmail,
+      phoneDisplay: nextPhone,
+      serviceArea:
+        input.serviceArea !== undefined && input.serviceArea.trim()
+          ? input.serviceArea.trim()
+          : row.serviceArea,
+      packagesJson: nextPackagesJson,
+      galleryJson: nextGalleryJson,
     })
     .where(eq(prospects.id, input.prospectId));
 
   return getProspectById(d1, input.prospectId);
+}
+
+export async function deleteProspectById(
+  d1: D1Database,
+  prospectId: string
+): Promise<boolean> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+
+  const existing = await db
+    .select({ id: prospects.id })
+    .from(prospects)
+    .where(eq(prospects.id, prospectId))
+    .limit(1);
+
+  if (existing.length === 0) return false;
+
+  await d1.batch([
+    d1.prepare('DELETE FROM quote_requests WHERE prospect_id = ?').bind(prospectId),
+    d1.prepare('DELETE FROM outreach_drafts WHERE prospect_id = ?').bind(prospectId),
+    d1.prepare('DELETE FROM prospects WHERE id = ?').bind(prospectId),
+  ]);
+
+  return true;
 }
