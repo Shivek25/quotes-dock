@@ -33,6 +33,8 @@ export interface JobProofItem {
   beforeNote: string;
   afterNote: string;
   accentHex: string;
+  imageUrl?: string;
+  beforeImageUrl?: string;
 }
 
 export const prospects = sqliteTable('prospects', {

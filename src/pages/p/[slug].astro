@@ -15,6 +15,18 @@ const defaultPkg =
 const initialMin = defaultPkg ? defaultPkg.prices.sedan : 145;
 const initialMax = initialMin + 20;
 const isPreview = prospect?.mode === 'preview';
+const isFounderSelfTest = Astro.url.searchParams.get('founder') === '1';
+
+const rawPhone = prospect?.phoneDisplay ?? '';
+const phoneDigits = rawPhone.replace(/\D/g, '');
+const hasDialablePhone =
+  Boolean(rawPhone) &&
+  phoneDigits.length >= 7 &&
+  !rawPhone.includes('555-') &&
+  !rawPhone.toLowerCase().includes('direct');
+const telHref = hasDialablePhone ? `tel:${rawPhone.replace(/[^+\d]/g, '')}` : '';
+const isUk = prospect?.country === 'UK';
+const foundingSetupText = isUk ? '£39 founding setup + £12/mo' : '$50 founding setup + $15/mo';
 
 const glossReadings = [
   { before: '64.2', after: '98.6', delta: '+34.4', beforeWidth: '64%', afterWidth: '98%' },
@@ -31,30 +43,25 @@ const glossReadings = [
     <BaseLayout
       title="Preview Not Found | QuotesDock"
       description="This detailing preview page could not be found."
+      noindex={true}
     >
       <main class="carbon-mesh mx-auto flex min-h-screen flex-col items-center justify-center px-6 py-16 text-center">
         <div class="glass-panel w-full max-w-lg rounded-2xl p-8">
           <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#00F2FE]">
-            QuotesDock Preview
+            QuotesDock
           </span>
           <h1 class="mt-4 text-2xl font-bold text-white">
-            This preview link is not active
+            This detailing quote link is not active
           </h1>
           <p class="mt-3 text-sm leading-relaxed text-[#94A3B8]">
-            Check that the business slug is spelled correctly, or open your Founder Studio to generate a new detailer preview.
+            Check the link address with your mobile detailer, or visit the QuotesDock homepage to explore our 60-second driveway quote template.
           </p>
           <div class="mt-6 flex flex-wrap justify-center gap-3">
             <a
               href="/"
-              class="rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+              class="rounded-xl bg-[#00F2FE] px-5 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE]"
             >
-              View Live Demos
-            </a>
-            <a
-              href="/studio"
-              class="rounded-xl bg-[#00F2FE] px-4 py-2.5 text-sm font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE]"
-            >
-              Open Founder Studio
+              Return to QuotesDock
             </a>
           </div>
         </div>
@@ -64,6 +71,7 @@ const glossReadings = [
     <BaseLayout
       title={`${prospect.businessName} | Instant 60-Second Driveway Quote`}
       description={prospect.tagline}
+      noindex={isPreview}
     >
       {isPreview && (
         <div class="border-b border-cyan-400/30 bg-[#061A26] px-4 py-2 text-xs text-cyan-50 sm:text-sm">
@@ -74,8 +82,10 @@ const glossReadings = [
                 <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
               </span>
               <span class="leading-snug">
-                <strong class="text-[#00F2FE]">Live Custom Preview</strong> prepared for{' '}
-                <strong>{prospect.businessName}</strong> ({prospect.city}) - test your 60-second quote configurator below
+                <strong class="text-[#00F2FE]">
+                  {isFounderSelfTest ? 'Founder Test Mode' : 'Live Custom Preview'}
+                </strong>{' '}
+                prepared for <strong>{prospect.businessName}</strong> ({prospect.city}) - sample prices shown for demonstration until confirmed by owner
               </span>
             </div>
             <a
@@ -127,12 +137,18 @@ const glossReadings = [
           </div>
 
           <div class="flex shrink-0 items-center gap-2.5">
-            <a
-              href={`tel:${prospect.phoneDisplay.replace(/[^+\d]/g, '')}`}
-              class="hidden rounded-lg border border-slate-700/80 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white sm:inline-flex"
-            >
-              {prospect.phoneDisplay}
-            </a>
+            {hasDialablePhone ? (
+              <a
+                href={telHref}
+                class="hidden rounded-lg border border-slate-700/80 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white sm:inline-flex"
+              >
+                {prospect.phoneDisplay}
+              </a>
+            ) : (
+              <span class="hidden rounded-lg border border-slate-700/80 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-300 sm:inline-flex">
+                Direct DM / Text Dispatch
+              </span>
+            )}
             <a
               href="#quote-calculator"
               class="rounded-lg bg-[#00F2FE] px-4 py-2 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm sm:text-sm"
@@ -773,6 +789,16 @@ const glossReadings = [
                   data-proof-card={item.id}
                 >
                   <div>
+                    {item.imageUrl && (
+                      <div class="mb-4 aspect-[16/10] overflow-hidden rounded-xl border border-slate-800 bg-[#070A0F]">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          loading="lazy"
+                          class="h-full w-full object-cover"
+                        />
+                      </div>
+                    )}
                     <div class="flex items-center justify-between gap-2">
                       <span class="text-xs font-bold uppercase tracking-wider text-[#00F2FE]">
                         Job Proof #0{index + 1}
@@ -958,10 +984,12 @@ const glossReadings = [
                 <h3 id="modal-heading" class="text-lg font-bold text-white">
                   {isPreview
                     ? 'Test Quote Logged (Preview Simulator)'
-                    : 'Quote Request Received'}
+                    : `Quote Request Sent to ${prospect.businessName}`}
                 </h3>
                 <p class="text-xs text-[#94A3B8]">
-                  {prospect.businessName} ({prospect.city})
+                  {isPreview
+                    ? `${prospect.businessName} (${prospect.city})`
+                    : 'We received your vehicle details and will text or call you shortly to confirm your driveway slot.'}
                 </p>
               </div>
             </div>
@@ -979,24 +1007,52 @@ const glossReadings = [
             class="mt-5 rounded-xl border border-slate-700/80 bg-[#0A0C10] p-4 text-sm text-white"
           />
 
-          <div class="mt-5">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-[#00F2FE]">
-                What the Business Owner Receives Instantly:
-              </span>
-              <span class="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 ring-1 ring-emerald-400/30">
-                Instant Lead Alert
-              </span>
-            </div>
-            <pre
-              id="modal-owner-sms"
-              class="mt-2 whitespace-pre-wrap rounded-xl border border-slate-800 bg-[#06080C] p-4 font-mono text-xs leading-relaxed text-cyan-100"
-            />
-          </div>
+          {isPreview ? (
+            <>
+              <div class="mt-5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-[#00F2FE]">
+                    What the Business Owner Receives Instantly:
+                  </span>
+                  <span class="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 ring-1 ring-emerald-400/30">
+                    Instant Lead Alert
+                  </span>
+                </div>
+                <pre
+                  id="modal-owner-sms"
+                  class="mt-2 whitespace-pre-wrap rounded-xl border border-slate-800 bg-[#06080C] p-4 font-mono text-xs leading-relaxed text-cyan-100"
+                />
+              </div>
 
-          {isPreview && (
-            <div class="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3.5 text-xs leading-relaxed text-amber-100">
-              <strong>Preview Mode Safety:</strong> No automated email or SMS was sent. Once {prospect.businessName} activates this page ($50 founding setup + $15/mo), real customer leads route straight to your phone/inbox with your real job photos live.
+              <div class="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3.5 text-xs leading-relaxed text-amber-100">
+                <strong>Preview Mode Safety:</strong> No automated email or SMS was sent. Once {prospect.businessName} activates this page ({foundingSetupText}), real customer leads route straight to your phone/inbox with your real job photos live.
+              </div>
+            </>
+          ) : (
+            <div class="mt-5 rounded-xl border border-cyan-400/30 bg-[#0A0C10] p-4">
+              <div class="text-xs font-bold uppercase tracking-wider text-[#00F2FE]">
+                Want Priority Dispatch? Text Your Quote Directly
+              </div>
+              <p class="mt-1.5 text-xs leading-relaxed text-[#94A3B8]">
+                Zero upfront payment is due today. Tap below to open a pre-filled text message directly to {prospect.businessName}{!hasDialablePhone ? ` or DM ${prospect.instagramHandle}` : ''}.
+              </p>
+              <div class="mt-3.5 flex flex-wrap gap-2.5">
+                <a
+                  id="modal-live-sms-link"
+                  href="#"
+                  class="inline-flex items-center justify-center rounded-xl bg-[#00F2FE] px-4 py-2.5 text-xs font-bold text-[#06121A] transition-colors hover:bg-[#4FACFE] cyan-glow-sm"
+                >
+                  Text My Quote to {prospect.businessName} Now
+                </a>
+                {hasDialablePhone && (
+                  <a
+                    href={telHref}
+                    class="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-xs font-semibold text-slate-100 transition-colors hover:border-cyan-400/50 hover:text-white"
+                  >
+                    Call {prospect.phoneDisplay}
+                  </a>
+                )}
+              </div>
             </div>
           )}
 
@@ -1018,6 +1074,8 @@ const glossReadings = [
           currencySymbol: prospect.currencySymbol,
           defaultPackageId: defaultPkg?.id ?? '',
           defaultPackageName: defaultPkg?.name ?? '',
+          businessName: prospect.businessName,
+          dialableDigits: hasDialablePhone ? phoneDigits : '',
         }}
       >
         (function () {
@@ -1047,8 +1105,10 @@ const glossReadings = [
           const modal = document.getElementById('quote-success-modal');
           const modalSummary = document.getElementById('modal-customer-summary');
           const modalSms = document.getElementById('modal-owner-sms');
+          const modalLiveSmsLink = document.getElementById('modal-live-sms-link');
           const closeModalBtn = document.getElementById('close-modal-btn');
           const doneModalBtn = document.getElementById('done-modal-btn');
+          const isFounderSelfTest = new URLSearchParams(window.location.search).get('founder') === '1';
 
           function pulsePrice(el) {
             if (!el) return;
@@ -1239,6 +1299,11 @@ const glossReadings = [
           modal?.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
           });
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+              closeModal();
+            }
+          });
 
           form?.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1265,6 +1330,7 @@ const glossReadings = [
               preferredTiming: String(formData.get('preferredTiming') || 'this_week'),
               notes: String(formData.get('notes') || ''),
               website_url: String(formData.get('website_url') || ''),
+              isFounderSelfTest,
             };
 
             const originalText = submitBtn.textContent;
@@ -1283,10 +1349,17 @@ const glossReadings = [
                 errorBox.textContent =
                   result.error || 'Please check your name, phone number, and postal code.';
                 errorBox.classList.remove('hidden');
+                if (result.field) {
+                  const invalidEl = document.getElementById(result.field);
+                  if (invalidEl) {
+                    invalidEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    invalidEl.focus();
+                  }
+                }
                 return;
               }
 
-              if (result.quote && modalSummary && modalSms && modal) {
+              if (result.quote && modalSummary && modal) {
                 modalSummary.innerHTML = '';
                 const line1 = document.createElement('div');
                 line1.className = 'font-bold text-white';
@@ -1304,10 +1377,34 @@ const glossReadings = [
                 modalSummary.appendChild(line2);
                 modalSummary.appendChild(line3);
 
-                modalSms.textContent = result.ownerPreview?.smsPreview || '';
+                if (modalSms) {
+                  modalSms.textContent = result.ownerPreview?.smsPreview || '';
+                }
+                if (modalLiveSmsLink) {
+                  const smsBody =
+                    `Hi ${businessName}, I just submitted a 60s quote request on your page:\n` +
+                    `Vehicle: ${result.quote.vehicleLabel}\n` +
+                    `Package: ${result.quote.packageName}\n` +
+                    `Est: ${result.quote.priceRange}\n` +
+                    `Area: ${result.quote.customerPostal} | Timing: ${result.quote.timingLabel}` +
+                    (result.quote.notes ? `\nNotes: ${result.quote.notes}` : '');
+                  modalLiveSmsLink.setAttribute(
+                    'href',
+                    `sms:${dialableDigits}?body=${encodeURIComponent(smsBody)}`
+                  );
+                }
+
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
                 form.reset();
+                addonCheckboxes.forEach((cb) => {
+                  const parentLabel = cb.closest('.addon-label');
+                  if (parentLabel) {
+                    parentLabel.className =
+                      'addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0A0C10]/65 p-3.5 hover:border-cyan-400/50';
+                  }
+                });
+                updatePricingDisplay();
               }
             } catch {
               errorBox.textContent =

@@ -203,11 +203,37 @@ export function buildDefaultGallery(city: string, country: CountryCode): JobProo
   ];
 }
 
+export const SANDBOX_DEMO_SLUGS = [
+  'apex-gloss-austin',
+  'velvet-foam-charlotte',
+  'cotswold-valet-uk',
+] as const;
+
+export function isSandboxDemoSlug(slug: string): boolean {
+  return (SANDBOX_DEMO_SLUGS as readonly string[]).includes(slug);
+}
+
+export function normalizeInstagramHandle(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return '@detailer';
+
+  // Extract handle if user pasted a full Instagram or Facebook profile URL
+  const cleanedUrl = trimmed
+    .replace(/^https?:\/\/(www\.)?(instagram\.com|instagr\.am|facebook\.com|fb\.com)\//i, '')
+    .split(/[?#]/)[0]
+    .replace(/^\/+|\/+$/g, '');
+
+  const firstSegment = cleanedUrl.split('/')[0]?.trim() || trimmed;
+  if (!firstSegment) return '@detailer';
+  return firstSegment.startsWith('@') ? firstSegment : `@${firstSegment}`;
+}
+
 export function buildOutreachDrafts(params: {
   prospectId: string;
   slug: string;
   businessName: string;
   city: string;
+  country?: CountryCode;
   instagramHandle: string;
   personalizationNote: string;
 }): Array<{
@@ -219,9 +245,10 @@ export function buildOutreachDrafts(params: {
   approvalStatus: 'draft';
 }> {
   const previewPath = `/p/${params.slug}`;
-  const cleanHandle = params.instagramHandle.startsWith('@')
-    ? params.instagramHandle
-    : `@${params.instagramHandle}`;
+  const cleanHandle = normalizeInstagramHandle(params.instagramHandle);
+  const isUk = params.country === 'UK';
+  const setupLabel = isUk ? '£39 one-time founding setup' : '$50 one-time founding setup';
+  const fullOfferLabel = isUk ? '£39 one-time (+ £12/mo)' : '$50 one-time (+ $15/mo)';
 
   return [
     {
@@ -233,7 +260,7 @@ export function buildOutreachDrafts(params: {
       messageBody:
         `Hey ${params.businessName} team - ${params.personalizationNote}. ` +
         `I put together a quick mobile quote page preview for your ${params.city} jobs so customers can pick their vehicle size, see an estimate range, and send you a job request in 60 seconds: ${previewPath}\n\n` +
-        `Try submitting a test quote on it to see the instant notification summary. Zero obligation - if you like it, I can swap in 6 of your real job photos and make it live this week for a $50 one-time founding setup.`,
+        `Try submitting a test quote on it to see the instant notification summary. Zero obligation - if you like it, I can swap in 6 of your real job photos and make it live this week for a ${setupLabel}.`,
     },
     {
       id: `${params.prospectId}-fb`,
@@ -258,7 +285,7 @@ export function buildOutreachDrafts(params: {
         `${params.personalizationNote}, so I put together a working mobile quote-page preview for you in ${params.city}:\n` +
         `${previewPath}\n\n` +
         `When a customer picks their vehicle size and package, it shows an estimated price range and sends the lead directly to you. You can test the form right on that link to preview how leads arrive.\n\n` +
-        `If it looks useful, our founding-client launch setup is $50 one-time (+ $15/mo) including up to 6 of your real job photos and custom edits in 24 hours. Want me to swap your photos in?\n\n` +
+        `If it looks useful, our founding-client launch setup is ${fullOfferLabel} including up to 6 of your real job photos and custom edits in 24 hours. Want me to swap your photos in?\n\n` +
         `Best,\nQuotesDock`,
     },
   ];
@@ -322,7 +349,8 @@ export function buildDefaultDetailingConfig(input: {
       slug: input.slug,
       businessName: input.businessName,
       city: input.city,
-      instagramHandle: input.instagramHandle,
+      country: input.country,
+      instagramHandle: normalizeInstagramHandle(input.instagramHandle),
       personalizationNote: input.personalizationNote,
     }),
   };

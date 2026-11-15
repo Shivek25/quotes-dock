@@ -29,6 +29,7 @@ export const quoteSubmissionSchema = z.object({
   preferredTiming: z.enum(['this_week', 'next_week', 'flexible']),
   notes: z.string().trim().max(400).optional().default(''),
   website_url: z.string().max(0).optional().default(''),
+  isFounderSelfTest: z.boolean().optional().default(false),
 });
 
 export const newProspectSchema = z.object({
@@ -45,8 +46,8 @@ export const newProspectSchema = z.object({
   city: z.string().trim().min(2, 'City is required').max(80),
   country: z.enum(['US', 'UK']).default('US'),
   serviceArea: z.string().trim().min(3, 'Service area is required').max(160),
-  phoneDisplay: z.string().trim().min(5, 'Phone number is required').max(30),
-  instagramHandle: z.string().trim().min(2, 'Instagram or Facebook handle is required').max(60),
+  phoneDisplay: z.string().trim().max(30).optional().default(''),
+  instagramHandle: z.string().trim().min(2, 'Instagram or Facebook handle is required').max(160),
   ratingScore: z.string().trim().min(1).max(10).default('4.9'),
   reviewCount: z.coerce.number().int().min(1).max(10000).default(45),
   personalizationNote: z
@@ -76,6 +77,38 @@ export const updateOutreachDraftSchema = z.object({
 
 export const updateProspectModeSchema = z.object({
   prospectId: z.string().trim().min(2).max(80),
-  mode: z.enum(['preview', 'live']),
-  ownerEmail: z.string().trim().email().optional().or(z.literal('')),
+  mode: z.enum(['preview', 'live']).optional(),
+  ownerEmail: z
+    .string()
+    .trim()
+    .email('Please enter a valid owner email address')
+    .optional()
+    .or(z.literal('')),
+  phoneDisplay: z.string().trim().max(30).optional(),
+  serviceArea: z.string().trim().min(3, 'Service area is too short').max(160).optional(),
+  baseSedanPrice: z.preprocess(
+    (val) => (val === '' || val === null || val === undefined ? undefined : val),
+    z.coerce.number().int().min(45).max(1000).optional()
+  ),
+  photoUrls: z
+    .array(
+      z
+        .string()
+        .trim()
+        .max(500)
+        .refine(
+          (val) =>
+            val === '' ||
+            val.startsWith('/') ||
+            val.startsWith('https://') ||
+            val.startsWith('http://'),
+          'Photo URLs must start with https://, http://, or /'
+        )
+    )
+    .max(6)
+    .optional(),
+});
+
+export const deleteProspectSchema = z.object({
+  prospectId: z.string().trim().min(2).max(80),
 });
