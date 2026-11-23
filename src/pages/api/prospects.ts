@@ -2,9 +2,13 @@ import type { APIRoute } from 'astro';
 import {
   createProspectWithDrafts,
   deleteProspectById,
+  ProspectValidationError,
   updateProspectMode,
 } from '../../lib/db/repository';
-import { isStudioAuthorized } from '../../lib/security/auth';
+import {
+  isSameOriginStudioRequest,
+  isStudioAuthorized,
+} from '../../lib/security/auth';
 import {
   deleteProspectSchema,
   newProspectSchema,
@@ -23,8 +27,11 @@ function jsonResponse(payload: unknown, status = 200): Response {
 
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const env = locals.runtime.env;
-  if (!isStudioAuthorized(request, cookies, env)) {
+  if (!(await isStudioAuthorized(request, cookies, env))) {
     return jsonResponse({ ok: false, error: 'Unauthorized studio access.' }, 401);
+  }
+  if (!isSameOriginStudioRequest(request, env)) {
+    return jsonResponse({ ok: false, error: 'Invalid request origin.' }, 403);
   }
 
   try {
@@ -73,8 +80,11 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
 
 export const PATCH: APIRoute = async ({ request, cookies, locals }) => {
   const env = locals.runtime.env;
-  if (!isStudioAuthorized(request, cookies, env)) {
+  if (!(await isStudioAuthorized(request, cookies, env))) {
     return jsonResponse({ ok: false, error: 'Unauthorized studio access.' }, 401);
+  }
+  if (!isSameOriginStudioRequest(request, env)) {
+    return jsonResponse({ ok: false, error: 'Invalid request origin.' }, 403);
   }
 
   try {
@@ -107,6 +117,9 @@ export const PATCH: APIRoute = async ({ request, cookies, locals }) => {
 
     return jsonResponse({ ok: true, prospect: updated });
   } catch (err) {
+    if (err instanceof ProspectValidationError) {
+      return jsonResponse({ ok: false, error: err.message }, 400);
+    }
     console.error('Error in PATCH /api/prospects:', err);
     return jsonResponse(
       { ok: false, error: 'Could not update prospect details.' },
@@ -117,8 +130,11 @@ export const PATCH: APIRoute = async ({ request, cookies, locals }) => {
 
 export const DELETE: APIRoute = async ({ request, cookies, locals }) => {
   const env = locals.runtime.env;
-  if (!isStudioAuthorized(request, cookies, env)) {
+  if (!(await isStudioAuthorized(request, cookies, env))) {
     return jsonResponse({ ok: false, error: 'Unauthorized studio access.' }, 401);
+  }
+  if (!isSameOriginStudioRequest(request, env)) {
+    return jsonResponse({ ok: false, error: 'Invalid request origin.' }, 403);
   }
 
   try {

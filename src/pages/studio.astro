@@ -6,9 +6,11 @@ import {
 } from '../lib/db/repository';
 import { isSandboxDemoSlug } from '../lib/db/seed-data';
 import {
+  deriveStudioSessionToken,
   getConfiguredStudioKey,
   isStudioAuthorized,
   STUDIO_COOKIE_NAME,
+  verifyStudioPassword,
 } from '../lib/security/auth';
 
 const env = Astro.locals.runtime.env;
@@ -23,8 +25,9 @@ if (Astro.url.searchParams.get('logout') === '1') {
 if (Astro.request.method === 'POST' && configuredKey) {
   const formData = await Astro.request.formData().catch(() => null);
   const submittedKey = String(formData?.get('studioKey') || '').trim();
-  if (submittedKey && submittedKey === configuredKey) {
-    Astro.cookies.set(STUDIO_COOKIE_NAME, submittedKey, {
+  if (verifyStudioPassword(submittedKey, configuredKey)) {
+    const sessionToken = await deriveStudioSessionToken(configuredKey);
+    Astro.cookies.set(STUDIO_COOKIE_NAME, sessionToken, {
       path: '/',
       httpOnly: true,
       sameSite: 'lax',
@@ -36,7 +39,7 @@ if (Astro.request.method === 'POST' && configuredKey) {
   authError = 'That studio key did not match ADMIN_STUDIO_KEY.';
 }
 
-const authorized = isStudioAuthorized(Astro.request, Astro.cookies, env);
+const authorized = await isStudioAuthorized(Astro.request, Astro.cookies, env);
 const items = authorized ? await listProspectsWithStats(env.DB) : [];
 const leadCandidates = authorized ? await listLeadCandidates(env.DB) : [];
 
@@ -76,6 +79,33 @@ const statusLabels: Record<string, string> = {
   approved: 'Approved Ready',
   sent_manually: 'Sent Manually',
   replied: 'Owner Replied',
+};
+
+const deliveryStatusBadges: Record<string, { label: string; classes: string }> = {
+  sent: {
+    label: 'Email Sent',
+    classes: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/40',
+  },
+  failed: {
+    label: 'Alert Failed',
+    classes: 'bg-red-500/20 text-red-200 border-red-400/40',
+  },
+  config_missing: {
+    label: 'Resend Config Missing',
+    classes: 'bg-amber-500/20 text-amber-200 border-amber-400/40',
+  },
+  no_owner_email: {
+    label: 'Missing Owner Email',
+    classes: 'bg-red-500/20 text-red-200 border-red-400/40',
+  },
+  preview_only: {
+    label: 'Preview Test',
+    classes: 'bg-sky-400/15 text-[#7DD3FC] border-sky-400/35',
+  },
+  not_applicable: {
+    label: 'Logged',
+    classes: 'bg-slate-800 text-slate-300 border-slate-600',
+  },
 };
 ---
 
@@ -612,7 +642,7 @@ const statusLabels: Record<string, string> = {
           ) : (
             <div class="space-y-6">
               {realItems.map(({ prospect, drafts, recentQuotes, previewTestQuotes, totalQuotes }) => {
-                const fullPkg = prospect.packages.find((p) => p.id === 'pkg-full') ?? prospect.packages[1] ?? prospect.packages[0];
+                const fullPkg = prospect.packages.find((p) => p.id === 'pkg-full-reset') ?? prospect.packages[1] ?? prospect.packages[0];
                 const currentBasePrice = fullPkg ? fullPkg.prices.sedan : 145;
 
                 return (
@@ -638,6 +668,11 @@ const statusLabels: Record<string, string> = {
                           >
                             {prospect.mode === 'live' ? 'Live Client Mode' : 'Preview Mode'}
                           </span>
+                          {prospect.mode === 'live' && !prospect.ownerEmail && (
+                            <span class="rounded-full bg-red-500/20 px-2.5 py-0.5 text-xs font-bold text-red-200 ring-1 ring-red-400/40">
+                              Missing Owner Alert Email
+                            </span>
+                          )}
                           {previewTestQuotes > 0 ? (
                             <span class="rounded-full bg-amber-400/20 px-2.5 py-0.5 text-xs font-bold text-amber-200 ring-1 ring-amber-400/40">
                               Owner Tested Quote Form ({previewTestQuotes} test{previewTestQuotes > 1 ? 's' : ''})
@@ -798,16 +833,35 @@ const statusLabels: Record<string, string> = {
                           Recent Quote Submissions ({recentQuotes.length} latest)
                         </div>
                         <ul class="mt-2 space-y-1.5 text-xs text-slate-200">
-                          {recentQuotes.map((q) => (
-                            <li class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#0C1017]/90 px-3 py-2">
-                              <span>
-                                <strong class="text-slate-50">{q.customerName}</strong> ({q.customerPhone}) · {q.vehicleSize.toUpperCase()} · {q.packageName}
-                              </span>
-                              <span class="font-display tabular-nums font-bold text-[#38BDF8]">
-                                {prospect.currencySymbol}{q.estimatedMin} - {prospect.currencySymbol}{q.estimatedMax}
-                              </span>
-                            </li>
-                          ))}
+                          {recentQuotes.map((q) => {
+                            const deliveryMeta =
+                              deliveryStatusBadges[q.deliveryStatus] ||
+                              deliveryStatusBadges.not_applicable;
+                            return (
+                              <li class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#0C1017]/90 px-3 py-2">
+                                <div class="min-w-0">
+                                  <span>
+                                    <strong class="text-slate-50">{q.customerName}</strong> ({q.customerPhone}) · {q.vehicleSize.toUpperCase()} · {q.packageName}
+                                  </span>
+                                  {q.deliveryError && (
+                                    <div class="mt-0.5 text-[11px] text-red-300">
+                                      Alert error: {q.deliveryError}
+                                    </div>
+                                  )}
+                                </div>
+                                <div class="flex items-center gap-2">
+                                  <span
+                                    class={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${deliveryMeta.classes}`}
+                                  >
+                                    {deliveryMeta.label}
+                                  </span>
+                                  <span class="font-display tabular-nums font-bold text-[#38BDF8]">
+                                    {prospect.currencySymbol}{q.estimatedMin} - {prospect.currencySymbol}{q.estimatedMax}
+                                  </span>
+                                </div>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
                     )}
@@ -1232,7 +1286,12 @@ const statusLabels: Record<string, string> = {
 
           const configuredOrigin = (domainInput?.value || window.location.origin).replace(/\/+$/, '');
           const fullUrl = `${configuredOrigin}/p/${slug}`;
-          const copyText = textarea.value.replaceAll(`/p/${slug}`, fullUrl);
+          const escapedSlug = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const relativePathRegex = new RegExp(
+            `(^|[\\s(>])\\/p\\/${escapedSlug}(?=[\\s)<.,!?]|$)`,
+            'g'
+          );
+          const copyText = textarea.value.replace(relativePathRegex, `$1${fullUrl}`);
           const isLocalUrl =
             configuredOrigin.includes('localhost') || configuredOrigin.includes('127.0.0.1');
 
@@ -1274,10 +1333,21 @@ const statusLabels: Record<string, string> = {
                 mode: nextMode,
               }),
             });
-            const data = await res.json();
-            if (res.ok && data.ok) {
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.ok) {
               window.location.reload();
+            } else {
+              showToast(data?.error || 'Could not update client mode.', 'error');
+              const card = btn.closest('[data-prospect-card]');
+              const detailsDrawer = card?.querySelector('details');
+              if (detailsDrawer) {
+                detailsDrawer.setAttribute('open', 'true');
+                const emailInput = detailsDrawer.querySelector('input[name="ownerEmail"]');
+                if (emailInput) emailInput.focus();
+              }
             }
+          } catch {
+            showToast('Network error updating client mode.', 'error');
           } finally {
             btn.removeAttribute('disabled');
           }

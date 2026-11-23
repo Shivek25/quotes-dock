@@ -482,6 +482,7 @@ export const INITIAL_SEED_PROSPECTS: SeedProspectBundle[] = [
       slug: 'cotswold-valet-uk',
       businessName: 'Cotswold Mobile Valet & Detail',
       city: 'Cheltenham, UK',
+      country: 'UK',
       instagramHandle: '@cotswoldvalet.uk',
       personalizationNote: 'Loved the Range Rover machine polish clip on @cotswoldvalet.uk and noticed prospects currently have to DM back and forth just to get a rough valet price',
     }),

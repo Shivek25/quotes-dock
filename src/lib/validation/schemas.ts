@@ -100,9 +100,8 @@ export const updateProspectModeSchema = z.object({
           (val) =>
             val === '' ||
             val.startsWith('/') ||
-            val.startsWith('https://') ||
-            val.startsWith('http://'),
-          'Photo URLs must start with https://, http://, or /'
+            val.startsWith('https://'),
+          'Photo URLs must start with https:// or /'
         )
     )
     .max(6)
