@@ -4,6 +4,9 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   output: 'server',
+  session: {
+    driver: 'memory',
+  },
   adapter: cloudflare({
     imageService: 'compile',
     platformProxy: {

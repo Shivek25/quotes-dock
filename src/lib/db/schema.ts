@@ -6,6 +6,13 @@ export type CountryCode = 'US' | 'UK';
 export type ProspectMode = 'preview' | 'live';
 export type OutreachChannel = 'instagram_dm' | 'facebook_msg' | 'email';
 export type OutreachApprovalStatus = 'draft' | 'approved' | 'sent_manually' | 'replied';
+export type QuoteDeliveryStatus =
+  | 'not_applicable'
+  | 'preview_only'
+  | 'sent'
+  | 'failed'
+  | 'config_missing'
+  | 'no_owner_email';
 
 export interface DetailingPackage {
   id: string;
@@ -83,6 +90,8 @@ export const quoteRequests = sqliteTable('quote_requests', {
   preferredTiming: text('preferred_timing').notNull(),
   notes: text('notes'),
   isPreviewTest: integer('is_preview_test').notNull().default(1),
+  deliveryStatus: text('delivery_status').notNull().default('not_applicable'),
+  deliveryError: text('delivery_error'),
   ipHash: text('ip_hash').notNull(),
   createdAt: text('created_at').notNull(),
 });

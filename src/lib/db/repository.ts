@@ -20,9 +20,17 @@ import {
   type ParsedProspect,
   type ProspectMode,
   type ProspectRow,
+  type QuoteDeliveryStatus,
   type QuoteRequestRow,
   type VehicleSizeKey,
 } from './schema';
+
+export class ProspectValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ProspectValidationError';
+  }
+}
 import {
   buildDefaultDetailingConfig,
   buildPackagesForBasePrice,
@@ -128,6 +136,97 @@ async function insertSeedBundle(d1: D1Database, bundle: SeedProspectBundle): Pro
   }
 }
 
+async function createFallbackSchema(d1: D1Database): Promise<void> {
+  await d1.batch([
+    d1.prepare(`CREATE TABLE IF NOT EXISTS prospects (
+      id TEXT PRIMARY KEY NOT NULL,
+      slug TEXT NOT NULL UNIQUE,
+      business_name TEXT NOT NULL,
+      niche TEXT NOT NULL DEFAULT 'mobile_detailing',
+      city TEXT NOT NULL,
+      country TEXT NOT NULL DEFAULT 'US',
+      currency_symbol TEXT NOT NULL DEFAULT '$',
+      postal_label TEXT NOT NULL DEFAULT 'Zip Code',
+      service_area TEXT NOT NULL,
+      phone_display TEXT NOT NULL,
+      instagram_handle TEXT NOT NULL,
+      rating_score TEXT NOT NULL,
+      review_count INTEGER NOT NULL,
+      rating_source TEXT NOT NULL,
+      tagline TEXT NOT NULL,
+      hero_headline TEXT NOT NULL,
+      hero_subheadline TEXT NOT NULL,
+      turnaround_badge TEXT NOT NULL,
+      packages_json TEXT NOT NULL,
+      addons_json TEXT NOT NULL,
+      gallery_json TEXT NOT NULL,
+      trust_points_json TEXT NOT NULL,
+      personalization_note TEXT NOT NULL,
+      mode TEXT NOT NULL DEFAULT 'preview',
+      owner_email TEXT,
+      created_at TEXT NOT NULL
+    )`),
+    d1.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_prospects_slug ON prospects (slug)`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS quote_requests (
+      id TEXT PRIMARY KEY NOT NULL,
+      prospect_id TEXT NOT NULL,
+      slug TEXT NOT NULL,
+      customer_name TEXT NOT NULL,
+      customer_phone TEXT NOT NULL,
+      customer_postal TEXT NOT NULL,
+      vehicle_size TEXT NOT NULL,
+      package_id TEXT NOT NULL,
+      package_name TEXT NOT NULL,
+      condition_level TEXT NOT NULL,
+      addons_selected_json TEXT NOT NULL,
+      estimated_min INTEGER NOT NULL,
+      estimated_max INTEGER NOT NULL,
+      preferred_timing TEXT NOT NULL,
+      notes TEXT,
+      is_preview_test INTEGER NOT NULL DEFAULT 1,
+      delivery_status TEXT NOT NULL DEFAULT 'not_applicable',
+      delivery_error TEXT,
+      ip_hash TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    )`),
+    d1.prepare(`CREATE INDEX IF NOT EXISTS idx_quote_requests_prospect_created ON quote_requests (prospect_id, created_at)`),
+    d1.prepare(`CREATE INDEX IF NOT EXISTS idx_quote_requests_ip_created ON quote_requests (ip_hash, created_at)`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS outreach_drafts (
+      id TEXT PRIMARY KEY NOT NULL,
+      prospect_id TEXT NOT NULL,
+      slug TEXT NOT NULL,
+      channel TEXT NOT NULL,
+      recipient_handle TEXT NOT NULL,
+      personalization_note TEXT NOT NULL,
+      message_body TEXT NOT NULL,
+      approval_status TEXT NOT NULL DEFAULT 'draft',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`),
+    d1.prepare(`CREATE INDEX IF NOT EXISTS idx_outreach_drafts_prospect_status ON outreach_drafts (prospect_id, approval_status)`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS lead_candidates (
+      id TEXT PRIMARY KEY NOT NULL,
+      dedupe_key TEXT NOT NULL UNIQUE,
+      business_name TEXT NOT NULL,
+      city TEXT NOT NULL,
+      country TEXT NOT NULL DEFAULT 'US',
+      service_area TEXT NOT NULL,
+      phone_display TEXT NOT NULL DEFAULT '',
+      instagram_handle TEXT NOT NULL,
+      website_url TEXT NOT NULL DEFAULT '',
+      rating_score TEXT NOT NULL DEFAULT '4.9',
+      review_count INTEGER NOT NULL DEFAULT 35,
+      fit_score INTEGER NOT NULL DEFAULT 75,
+      fit_signals_json TEXT NOT NULL DEFAULT '[]',
+      has_instant_quote INTEGER NOT NULL DEFAULT 0,
+      personalization_note TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'new',
+      scouted_at TEXT NOT NULL
+    )`),
+    d1.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_lead_candidates_dedupe ON lead_candidates (dedupe_key)`),
+  ]);
+}
+
 export async function ensureSchemaAndSeed(d1: D1Database): Promise<void> {
   if (bootPromise) {
     return bootPromise;
@@ -135,98 +234,26 @@ export async function ensureSchemaAndSeed(d1: D1Database): Promise<void> {
 
   bootPromise = (async () => {
     try {
-      await d1.batch([
-        d1.prepare(`CREATE TABLE IF NOT EXISTS prospects (
-          id TEXT PRIMARY KEY NOT NULL,
-          slug TEXT NOT NULL UNIQUE,
-          business_name TEXT NOT NULL,
-          niche TEXT NOT NULL DEFAULT 'mobile_detailing',
-          city TEXT NOT NULL,
-          country TEXT NOT NULL DEFAULT 'US',
-          currency_symbol TEXT NOT NULL DEFAULT '$',
-          postal_label TEXT NOT NULL DEFAULT 'Zip Code',
-          service_area TEXT NOT NULL,
-          phone_display TEXT NOT NULL,
-          instagram_handle TEXT NOT NULL,
-          rating_score TEXT NOT NULL,
-          review_count INTEGER NOT NULL,
-          rating_source TEXT NOT NULL,
-          tagline TEXT NOT NULL,
-          hero_headline TEXT NOT NULL,
-          hero_subheadline TEXT NOT NULL,
-          turnaround_badge TEXT NOT NULL,
-          packages_json TEXT NOT NULL,
-          addons_json TEXT NOT NULL,
-          gallery_json TEXT NOT NULL,
-          trust_points_json TEXT NOT NULL,
-          personalization_note TEXT NOT NULL,
-          mode TEXT NOT NULL DEFAULT 'preview',
-          owner_email TEXT,
-          created_at TEXT NOT NULL
-        )`),
-        d1.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_prospects_slug ON prospects (slug)`),
-        d1.prepare(`CREATE TABLE IF NOT EXISTS quote_requests (
-          id TEXT PRIMARY KEY NOT NULL,
-          prospect_id TEXT NOT NULL,
-          slug TEXT NOT NULL,
-          customer_name TEXT NOT NULL,
-          customer_phone TEXT NOT NULL,
-          customer_postal TEXT NOT NULL,
-          vehicle_size TEXT NOT NULL,
-          package_id TEXT NOT NULL,
-          package_name TEXT NOT NULL,
-          condition_level TEXT NOT NULL,
-          addons_selected_json TEXT NOT NULL,
-          estimated_min INTEGER NOT NULL,
-          estimated_max INTEGER NOT NULL,
-          preferred_timing TEXT NOT NULL,
-          notes TEXT,
-          is_preview_test INTEGER NOT NULL DEFAULT 1,
-          ip_hash TEXT NOT NULL,
-          created_at TEXT NOT NULL
-        )`),
-        d1.prepare(`CREATE INDEX IF NOT EXISTS idx_quote_requests_prospect_created ON quote_requests (prospect_id, created_at)`),
-        d1.prepare(`CREATE INDEX IF NOT EXISTS idx_quote_requests_ip_created ON quote_requests (ip_hash, created_at)`),
-        d1.prepare(`CREATE TABLE IF NOT EXISTS outreach_drafts (
-          id TEXT PRIMARY KEY NOT NULL,
-          prospect_id TEXT NOT NULL,
-          slug TEXT NOT NULL,
-          channel TEXT NOT NULL,
-          recipient_handle TEXT NOT NULL,
-          personalization_note TEXT NOT NULL,
-          message_body TEXT NOT NULL,
-          approval_status TEXT NOT NULL DEFAULT 'draft',
-          created_at TEXT NOT NULL,
-          updated_at TEXT NOT NULL
-        )`),
-        d1.prepare(`CREATE INDEX IF NOT EXISTS idx_outreach_drafts_prospect_status ON outreach_drafts (prospect_id, approval_status)`),
-        d1.prepare(`CREATE TABLE IF NOT EXISTS lead_candidates (
-          id TEXT PRIMARY KEY NOT NULL,
-          dedupe_key TEXT NOT NULL UNIQUE,
-          business_name TEXT NOT NULL,
-          city TEXT NOT NULL,
-          country TEXT NOT NULL DEFAULT 'US',
-          service_area TEXT NOT NULL,
-          phone_display TEXT NOT NULL DEFAULT '',
-          instagram_handle TEXT NOT NULL,
-          website_url TEXT NOT NULL DEFAULT '',
-          rating_score TEXT NOT NULL DEFAULT '4.9',
-          review_count INTEGER NOT NULL DEFAULT 35,
-          fit_score INTEGER NOT NULL DEFAULT 75,
-          fit_signals_json TEXT NOT NULL DEFAULT '[]',
-          has_instant_quote INTEGER NOT NULL DEFAULT 0,
-          personalization_note TEXT NOT NULL,
-          status TEXT NOT NULL DEFAULT 'new',
-          scouted_at TEXT NOT NULL
-        )`),
-        d1.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_lead_candidates_dedupe ON lead_candidates (dedupe_key)`),
-      ]);
-
       const db = drizzle(d1);
-      const countResult = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(prospects);
-      const existingCount = Number(countResult[0]?.count ?? 0);
+      let existingCount = 0;
+
+      try {
+        const countResult = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(prospects);
+        existingCount = Number(countResult[0]?.count ?? 0);
+      } catch (queryErr) {
+        const msg = queryErr instanceof Error ? queryErr.message.toLowerCase() : String(queryErr).toLowerCase();
+        if (!msg.includes('no such table')) {
+          throw queryErr;
+        }
+        // Fallback only for unmigrated local environments; production relies on drizzle/migrations/*.sql
+        await createFallbackSchema(d1);
+        const countResult = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(prospects);
+        existingCount = Number(countResult[0]?.count ?? 0);
+      }
 
       if (existingCount === 0) {
         for (const seedBundle of INITIAL_SEED_PROSPECTS) {
@@ -288,33 +315,58 @@ export async function listProspectsWithStats(
   await ensureSchemaAndSeed(d1);
   const db = drizzle(d1);
 
-  const prospectRows = await db
-    .select()
-    .from(prospects)
-    .orderBy(desc(prospects.createdAt));
+  const [prospectRows, allDrafts, recentQuoteRows, quoteCountRows] = await Promise.all([
+    db.select().from(prospects).orderBy(desc(prospects.createdAt)).limit(200),
+    db.select().from(outreachDrafts).orderBy(desc(outreachDrafts.createdAt)).limit(600),
+    db.select().from(quoteRequests).orderBy(desc(quoteRequests.createdAt)).limit(400),
+    db
+      .select({
+        prospectId: quoteRequests.prospectId,
+        totalQuotes: sql<number>`count(*)`,
+        previewTestQuotes: sql<number>`sum(case when ${quoteRequests.isPreviewTest} = 1 then 1 else 0 end)`,
+      })
+      .from(quoteRequests)
+      .groupBy(quoteRequests.prospectId),
+  ]);
 
-  const allDrafts = await db
-    .select()
-    .from(outreachDrafts)
-    .orderBy(desc(outreachDrafts.createdAt));
+  const draftsByProspect = new Map<string, OutreachDraftRow[]>();
+  for (const draft of allDrafts) {
+    const list = draftsByProspect.get(draft.prospectId);
+    if (list) {
+      list.push(draft);
+    } else {
+      draftsByProspect.set(draft.prospectId, [draft]);
+    }
+  }
 
-  const allQuotes = await db
-    .select()
-    .from(quoteRequests)
-    .orderBy(desc(quoteRequests.createdAt));
+  const recentQuotesByProspect = new Map<string, QuoteRequestRow[]>();
+  for (const quote of recentQuoteRows) {
+    const list = recentQuotesByProspect.get(quote.prospectId);
+    if (list) {
+      if (list.length < 5) list.push(quote);
+    } else {
+      recentQuotesByProspect.set(quote.prospectId, [quote]);
+    }
+  }
+
+  const countsByProspect = new Map<string, { total: number; preview: number }>();
+  for (const agg of quoteCountRows) {
+    countsByProspect.set(agg.prospectId, {
+      total: Number(agg.totalQuotes ?? 0),
+      preview: Number(agg.previewTestQuotes ?? 0),
+    });
+  }
 
   return prospectRows.map((row) => {
     const parsed = parseProspectRow(row);
-    const scopedDrafts = allDrafts.filter((d) => d.prospectId === parsed.id);
-    const scopedQuotes = allQuotes.filter((q) => q.prospectId === parsed.id);
-    const previewTestQuotes = scopedQuotes.filter((q) => q.isPreviewTest === 1).length;
+    const counts = countsByProspect.get(parsed.id);
 
     return {
       prospect: parsed,
-      drafts: scopedDrafts,
-      recentQuotes: scopedQuotes.slice(0, 5),
-      totalQuotes: scopedQuotes.length,
-      previewTestQuotes,
+      drafts: draftsByProspect.get(parsed.id) ?? [],
+      recentQuotes: recentQuotesByProspect.get(parsed.id) ?? [],
+      totalQuotes: counts?.total ?? 0,
+      previewTestQuotes: counts?.preview ?? 0,
     };
   });
 }
@@ -390,6 +442,8 @@ export async function createQuoteRequest(
     preferredTiming: string;
     notes: string;
     isPreviewTest: boolean;
+    deliveryStatus?: QuoteDeliveryStatus;
+    deliveryError?: string | null;
     ipHash: string;
   }
 ): Promise<QuoteRequestRow> {
@@ -414,6 +468,9 @@ export async function createQuoteRequest(
     preferredTiming: record.preferredTiming,
     notes: record.notes || null,
     isPreviewTest: record.isPreviewTest ? 1 : 0,
+    deliveryStatus:
+      record.deliveryStatus ?? (record.isPreviewTest ? 'preview_only' : 'not_applicable'),
+    deliveryError: record.deliveryError ?? null,
     ipHash: record.ipHash,
     createdAt: nowIso,
   };
@@ -422,13 +479,47 @@ export async function createQuoteRequest(
   return values;
 }
 
+export async function updateQuoteDeliveryStatus(
+  d1: D1Database,
+  quoteId: string,
+  deliveryStatus: QuoteDeliveryStatus,
+  deliveryError?: string | null
+): Promise<void> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  await db
+    .update(quoteRequests)
+    .set({
+      deliveryStatus,
+      deliveryError: deliveryError ? deliveryError.slice(0, 300) : null,
+    })
+    .where(eq(quoteRequests.id, quoteId));
+}
+
 export function slugifyBusinessName(name: string, city: string): string {
-  const combined = `${name} ${city.split(',')[0] ?? ''}`;
-  return combined
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 64);
+  const cleanSegment = (val: string): string =>
+    val
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+  const nameSlug = cleanSegment(name);
+  const primaryCity = city.split(',')[0] ?? '';
+  const citySlug = cleanSegment(primaryCity);
+
+  let combined = nameSlug;
+  if (citySlug) {
+    const nameAlreadyHasCity =
+      nameSlug === citySlug ||
+      nameSlug.endsWith(`-${citySlug}`) ||
+      nameSlug.startsWith(`${citySlug}-`) ||
+      nameSlug.includes(`-${citySlug}-`);
+    if (!nameAlreadyHasCity) {
+      combined = nameSlug ? `${nameSlug}-${citySlug}` : citySlug;
+    }
+  }
+
+  return combined.slice(0, 64).replace(/-+$/g, '');
 }
 
 export async function createProspectWithDrafts(
@@ -596,14 +687,23 @@ export async function updateProspectMode(
       ? input.phoneDisplay.trim() || 'Direct Text / DM'
       : row.phoneDisplay;
 
+  const nextMode = input.mode ?? (row.mode === 'live' ? 'live' : 'preview');
+  const nextOwnerEmail =
+    input.ownerEmail !== undefined
+      ? input.ownerEmail.trim() || null
+      : row.ownerEmail;
+
+  if (nextMode === 'live' && !nextOwnerEmail) {
+    throw new ProspectValidationError(
+      'Add an Owner Alert Email before activating Live Mode so real customer leads are never lost.'
+    );
+  }
+
   await db
     .update(prospects)
     .set({
-      mode: input.mode ?? row.mode,
-      ownerEmail:
-        input.ownerEmail !== undefined
-          ? input.ownerEmail.trim() || null
-          : row.ownerEmail,
+      mode: nextMode,
+      ownerEmail: nextOwnerEmail,
       phoneDisplay: nextPhone,
       serviceArea:
         input.serviceArea !== undefined && input.serviceArea.trim()

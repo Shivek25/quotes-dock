@@ -4,7 +4,10 @@ import {
   updateLeadCandidateStatus,
   upsertLeadCandidatesBatch,
 } from '../../lib/db/repository';
-import { isStudioAuthorized } from '../../lib/security/auth';
+import {
+  isSameOriginStudioRequest,
+  isStudioAuthorized,
+} from '../../lib/security/auth';
 import {
   updateCandidateStatusSchema,
   upsertCandidatesBatchSchema,
@@ -22,7 +25,7 @@ function jsonResponse(payload: unknown, status = 200): Response {
 
 export const GET: APIRoute = async ({ request, cookies, locals }) => {
   const env = locals.runtime.env;
-  if (!isStudioAuthorized(request, cookies, env)) {
+  if (!(await isStudioAuthorized(request, cookies, env))) {
     return jsonResponse({ ok: false, error: 'Unauthorized studio access.' }, 401);
   }
 
@@ -40,8 +43,11 @@ export const GET: APIRoute = async ({ request, cookies, locals }) => {
 
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const env = locals.runtime.env;
-  if (!isStudioAuthorized(request, cookies, env)) {
+  if (!(await isStudioAuthorized(request, cookies, env))) {
     return jsonResponse({ ok: false, error: 'Unauthorized studio access.' }, 401);
+  }
+  if (!isSameOriginStudioRequest(request, env)) {
+    return jsonResponse({ ok: false, error: 'Invalid request origin.' }, 403);
   }
 
   try {
@@ -72,8 +78,11 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
 
 export const PATCH: APIRoute = async ({ request, cookies, locals }) => {
   const env = locals.runtime.env;
-  if (!isStudioAuthorized(request, cookies, env)) {
+  if (!(await isStudioAuthorized(request, cookies, env))) {
     return jsonResponse({ ok: false, error: 'Unauthorized studio access.' }, 401);
+  }
+  if (!isSameOriginStudioRequest(request, env)) {
+    return jsonResponse({ ok: false, error: 'Invalid request origin.' }, 403);
   }
 
   try {

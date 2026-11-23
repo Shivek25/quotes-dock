@@ -4,9 +4,14 @@ import {
   countRecentQuotesByIp,
   createQuoteRequest,
   getProspectBySlug,
+  updateQuoteDeliveryStatus,
 } from '../../lib/db/repository';
-import type { VehicleSizeKey } from '../../lib/db/schema';
-import { extractClientIp, hashClientIp } from '../../lib/security/auth';
+import type { QuoteDeliveryStatus, VehicleSizeKey } from '../../lib/db/schema';
+import {
+  extractClientIp,
+  hashClientIp,
+  isStudioAuthorized,
+} from '../../lib/security/auth';
 import { quoteSubmissionSchema } from '../../lib/validation/schemas';
 
 const VEHICLE_LABELS: Record<VehicleSizeKey, string> = {
@@ -37,7 +42,47 @@ function jsonResponse(payload: unknown, status = 200): Response {
   });
 }
 
-export const POST: APIRoute = async ({ request, locals }) => {
+async function sendResendEmail(params: {
+  apiKey: string;
+  from: string;
+  to: string;
+  subject: string;
+  text: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${params.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: params.from,
+        to: [params.to],
+        subject: params.subject,
+        text: params.text,
+      }),
+      signal: AbortSignal.timeout(4500),
+    });
+
+    if (res.ok) {
+      return { ok: true };
+    }
+
+    const errText = await res.text().catch(() => '');
+    return {
+      ok: false,
+      error: `Resend HTTP ${res.status}: ${errText.slice(0, 180)}`,
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message.slice(0, 180) : 'Email request timed out',
+    };
+  }
+}
+
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
     const rawBody = await request.json().catch(() => null);
     if (!rawBody || typeof rawBody !== 'object') {
@@ -69,7 +114,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const data = parsed.data;
-    const d1 = locals.runtime.env.DB;
+    const env = locals.runtime.env;
+    const d1 = env.DB;
     const prospect = await getProspectBySlug(d1, data.slug);
 
     if (!prospect) {
@@ -79,18 +125,25 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const ipHash = await hashClientIp(extractClientIp(request));
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-    const recentCount = await countRecentQuotesByIp(d1, ipHash, tenMinutesAgo);
+    // Only honor founder self-test mode for authenticated Studio sessions
+    const studioAuthed = await isStudioAuthorized(request, cookies, env);
+    const isFounderSelfTest = Boolean(data.isFounderSelfTest) && studioAuthed;
 
-    if (recentCount >= 5) {
-      return jsonResponse(
-        {
-          ok: false,
-          error: 'Too many quote requests in a short time. Please wait a few minutes before submitting again.',
-        },
-        429
-      );
+    const ipHash = await hashClientIp(extractClientIp(request), env);
+    if (!isFounderSelfTest) {
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      const recentCount = await countRecentQuotesByIp(d1, ipHash, tenMinutesAgo);
+
+      if (recentCount >= 5) {
+        return jsonResponse(
+          {
+            ok: false,
+            error:
+              'Too many quote requests in a short time. Please wait a few minutes before submitting again.',
+          },
+          429
+        );
+      }
     }
 
     const estimate = calculateServerQuoteEstimate(prospect, {
@@ -107,11 +160,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const isFounderSelfTest = Boolean(data.isFounderSelfTest);
     const quoteId = isFounderSelfTest
       ? 'q_founder_test'
       : `q_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`;
     const addonNames = estimate.selectedAddons.map((a) => a.name);
+
+    let deliveryStatus: QuoteDeliveryStatus =
+      prospect.mode === 'preview' ? 'preview_only' : 'not_applicable';
+    let deliveryError: string | null = null;
 
     if (!isFounderSelfTest) {
       await createQuoteRequest(d1, {
@@ -131,6 +187,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         preferredTiming: data.preferredTiming,
         notes: data.notes,
         isPreviewTest: prospect.mode === 'preview',
+        deliveryStatus,
+        deliveryError: null,
         ipHash,
       });
     }
@@ -154,32 +212,52 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const emailSubject = `New ${priceRange} Mobile Detail Lead in ${data.customerPostal} (${data.customerName})`;
     let emailDispatched = false;
 
-    const resendApiKey = locals.runtime.env.RESEND_API_KEY?.trim();
-    if (
-      prospect.mode === 'live' &&
-      !isFounderSelfTest &&
-      resendApiKey &&
-      prospect.ownerEmail
-    ) {
-      try {
-        const res = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${resendApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'QuotesDock Alerts <onboarding@resend.dev>',
-            to: [prospect.ownerEmail],
-            subject: emailSubject,
-            text: smsPreview,
-          }),
-          signal: AbortSignal.timeout(4000),
+    if (prospect.mode === 'live' && !isFounderSelfTest) {
+      const resendApiKey = env.RESEND_API_KEY?.trim() || '';
+      const resendFromEmail = env.RESEND_FROM_EMAIL?.trim() || '';
+      const founderAlertEmail = env.FOUNDER_ALERT_EMAIL?.trim() || '';
+
+      if (!prospect.ownerEmail) {
+        deliveryStatus = 'no_owner_email';
+        deliveryError = 'No owner alert email configured for this live shop.';
+        console.error(`Live quote ${quoteId} missing ownerEmail on slug ${prospect.slug}`);
+      } else if (!resendApiKey || !resendFromEmail) {
+        deliveryStatus = 'config_missing';
+        deliveryError = 'RESEND_API_KEY or verified RESEND_FROM_EMAIL is not configured.';
+        console.error(`Live quote ${quoteId} skipped email: ${deliveryError}`);
+      } else {
+        const result = await sendResendEmail({
+          apiKey: resendApiKey,
+          from: resendFromEmail,
+          to: prospect.ownerEmail,
+          subject: emailSubject,
+          text: smsPreview,
         });
-        emailDispatched = res.ok;
-      } catch (emailErr) {
-        console.error('Resend notification failed:', emailErr);
+
+        if (result.ok) {
+          emailDispatched = true;
+          deliveryStatus = 'sent';
+          deliveryError = null;
+        } else {
+          deliveryStatus = 'failed';
+          deliveryError = result.error || 'Email notification failed.';
+          console.error(`Resend notification failed for ${quoteId}:`, deliveryError);
+
+          if (founderAlertEmail) {
+            await sendResendEmail({
+              apiKey: resendApiKey,
+              from: resendFromEmail,
+              to: founderAlertEmail,
+              subject: `[DELIVERY FAILED] ${emailSubject}`,
+              text:
+                `Failed to deliver live lead ${quoteId} to ${prospect.ownerEmail}.\n` +
+                `Reason: ${deliveryError}\n\n${smsPreview}`,
+            });
+          }
+        }
       }
+
+      await updateQuoteDeliveryStatus(d1, quoteId, deliveryStatus, deliveryError);
     }
 
     return jsonResponse({
