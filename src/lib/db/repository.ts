@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/d1';
 
 export type D1Database = Parameters<typeof drizzle>[0];
 import {
+  inboundInquiries,
   leadCandidates,
   outreachDrafts,
   prospects,
@@ -12,12 +13,16 @@ import {
   type CountryCode,
   type DetailingAddon,
   type DetailingPackage,
+  type InboundInquiryRow,
+  type InquiryStatus,
+  type InquiryType,
   type JobProofItem,
   type LeadCandidateRow,
   type OutreachApprovalStatus,
   type OutreachDraftRow,
   type ParsedLeadCandidate,
   type ParsedProspect,
+  type PlanTier,
   type ProspectMode,
   type ProspectRow,
   type QuoteDeliveryStatus,
@@ -224,6 +229,24 @@ async function createFallbackSchema(d1: D1Database): Promise<void> {
       scouted_at TEXT NOT NULL
     )`),
     d1.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_lead_candidates_dedupe ON lead_candidates (dedupe_key)`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS inbound_inquiries (
+      id TEXT PRIMARY KEY NOT NULL,
+      inquiry_type TEXT NOT NULL DEFAULT 'free_preview_request',
+      prospect_id TEXT,
+      slug TEXT,
+      business_name TEXT NOT NULL,
+      owner_name TEXT NOT NULL,
+      contact_info TEXT NOT NULL,
+      city TEXT NOT NULL DEFAULT '',
+      country TEXT NOT NULL DEFAULT 'US',
+      plan_tier TEXT NOT NULL DEFAULT 'founding',
+      notes TEXT,
+      status TEXT NOT NULL DEFAULT 'new',
+      ip_hash TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    )`),
+    d1.prepare(`CREATE INDEX IF NOT EXISTS idx_inbound_inquiries_status_created ON inbound_inquiries (status, created_at)`),
+    d1.prepare(`CREATE INDEX IF NOT EXISTS idx_inbound_inquiries_ip_created ON inbound_inquiries (ip_hash, created_at)`),
   ]);
 }
 
@@ -649,6 +672,18 @@ export async function updateProspectMode(
     serviceArea?: string;
     baseSedanPrice?: number;
     photoUrls?: string[];
+    galleryItems?: Array<{
+      id?: string;
+      title: string;
+      vehicleLabel: string;
+      servicePerformed: string;
+      resultSummary?: string;
+      beforeNote?: string;
+      afterNote?: string;
+      imageUrl?: string;
+      beforeImageUrl?: string;
+    }>;
+    trustPoints?: string[];
   }
 ): Promise<ParsedProspect | null> {
   await ensureSchemaAndSeed(d1);
@@ -670,8 +705,27 @@ export async function updateProspectMode(
   }
 
   let nextGalleryJson = row.galleryJson;
-  if (input.photoUrls !== undefined) {
-    const parsedGallery = safeParseJson<JobProofItem[]>(row.galleryJson, []);
+  const parsedGallery = safeParseJson<JobProofItem[]>(row.galleryJson, []);
+  if (input.galleryItems !== undefined && input.galleryItems.length > 0) {
+    const updatedGallery: JobProofItem[] = input.galleryItems.slice(0, 6).map((item, idx) => {
+      const prev = parsedGallery[idx];
+      const cleanedImg = item.imageUrl?.trim() || '';
+      const cleanedBeforeImg = item.beforeImageUrl?.trim() || '';
+      return {
+        id: item.id || prev?.id || `job-${idx + 1}`,
+        title: item.title.trim(),
+        vehicleLabel: item.vehicleLabel.trim(),
+        servicePerformed: item.servicePerformed.trim(),
+        resultSummary: item.resultSummary?.trim() || prev?.resultSummary || '',
+        beforeNote: item.beforeNote?.trim() || '',
+        afterNote: item.afterNote?.trim() || '',
+        accentHex: prev?.accentHex || '#0369A1',
+        imageUrl: cleanedImg || undefined,
+        beforeImageUrl: cleanedBeforeImg || undefined,
+      };
+    });
+    nextGalleryJson = JSON.stringify(updatedGallery);
+  } else if (input.photoUrls !== undefined) {
     const updatedGallery = parsedGallery.map((item, idx) => {
       const cleaned = input.photoUrls?.[idx]?.trim() || '';
       return {
@@ -680,6 +734,17 @@ export async function updateProspectMode(
       };
     });
     nextGalleryJson = JSON.stringify(updatedGallery);
+  }
+
+  let nextTrustPointsJson = row.trustPointsJson;
+  if (input.trustPoints !== undefined) {
+    const cleanedPoints = input.trustPoints
+      .map((pt) => pt.trim())
+      .filter((pt) => pt.length >= 2)
+      .slice(0, 6);
+    if (cleanedPoints.length > 0) {
+      nextTrustPointsJson = JSON.stringify(cleanedPoints);
+    }
   }
 
   const nextPhone =
@@ -711,6 +776,7 @@ export async function updateProspectMode(
           : row.serviceArea,
       packagesJson: nextPackagesJson,
       galleryJson: nextGalleryJson,
+      trustPointsJson: nextTrustPointsJson,
     })
     .where(eq(prospects.id, input.prospectId));
 
@@ -902,5 +968,99 @@ export async function updateLeadCandidateStatus(
     .set({ status })
     .where(eq(leadCandidates.id, id));
 
+  return true;
+}
+
+export async function countRecentInquiriesByIp(
+  d1: D1Database,
+  ipHash: string,
+  sinceIso: string
+): Promise<number> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  const rows = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(inboundInquiries)
+    .where(
+      and(
+        eq(inboundInquiries.ipHash, ipHash),
+        gte(inboundInquiries.createdAt, sinceIso)
+      )
+    );
+  return Number(rows[0]?.count ?? 0);
+}
+
+export async function createInboundInquiry(
+  d1: D1Database,
+  record: {
+    id: string;
+    inquiryType: InquiryType;
+    prospectId?: string | null;
+    slug?: string | null;
+    businessName: string;
+    ownerName: string;
+    contactInfo: string;
+    city: string;
+    country: CountryCode;
+    planTier: PlanTier;
+    notes: string;
+    ipHash: string;
+  }
+): Promise<InboundInquiryRow> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  const nowIso = new Date().toISOString();
+
+  const values: InboundInquiryRow = {
+    id: record.id,
+    inquiryType: record.inquiryType,
+    prospectId: record.prospectId || null,
+    slug: record.slug || null,
+    businessName: record.businessName,
+    ownerName: record.ownerName,
+    contactInfo: record.contactInfo,
+    city: record.city,
+    country: record.country,
+    planTier: record.planTier,
+    notes: record.notes || null,
+    status: 'new',
+    ipHash: record.ipHash,
+    createdAt: nowIso,
+  };
+
+  await db.insert(inboundInquiries).values(values);
+  return values;
+}
+
+export async function listInboundInquiries(
+  d1: D1Database
+): Promise<InboundInquiryRow[]> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  return db
+    .select()
+    .from(inboundInquiries)
+    .orderBy(desc(inboundInquiries.createdAt))
+    .limit(50);
+}
+
+export async function updateInboundInquiryStatus(
+  d1: D1Database,
+  id: string,
+  status: InquiryStatus
+): Promise<boolean> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  const existing = await db
+    .select({ id: inboundInquiries.id })
+    .from(inboundInquiries)
+    .where(eq(inboundInquiries.id, id))
+    .limit(1);
+  if (existing.length === 0) return false;
+
+  await db
+    .update(inboundInquiries)
+    .set({ status })
+    .where(eq(inboundInquiries.id, id));
   return true;
 }

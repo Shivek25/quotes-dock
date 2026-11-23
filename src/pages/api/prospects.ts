@@ -109,6 +109,8 @@ export const PATCH: APIRoute = async ({ request, cookies, locals }) => {
       serviceArea: parsed.data.serviceArea,
       baseSedanPrice: parsed.data.baseSedanPrice,
       photoUrls: parsed.data.photoUrls,
+      galleryItems: parsed.data.galleryItems,
+      trustPoints: parsed.data.trustPoints,
     });
 
     if (!updated) {

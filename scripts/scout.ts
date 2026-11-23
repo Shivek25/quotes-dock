@@ -439,6 +439,10 @@ function isDirectoryUrl(url: string): boolean {
       pathname.includes('/listings/') ||
       pathname.includes('/directory/') ||
       pathname.includes('/businesses/') ||
+      pathname.includes('/places/') ||
+      pathname.includes('/place/') ||
+      pathname.includes('/company/') ||
+      pathname.includes('/profile/') ||
       pathname.includes('/carwash/')
     );
   } catch {
@@ -1087,11 +1091,19 @@ function doesOrganicResultBelongToCandidate(
     hostnameBase = '';
   }
 
+  const lengthRatio =
+    orgCoreKey.length > 0 && leadCoreKey.length > 0
+      ? Math.min(orgCoreKey.length, leadCoreKey.length) /
+        Math.max(orgCoreKey.length, leadCoreKey.length)
+      : 0;
+
   const brandMatch =
     (leadCoreKey.length >= 2 && orgCoreKey === leadCoreKey) ||
     (leadCoreKey.length >= 4 &&
+      orgCoreKey.length >= 4 &&
+      lengthRatio >= 0.6 &&
       (orgCoreKey.includes(leadCoreKey) || leadCoreKey.includes(orgCoreKey))) ||
-    (leadCoreKey.length >= 3 && hostnameBase.includes(leadCoreKey));
+    (leadCoreKey.length >= 4 && hostnameBase.includes(leadCoreKey));
 
   if (!brandMatch) return false;
 
@@ -1149,10 +1161,17 @@ async function inspectCandidateWithCrossCheck(
     const orgCore = extractCoreBrandKey(cleanOrgBusinessName(title), options.city);
     const digitsInOrg = `${title} ${snippet}`.replace(/\D/g, '');
     const phoneMatch = Boolean(lead.phoneKey && digitsInOrg.includes(lead.phoneKey));
+    const coreLenRatio =
+      lead.coreBrandKey.length > 0 && orgCore.length > 0
+        ? Math.min(lead.coreBrandKey.length, orgCore.length) /
+          Math.max(lead.coreBrandKey.length, orgCore.length)
+        : 0;
     const coreMatch =
       Boolean(lead.coreBrandKey && orgCore) &&
       (orgCore === lead.coreBrandKey ||
         (lead.coreBrandKey.length >= 4 &&
+          orgCore.length >= 4 &&
+          coreLenRatio >= 0.6 &&
           (orgCore.includes(lead.coreBrandKey) || lead.coreBrandKey.includes(orgCore))));
     const inlineHandle = extractInlineHandleFromTitle(title) || extractSocialHandleFromUrl(link);
     const handleClean = (inlineHandle || '').replace(/[^a-z0-9]/g, '');
@@ -1362,20 +1381,31 @@ async function rankWithGeminiOrFallback(
     }));
   }
 
-  const candidateSummaries = candidates.map((c) => ({
-    index: c.index,
-    businessName: c.businessName,
-    city: c.city,
-    country: c.country,
-    reviewCount: c.reviewCount,
-    ratingScore: c.ratingScore,
-    websiteStatus: c.websiteStatus,
-    socialOrPhoneOnly: true,
-    instagramHandle: c.instagramHandle,
-    baseFitScore: c.baseFitScore,
-    fitSignals: c.fitSignals,
-    servicesObserved: c.servicesObserved,
-  }));
+  const candidateSummaries = candidates.map((c) => {
+    const lowerUrl = c.websiteUrl.toLowerCase();
+    const socialPlatform = lowerUrl.includes('instagram.com') || lowerUrl.includes('instagr.am')
+      ? 'Instagram'
+      : lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.com')
+        ? 'Facebook'
+        : lowerUrl.includes('linktr.ee')
+          ? 'Linktree'
+          : 'Google Maps / Phone Only';
+    return {
+      index: c.index,
+      businessName: c.businessName,
+      city: c.city,
+      country: c.country,
+      reviewCount: c.reviewCount,
+      ratingScore: c.ratingScore,
+      websiteStatus: c.websiteStatus,
+      socialPlatform,
+      socialOrPhoneOnly: true,
+      instagramHandle: c.instagramHandle,
+      baseFitScore: c.baseFitScore,
+      fitSignals: c.fitSignals,
+      servicesObserved: c.servicesObserved,
+    };
+  });
 
   const prompt = [
     `You are ranking verified NO-WEBSITE / SOCIAL-ONLY mobile car detailing or valeting prospects in ${options.city} (${options.country}) for a 60-second instant quote calculator preview.`,
@@ -1384,7 +1414,7 @@ async function rankWithGeminiOrFallback(
     `For each selected candidate:`,
     `1) Return "fitScore" (integer 1-100).`,
     `2) Return "serviceArea" (3-4 real nearby suburbs/towns around ${options.city}, comma-separated).`,
-    `3) Return a truthful 1-line "personalizationNote" (max 210 chars) highlighting their social/phone enquiry workflow and lack of an instant quote site. NEVER claim they have a website. NEVER use em dashes (use hyphens or commas instead).`,
+    `3) Return a truthful 1-line "personalizationNote" (max 210 chars) highlighting their enquiry workflow and lack of an instant quote site. ONLY reference the exact "socialPlatform" listed for that candidate (NEVER mention Instagram if socialPlatform is Facebook or Google Maps / Phone Only). NEVER claim they have a website. NEVER use em dashes (use hyphens or commas instead).`,
     `Candidates JSON:`,
     JSON.stringify(candidateSummaries),
   ].join('\n');

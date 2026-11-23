@@ -1,6 +1,8 @@
 # QuotesDock
 
-Preview-First Quote & Job-Proof Page system built for US and UK Mobile Car Detailers on a $0/month fixed Cloudflare stack (Astro + Cloudflare Pages/Workers + Cloudflare D1).
+Preview-First Quote & Job-Proof Page system built for US and UK Mobile Car Detailers on a $0/month fixed Cloudflare stack (Astro + Cloudflare Pages/Workers + Cloudflare D1 + Cloudflare R2).
+
+> See [PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md) for the full living project architecture, milestone tracker, solved issues log, and production deployment checklist.
 
 ## What Phase 1 Includes
 

@@ -46,51 +46,19 @@ const isUk = prospect?.country === "UK";
 const foundingSetupText = isUk
   ? "£39 founding setup + £12/mo"
   : "$50 founding setup + $15/mo";
-
-const glossReadings = [
-  {
-    before: "64.2",
-    after: "98.6",
-    delta: "+34.4",
-    beforeWidth: "64%",
-    afterWidth: "98%",
-  },
-  {
-    before: "68.8",
-    after: "97.4",
-    delta: "+28.6",
-    beforeWidth: "69%",
-    afterWidth: "97%",
-  },
-  {
-    before: "66.0",
-    after: "96.9",
-    delta: "+30.9",
-    beforeWidth: "66%",
-    afterWidth: "97%",
-  },
-  {
-    before: "61.5",
-    after: "98.1",
-    delta: "+36.6",
-    beforeWidth: "62%",
-    afterWidth: "98%",
-  },
-  {
-    before: "70.4",
-    after: "97.8",
-    delta: "+27.4",
-    beforeWidth: "70%",
-    afterWidth: "98%",
-  },
-  {
-    before: "58.9",
-    after: "96.5",
-    delta: "+37.6",
-    beforeWidth: "59%",
-    afterWidth: "96%",
-  },
-];
+const realPhotoGallery = prospect
+  ? prospect.gallery.filter((item) => Boolean(item.imageUrl?.trim()))
+  : [];
+const visibleGallery = isPreview ? (prospect?.gallery ?? []) : realPhotoGallery;
+const hasSelfContainedWater = Boolean(
+  prospect?.trustPoints.some((pt) =>
+    /water|power|self-contained|autonomous/i.test(pt),
+  ),
+);
+const rawFoundingCheckout = env.FOUNDING_CHECKOUT_URL?.trim() || "";
+const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
+  ? rawFoundingCheckout
+  : "";
 ---
 
 {!prospect ? (
@@ -146,12 +114,20 @@ const glossReadings = [
               confirmed by owner
             </span>
           </div>
-          <a
-            href="#quote-calculator"
-            class="shrink-0 font-semibold text-[#7DD3FC] underline decoration-sky-400/50 underline-offset-4 hover:text-white"
-          >
-            Run Quote Test
-          </a>
+          <div class="flex shrink-0 items-center gap-4">
+            <a
+              href="#quote-calculator"
+              class="font-semibold text-[#7DD3FC] underline decoration-sky-400/50 underline-offset-4 hover:text-white"
+            >
+              Run Quote Test
+            </a>
+            <a
+              href="#claim-preview"
+              class="rounded-lg bg-[#38BDF8] px-3 py-1 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC]"
+            >
+              Claim Page
+            </a>
+          </div>
         </div>
       </div>
     )}
@@ -193,11 +169,13 @@ const glossReadings = [
           >
             Configurator
           </a>
-          <a href="#job-proof" class="transition-colors hover:text-white">
-            Job Proof
-          </a>
+          {visibleGallery.length > 0 && (
+            <a href="#job-proof" class="transition-colors hover:text-white">
+              Recent Work
+            </a>
+          )}
           <a href="#rig-specs" class="transition-colors hover:text-white">
-            Mobile Rig
+            Service Highlights
           </a>
           <a href="#faq" class="transition-colors hover:text-white">
             FAQ
@@ -280,15 +258,17 @@ const glossReadings = [
                   />
                 </svg>
               </a>
-              <a
-                href="#job-proof"
-                class="inline-flex items-center gap-2 rounded-xl border border-slate-600/80 bg-[#151D2A] px-5 py-4 text-sm font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
-              >
-                Inspect Gloss Proof
-              </a>
+              {visibleGallery.length > 0 && (
+                <a
+                  href="#job-proof"
+                  class="inline-flex items-center gap-2 rounded-xl border border-slate-600/80 bg-[#151D2A] px-5 py-4 text-sm font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
+                >
+                  View Recent Work
+                </a>
+              )}
             </div>
 
-            {/* 4-Card Telemetry Strip */}
+            {/* 4-Card Honest Summary Strip */}
             <div class="mt-8 grid grid-cols-2 gap-3 border-t border-slate-800/90 pt-6 sm:grid-cols-4">
               <div class="glass-panel rounded-xl p-3.5">
                 <div class="font-display tabular-nums text-lg font-bold text-[#38BDF8]">
@@ -300,18 +280,18 @@ const glossReadings = [
               </div>
               <div class="glass-panel rounded-xl p-3.5">
                 <div class="font-display tabular-nums text-lg font-bold text-slate-50">
-                  0 PPM
+                  {prospect.packages.length} Tiers
                 </div>
                 <div class="mt-0.5 text-[11px] font-medium text-[#CBD5E1]">
-                  Spot-Free Pure Rinse
+                  Sedan, SUV &amp; Truck
                 </div>
               </div>
               <div class="glass-panel rounded-xl p-3.5">
-                <div class="font-display tabular-nums text-lg font-bold text-[#38BDF8]">
-                  98+ GU
+                <div class="font-display text-lg font-bold text-[#38BDF8]">
+                  {hasSelfContainedWater ? "Self-Contained" : "On-Site"}
                 </div>
                 <div class="mt-0.5 text-[11px] font-medium text-[#CBD5E1]">
-                  Target Gloss Depth
+                  {hasSelfContainedWater ? "Water & Power Ready" : "Home or Workplace"}
                 </div>
               </div>
               <div class="glass-panel rounded-xl p-3.5">
@@ -325,13 +305,13 @@ const glossReadings = [
             </div>
           </div>
 
-          {/* Right Optical Bay Frame */}
+          {/* Right Bay Preview Frame */}
           <div class="reveal-up is-visible stagger-1 lg:col-span-5">
             <div class="glass-panel anisotropic-border relative overflow-hidden rounded-2xl p-2">
               <div class="relative aspect-[4/3] overflow-hidden rounded-xl bg-[#090D13]">
                 <img
                   src="/images/hero-wetbay.jpg"
-                  alt={`${prospect.businessName} wet-bay detailing showcase`}
+                  alt={`${prospect.businessName} mobile detailing showcase`}
                   class="h-full w-full object-cover object-[70%_62%] scale-105"
                 />
                 {/* Mask upper-left background wall cleanly so image works for every city */}
@@ -344,7 +324,7 @@ const glossReadings = [
                   <div class="min-w-0">
                     <div class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#7DD3FC]">
                       <span class="h-1.5 w-1.5 rounded-full bg-[#38BDF8]" />
-                      Autonomous Mobile Unit
+                      {hasSelfContainedWater ? "Self-Contained Mobile Unit" : "Mobile Detailing Service"}
                     </div>
                     <div class="mt-0.5 truncate text-xs text-slate-200">
                       Serving {prospect.serviceArea}
@@ -372,7 +352,7 @@ const glossReadings = [
       {/* Interactive 60-Second Driveway Quote Configurator */}
       <section
         id="quote-calculator"
-        class="reveal-up glass-panel anisotropic-border rounded-2xl p-5 sm:p-8 lg:p-10"
+        class="reveal-up is-visible glass-panel anisotropic-border rounded-2xl p-5 sm:p-8 lg:p-10"
       >
         <div class="flex flex-wrap items-start justify-between gap-6 border-b border-slate-800 pb-6">
           <div>
@@ -896,146 +876,131 @@ const glossReadings = [
         </form>
       </section>
 
-      {/* Gloss Telemetry & Interactive Job-Proof Showcase */}
-      <section id="job-proof" class="reveal-up mt-16">
-        <div class="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <span class="inline-flex items-center gap-1.5 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
-              Optical Gloss Verification
-            </span>
-            <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
-              Recent Work & Paint-Correction Telemetry
-            </h2>
-            <p class="mt-1.5 text-sm text-[#CBD5E1]">
-              Toggle each inspection card to compare arrival condition against
-              finished results in {prospect.city}.
-            </p>
+      {/* Recent Work & Verified Job-Proof Showcase */}
+      {visibleGallery.length > 0 && (
+        <section id="job-proof" class="reveal-up mt-16">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
+                {isPreview ? "Job Proof Layout Preview" : "Recent Local Work"}
+              </span>
+              <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+                {isPreview
+                  ? "Recent Work & Before/After Job Showcase"
+                  : `Recent ${prospect.city} Detailing Results`}
+              </h2>
+              <p class="mt-1.5 text-sm text-[#CBD5E1]">
+                Toggle each job card to compare arrival condition notes against the finished result.
+              </p>
+            </div>
+            {isPreview && (
+              <span class="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3.5 py-2 text-xs font-semibold text-amber-200">
+                Sample Layout: We replace these 6 slots with your real job photos and captions in 24 hrs
+              </span>
+            )}
           </div>
-          {isPreview && (
-            <span class="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3.5 py-2 text-xs font-semibold text-amber-200">
-              Owner Note: We replace these 6 slots with your real job photos in
-              24 hrs
-            </span>
-          )}
-        </div>
 
-        <div class="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {prospect.gallery.map((item, index) => {
-            const reading = glossReadings[index % glossReadings.length];
-            return (
-              <article
-                class="glass-panel interactive-card anisotropic-border flex flex-col justify-between rounded-2xl p-5"
-                data-proof-card={item.id}
-              >
-                <div>
-                  {item.imageUrl && (
-                    <div class="mb-4 aspect-[16/10] overflow-hidden rounded-xl border border-slate-800 bg-[#090D13]">
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        loading="lazy"
-                        class="h-full w-full object-cover"
-                      />
+          <div class="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {visibleGallery.map((item, index) => {
+              const hasBeforeAfterNotes = Boolean(item.beforeNote || item.afterNote);
+              return (
+                <article
+                  class="glass-panel interactive-card anisotropic-border flex flex-col justify-between rounded-2xl p-5"
+                  data-proof-card={item.id}
+                >
+                  <div>
+                    {item.imageUrl ? (
+                      <div class="mb-4 aspect-[16/10] overflow-hidden rounded-xl border border-slate-800 bg-[#090D13]">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          loading="lazy"
+                          data-after-src={item.imageUrl}
+                          data-before-src={item.beforeImageUrl || ""}
+                          class="proof-img h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      isPreview && (
+                        <div class="mb-4 flex aspect-[16/10] flex-col items-center justify-center rounded-xl border border-dashed border-slate-700 bg-[#090D13]/90 px-4 text-center">
+                          <span class="font-mono text-[11px] font-bold uppercase tracking-wider text-[#7DD3FC]">
+                            Your Photo Slot #0{index + 1}
+                          </span>
+                          <span class="mt-1 text-xs text-slate-400">
+                            Swapped with your real job photo upon activation
+                          </span>
+                        </div>
+                      )
+                    )}
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
+                        {item.imageUrl ? `Job #0${index + 1}` : `Sample Slot #0${index + 1}`}
+                      </span>
+                      <span class="rounded-md border border-slate-700 bg-[#0C1017] px-2.5 py-0.5 text-[11px] font-semibold text-slate-200">
+                        {item.vehicleLabel}
+                      </span>
+                    </div>
+
+                    <h3 class="mt-3 text-lg font-bold text-slate-50">
+                      {item.title}
+                    </h3>
+                    <p class="mt-0.5 text-xs font-semibold text-sky-300">
+                      {item.servicePerformed}
+                    </p>
+                    {item.resultSummary && (
+                      <p class="mt-2.5 text-xs leading-relaxed text-[#CBD5E1]">
+                        {item.resultSummary}
+                      </p>
+                    )}
+                  </div>
+
+                  {hasBeforeAfterNotes && (
+                    <div class="mt-5 rounded-xl border border-slate-800 bg-[#0C1017]/90 p-4">
+                      <div class="flex items-center gap-2">
+                        <button
+                          type="button"
+                          data-toggle-proof="after"
+                          class="proof-tab-btn rounded-lg bg-[#38BDF8]/15 px-2.5 py-1 text-[11px] font-bold text-[#7DD3FC] ring-1 ring-sky-400/40"
+                        >
+                          After Finish
+                        </button>
+                        <button
+                          type="button"
+                          data-toggle-proof="before"
+                          class="proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#CBD5E1] hover:text-white"
+                        >
+                          Before Arrival
+                        </button>
+                      </div>
+                      <p
+                        class="proof-note mt-2.5 text-xs leading-snug text-emerald-300"
+                        data-before-text={`Before: ${item.beforeNote || "Arrival inspection"}`}
+                        data-after-text={`After: ${item.afterNote || "Finished detail"}`}
+                      >
+                        After: {item.afterNote || "Finished detail"}
+                      </p>
                     </div>
                   )}
-                  <div class="flex items-center justify-between gap-2">
-                    <span class="text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
-                      Job Proof #0{index + 1}
-                    </span>
-                    <span class="rounded-md border border-slate-700 bg-[#0C1017] px-2.5 py-0.5 text-[11px] font-semibold text-slate-200">
-                      {item.vehicleLabel}
-                    </span>
-                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
-                  <h3 class="mt-3 text-lg font-bold text-slate-50">
-                    {item.title}
-                  </h3>
-                  <p class="mt-0.5 text-xs font-semibold text-sky-300">
-                    {item.servicePerformed}
-                  </p>
-                  <p class="mt-2.5 text-xs leading-relaxed text-[#CBD5E1]">
-                    {item.resultSummary}
-                  </p>
-                </div>
-
-                {/* Horiba 60° Gloss Unit Telemetry & Interactive Before/After Switch */}
-                <div class="mt-5 space-y-3 rounded-xl border border-slate-800 bg-[#0C1017]/90 p-4">
-                  <div class="space-y-1.5">
-                    <div class="flex justify-between font-mono text-[11px]">
-                      <span class="text-[#CBD5E1]">Arrival Reading</span>
-                      <span class="font-bold text-amber-300">
-                        {reading.before} GU
-                      </span>
-                    </div>
-                    <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
-                      <div
-                        class="h-full rounded-full bg-amber-400/80"
-                        style={`width: ${reading.beforeWidth};`}
-                      />
-                    </div>
-                  </div>
-
-                  <div class="space-y-1.5">
-                    <div class="flex justify-between font-mono text-[11px]">
-                      <span class="font-semibold text-slate-100">
-                        Cured Finish
-                      </span>
-                      <span class="font-bold text-[#38BDF8]">
-                        {reading.after} GU ({reading.delta})
-                      </span>
-                    </div>
-                    <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
-                      <div
-                        class="h-full rounded-full bg-[#38BDF8]"
-                        style={`width: ${reading.afterWidth};`}
-                      />
-                    </div>
-                  </div>
-
-                  <div class="border-t border-slate-800 pt-3">
-                    <div class="flex items-center gap-2">
-                      <button
-                        type="button"
-                        data-toggle-proof="after"
-                        class="proof-tab-btn rounded-lg bg-[#38BDF8]/15 px-2.5 py-1 text-[11px] font-bold text-[#7DD3FC] ring-1 ring-sky-400/40"
-                      >
-                        After Finish
-                      </button>
-                      <button
-                        type="button"
-                        data-toggle-proof="before"
-                        class="proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#CBD5E1] hover:text-white"
-                      >
-                        Before Arrival
-                      </button>
-                    </div>
-                    <p
-                      class="proof-note mt-2 text-xs leading-snug text-emerald-300"
-                      data-before-text={`Before: ${item.beforeNote}`}
-                      data-after-text={`After: ${item.afterNote}`}
-                    >
-                      After: {item.afterNote}
-                    </p>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Autonomous Rig Capabilities */}
+      {/* Service & Mobile Setup Highlights */}
       <section id="rig-specs" class="reveal-up mt-16">
         <div class="max-w-2xl">
           <span class="inline-flex items-center rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
-            Autonomous Driveway Rig
+            {hasSelfContainedWater ? "Mobile Rig Highlights" : "Service Highlights"}
           </span>
           <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
-            Zero House Hookups Required
+            {hasSelfContainedWater
+              ? "Self-Contained Mobile Detailing Setup"
+              : `Why Drivers Choose ${prospect.businessName}`}
           </h2>
           <p class="mt-1.5 text-sm text-[#CBD5E1]">
-            Serving <strong>{prospect.serviceArea}</strong> with self-contained
-            spot-free water and quiet studio power.
+            Serving <strong>{prospect.serviceArea}</strong> with convenient mobile appointments and upfront pricing ranges.
           </p>
         </div>
 
@@ -1043,7 +1008,7 @@ const glossReadings = [
           {prospect.trustPoints.map((point, idx) => (
             <div class="glass-panel anisotropic-border rounded-2xl p-5">
               <div class="font-mono text-xs font-bold text-[#7DD3FC]">
-                SPEC 0{idx + 1}
+                HIGHLIGHT 0{idx + 1}
               </div>
               <div class="mt-2 text-base font-bold text-slate-50">{point}</div>
             </div>
@@ -1068,12 +1033,169 @@ const glossReadings = [
             Can you detail at my office or apartment lot?
           </h3>
           <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
-            Yes, as long as there is safe space next to your vehicle for our
-            mobile unit (and property management permits mobile service), we
-            bring all water and power on board.
+            Yes, as long as there is safe space next to your vehicle and
+            property management permits mobile detailing. We confirm any access
+            or hookup requirements with you by text before arriving.
           </p>
         </div>
       </section>
+
+      {/* Preview-Only Owner Claim & Respectful Removal Section */}
+      {isPreview && (
+        <section
+          id="claim-preview"
+          class="reveal-up mt-16 rounded-2xl border border-sky-400/35 bg-[#111A29] p-6 sm:p-8"
+        >
+          <div class="grid gap-8 lg:grid-cols-12">
+            <div class="lg:col-span-6">
+              <span class="inline-flex items-center rounded-full border border-emerald-400/35 bg-emerald-500/15 px-3 py-1 text-xs font-bold text-emerald-300">
+                For {prospect.businessName} Owner
+              </span>
+              <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50">
+                Want to Put This Quote Page in Your Bio?
+              </h2>
+              <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
+                Claim this private preview to swap in up to 6 of your real job
+                photos, set your exact Sedan/SUV/Truck prices, and route real
+                customer quote alerts straight to your inbox within 24 hours (
+                <strong class="text-slate-100">{foundingSetupText}</strong>).
+              </p>
+
+              {foundingCheckoutUrl && (
+                <div class="mt-5">
+                  <a
+                    href={foundingCheckoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-5 py-3 text-sm font-bold text-[#051B11] transition-colors hover:bg-emerald-300"
+                  >
+                    Activate Directly via Founding Checkout
+                  </a>
+                </div>
+              )}
+
+              <details class="mt-6 rounded-xl border border-slate-800 bg-[#0C1017]/80 p-3.5 text-xs">
+                <summary class="cursor-pointer select-none font-semibold text-slate-300 hover:text-white">
+                  Owner of {prospect.businessName}? Request edits or removal
+                </summary>
+                <form id="removal-request-form" class="mt-3 space-y-2.5">
+                  <p class="text-[#CBD5E1]">
+                    This unlisted preview was built strictly as a private
+                    demonstration (noindex). Enter your name and contact below
+                    and we will remove or update it promptly.
+                  </p>
+                  <div class="grid gap-2 sm:grid-cols-2">
+                    <input
+                      name="ownerName"
+                      type="text"
+                      required
+                      placeholder="Your name"
+                      class="w-full rounded-lg border border-slate-700 bg-[#151D2A] px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
+                    />
+                    <input
+                      name="contactInfo"
+                      type="text"
+                      required
+                      placeholder="Email or Instagram handle"
+                      class="w-full rounded-lg border border-slate-700 bg-[#151D2A] px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
+                    />
+                  </div>
+                  <div
+                    id="removal-feedback"
+                    class="hidden rounded-lg px-3 py-2 text-xs font-semibold"
+                  />
+                  <button
+                    type="submit"
+                    class="rounded-lg border border-slate-600 bg-[#151D2A] px-3.5 py-2 text-xs font-bold text-slate-200 hover:border-red-400/50 hover:text-red-200"
+                  >
+                    Submit Removal / Edit Request
+                  </button>
+                </form>
+              </details>
+            </div>
+
+            <div class="lg:col-span-6">
+              <form
+                id="claim-preview-form"
+                class="rounded-2xl border border-slate-700/80 bg-[#0C1017]/90 p-5 space-y-3.5"
+              >
+                <div class="text-sm font-bold text-slate-50">
+                  Claim &amp; Customize This Preview (24-Hr Turnaround)
+                </div>
+                <div class="hidden" aria-hidden="true">
+                  <input
+                    name="website_url"
+                    type="text"
+                    tabindex="-1"
+                    autocomplete="off"
+                    value=""
+                  />
+                </div>
+                <div class="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label
+                      for="claimOwnerName"
+                      class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200"
+                    >
+                      Your Name *
+                    </label>
+                    <input
+                      id="claimOwnerName"
+                      name="ownerName"
+                      type="text"
+                      required
+                      placeholder="Jordan"
+                      class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="claimContactInfo"
+                      class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200"
+                    >
+                      Email or Mobile Number *
+                    </label>
+                    <input
+                      id="claimContactInfo"
+                      name="contactInfo"
+                      type="text"
+                      required
+                      placeholder="owner@shop.com or phone"
+                      class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    for="claimNotes"
+                    class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200"
+                  >
+                    Price or Photo Notes (Optional)
+                  </label>
+                  <input
+                    id="claimNotes"
+                    name="notes"
+                    type="text"
+                    placeholder="e.g. Swap my 6 IG photos and set Full Detail to $175"
+                    class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
+                  />
+                </div>
+                <div
+                  id="claim-feedback"
+                  class="hidden rounded-xl px-3.5 py-2.5 text-xs font-semibold"
+                />
+                <button
+                  id="claim-submit-btn"
+                  type="submit"
+                  class="w-full rounded-xl bg-[#38BDF8] px-5 py-3 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
+                >
+                  Claim &amp; Activate My Quote Page
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+      )}
     </main>
 
     {/* Persistent Sticky Live Quote Dock */}
@@ -1195,7 +1317,27 @@ const glossReadings = [
               <strong>Preview Mode Safety:</strong> No automated email or SMS
               was sent. Once {prospect.businessName} activates this page (
               {foundingSetupText}), real customer leads route straight to your
-              phone/inbox with your real job photos live.
+              inbox with your real job photos live.
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2.5">
+              <button
+                id="modal-claim-btn"
+                type="button"
+                class="inline-flex items-center justify-center rounded-xl bg-emerald-400 px-4 py-2.5 text-xs font-bold text-[#051B11] transition-colors hover:bg-emerald-300"
+              >
+                Claim &amp; Activate This Page
+              </button>
+              {foundingCheckoutUrl && (
+                <a
+                  href={foundingCheckoutUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-4 py-2.5 text-xs font-bold text-emerald-200 transition-colors hover:bg-emerald-500/25"
+                >
+                  Direct Founding Checkout
+                </a>
+              )}
             </div>
           </>
         ) : (
@@ -1271,6 +1413,9 @@ const glossReadings = [
         defaultPackageId: defaultPkg?.id ?? "",
         defaultPackageName: defaultPkg?.name ?? "",
         businessName: prospect.businessName,
+        prospectSlug: prospect.slug,
+        prospectCity: prospect.city,
+        prospectCountry: prospect.country,
         dialableDigits: hasDialablePhone ? phoneDigits : "",
         isFounderSelfTest,
       }}
@@ -1482,10 +1627,11 @@ const glossReadings = [
           });
         });
 
-        // Interactive Before / After toggles on Job Proof cards
+        // Interactive Before / After toggles on Job Proof cards (notes + optional before image)
         document.querySelectorAll("[data-proof-card]").forEach((card) => {
           const buttons = card.querySelectorAll(".proof-tab-btn");
           const noteEl = card.querySelector(".proof-note");
+          const imgEl = card.querySelector(".proof-img");
           if (!noteEl) return;
 
           buttons.forEach((btn) => {
@@ -1498,18 +1644,122 @@ const glossReadings = [
                   : "proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#CBD5E1] hover:text-white";
               });
               if (mode === "before") {
-                noteEl.textContent =
-                  noteEl.getAttribute("data-before-text") || "";
-                noteEl.className =
-                  "proof-note mt-2 text-xs leading-snug text-amber-200";
+                noteEl.textContent = noteEl.getAttribute("data-before-text") || "";
+                noteEl.className = "proof-note mt-2.5 text-xs leading-snug text-amber-200";
+                const beforeSrc = imgEl?.getAttribute("data-before-src");
+                if (imgEl && beforeSrc) imgEl.setAttribute("src", beforeSrc);
               } else {
-                noteEl.textContent =
-                  noteEl.getAttribute("data-after-text") || "";
-                noteEl.className =
-                  "proof-note mt-2 text-xs leading-snug text-emerald-300";
+                noteEl.textContent = noteEl.getAttribute("data-after-text") || "";
+                noteEl.className = "proof-note mt-2.5 text-xs leading-snug text-emerald-300";
+                const afterSrc = imgEl?.getAttribute("data-after-src");
+                if (imgEl && afterSrc) imgEl.setAttribute("src", afterSrc);
               }
             });
           });
+        });
+
+        // Preview Claim & Removal Forms
+        const modalClaimBtn = document.getElementById("modal-claim-btn");
+        modalClaimBtn?.addEventListener("click", () => {
+          closeModal();
+          const claimSection = document.getElementById("claim-preview");
+          claimSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+          const nameInput = document.getElementById("claimOwnerName");
+          if (nameInput) setTimeout(() => nameInput.focus(), 350);
+        });
+
+        const claimForm = document.getElementById("claim-preview-form");
+        const claimFeedback = document.getElementById("claim-feedback");
+        const claimSubmitBtn = document.getElementById("claim-submit-btn");
+        claimForm?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          if (!claimForm || !claimFeedback || !claimSubmitBtn) return;
+          claimFeedback.classList.add("hidden");
+          const fd = new FormData(claimForm);
+          const orig = claimSubmitBtn.textContent;
+          claimSubmitBtn.setAttribute("disabled", "true");
+          claimSubmitBtn.textContent = "Submitting Claim...";
+          try {
+            const res = await fetch("/api/inquiries", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                inquiryType: "claim_page",
+                slug: prospectSlug,
+                businessName,
+                ownerName: String(fd.get("ownerName") || ""),
+                contactInfo: String(fd.get("contactInfo") || ""),
+                city: prospectCity,
+                country: prospectCountry,
+                planTier: "founding",
+                notes: String(fd.get("notes") || ""),
+                website_url: String(fd.get("website_url") || ""),
+              }),
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok || !data?.ok) {
+              claimFeedback.textContent =
+                data?.error || "Could not submit claim. Please check your details.";
+              claimFeedback.className =
+                "rounded-xl border border-red-400/40 bg-red-950/60 px-3.5 py-2.5 text-xs font-semibold text-red-200";
+              return;
+            }
+            claimFeedback.textContent =
+              "Claim received! We will reach out shortly to swap in your real photos and activate Live Mode within 24 hours.";
+            claimFeedback.className =
+              "rounded-xl border border-emerald-400/40 bg-emerald-950/60 px-3.5 py-2.5 text-xs font-semibold text-emerald-200";
+            claimForm.reset();
+          } catch {
+            claimFeedback.textContent = "Network error submitting claim. Please try again.";
+            claimFeedback.className =
+              "rounded-xl border border-red-400/40 bg-red-950/60 px-3.5 py-2.5 text-xs font-semibold text-red-200";
+          } finally {
+            claimSubmitBtn.removeAttribute("disabled");
+            claimSubmitBtn.textContent = orig;
+          }
+        });
+
+        const removalForm = document.getElementById("removal-request-form");
+        const removalFeedback = document.getElementById("removal-feedback");
+        removalForm?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          if (!removalForm || !removalFeedback) return;
+          removalFeedback.classList.add("hidden");
+          const fd = new FormData(removalForm);
+          try {
+            const res = await fetch("/api/inquiries", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                inquiryType: "removal_request",
+                slug: prospectSlug,
+                businessName,
+                ownerName: String(fd.get("ownerName") || ""),
+                contactInfo: String(fd.get("contactInfo") || ""),
+                city: prospectCity,
+                country: prospectCountry,
+                planTier: "founding",
+                notes: "Owner requested preview edit or removal.",
+                website_url: "",
+              }),
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok || !data?.ok) {
+              removalFeedback.textContent = data?.error || "Could not submit request.";
+              removalFeedback.className =
+                "rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-xs font-semibold text-red-200";
+              return;
+            }
+            removalFeedback.textContent =
+              "Request logged. We will update or remove this preview promptly.";
+            removalFeedback.className =
+              "rounded-lg border border-emerald-400/40 bg-emerald-950/60 px-3 py-2 text-xs font-semibold text-emerald-200";
+            removalForm.reset();
+          } catch {
+            removalFeedback.textContent = "Network error submitting request.";
+            removalFeedback.className =
+              "rounded-lg border border-red-400/40 bg-red-950/60 px-3 py-2 text-xs font-semibold text-red-200";
+          }
         });
 
         function closeModal() {
@@ -1631,15 +1881,11 @@ const glossReadings = [
 
               modal.classList.remove("hidden");
               modal.classList.add("flex");
-              form.reset();
-              addonCheckboxes.forEach((cb) => {
-                const parentLabel = cb.closest(".addon-label");
-                if (parentLabel) {
-                  parentLabel.className =
-                    "addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-3.5 hover:border-sky-400/50";
-                }
+              // Clear contact fields only so the calculator summary stays synced with the modal
+              ["customerName", "customerPhone", "customerPostal", "notes"].forEach((id) => {
+                const inputEl = document.getElementById(id);
+                if (inputEl && "value" in inputEl) inputEl.value = "";
               });
-              updatePricingDisplay();
             }
           } catch {
             errorBox.textContent =

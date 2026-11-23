@@ -5,5 +5,8 @@ IP_HASH_SALT=change_me_to_random_32_char_secret
 # Required for live client email notifications (must use a verified Resend sending domain)
 RESEND_API_KEY=
 RESEND_FROM_EMAIL=QuotesDock Alerts <alerts@yourdomain.com>
-# Optional fallback email alerted if a live client email notification fails
+# Optional fallback email alerted if a live client email notification fails or a shop requests a preview
 FOUNDER_ALERT_EMAIL=
+# Optional Merchant-of-Record checkout links (Polar.sh / Lemon Squeezy)
+FOUNDING_CHECKOUT_URL=
+STANDARD_CHECKOUT_URL=

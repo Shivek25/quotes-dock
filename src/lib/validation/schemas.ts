@@ -75,6 +75,30 @@ export const updateOutreachDraftSchema = z.object({
     .optional(),
 });
 
+const safePhotoUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .refine(
+    (val) =>
+      val === '' ||
+      val.startsWith('/') ||
+      val.startsWith('https://'),
+    'Photo URLs must start with https:// or /'
+  );
+
+export const galleryItemEditSchema = z.object({
+  id: z.string().trim().min(1).max(40).optional(),
+  title: z.string().trim().min(2, 'Job title is too short').max(100),
+  vehicleLabel: z.string().trim().min(2, 'Vehicle label is too short').max(80),
+  servicePerformed: z.string().trim().min(2, 'Service performed is too short').max(100),
+  resultSummary: z.string().trim().max(260).optional().default(''),
+  beforeNote: z.string().trim().max(160).optional().default(''),
+  afterNote: z.string().trim().max(160).optional().default(''),
+  imageUrl: safePhotoUrlSchema.optional().default(''),
+  beforeImageUrl: safePhotoUrlSchema.optional().default(''),
+});
+
 export const updateProspectModeSchema = z.object({
   prospectId: z.string().trim().min(2).max(80),
   mode: z.enum(['preview', 'live']).optional(),
@@ -90,20 +114,11 @@ export const updateProspectModeSchema = z.object({
     (val) => (val === '' || val === null || val === undefined ? undefined : val),
     z.coerce.number().int().min(45).max(1000).optional()
   ),
-  photoUrls: z
-    .array(
-      z
-        .string()
-        .trim()
-        .max(500)
-        .refine(
-          (val) =>
-            val === '' ||
-            val.startsWith('/') ||
-            val.startsWith('https://'),
-          'Photo URLs must start with https:// or /'
-        )
-    )
+  photoUrls: z.array(safePhotoUrlSchema).max(6).optional(),
+  galleryItems: z.array(galleryItemEditSchema).max(6).optional(),
+  trustPoints: z
+    .array(z.string().trim().min(2).max(90))
+    .min(1)
     .max(6)
     .optional(),
 });
@@ -135,4 +150,43 @@ export const upsertCandidatesBatchSchema = z.object({
 export const updateCandidateStatusSchema = z.object({
   id: z.string().trim().min(2).max(80),
   status: z.enum(['new', 'promoted', 'dismissed']),
+});
+
+export const newInquirySchema = z.object({
+  inquiryType: z
+    .enum(['free_preview_request', 'claim_page', 'removal_request'])
+    .default('free_preview_request'),
+  prospectId: z.string().trim().max(80).optional().default(''),
+  slug: z
+    .string()
+    .trim()
+    .max(80)
+    .regex(/^[a-z0-9-]*$/, 'Invalid page slug')
+    .optional()
+    .default(''),
+  businessName: z
+    .string()
+    .trim()
+    .min(2, 'Please enter your detailing business name')
+    .max(120),
+  ownerName: z
+    .string()
+    .trim()
+    .min(2, 'Please enter your name')
+    .max(80),
+  contactInfo: z
+    .string()
+    .trim()
+    .min(4, 'Please enter an email, mobile number, or Instagram handle')
+    .max(160),
+  city: z.string().trim().max(80).optional().default(''),
+  country: z.enum(['US', 'UK']).default('US'),
+  planTier: z.enum(['founding', 'standard']).default('founding'),
+  notes: z.string().trim().max(500).optional().default(''),
+  website_url: z.string().max(0).optional().default(''),
+});
+
+export const updateInquiryStatusSchema = z.object({
+  id: z.string().trim().min(2).max(80),
+  status: z.enum(['new', 'contacted', 'paid', 'archived']),
 });

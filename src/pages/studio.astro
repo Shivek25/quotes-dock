@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import {
+  listInboundInquiries,
   listLeadCandidates,
   listProspectsWithStats,
 } from '../lib/db/repository';
@@ -42,6 +43,8 @@ if (Astro.request.method === 'POST' && configuredKey) {
 const authorized = await isStudioAuthorized(Astro.request, Astro.cookies, env);
 const items = authorized ? await listProspectsWithStats(env.DB) : [];
 const leadCandidates = authorized ? await listLeadCandidates(env.DB) : [];
+const inboundInquiries = authorized ? await listInboundInquiries(env.DB) : [];
+const activeInquiries = inboundInquiries.filter((inq) => inq.status !== 'archived');
 
 const realItems = items.filter((item) => !isSandboxDemoSlug(item.prospect.slug));
 const sandboxItems = items.filter((item) => isSandboxDemoSlug(item.prospect.slug));
@@ -429,8 +432,142 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
           </form>
         </section>
 
-        {/* Right Column: Scouted Leads Queue + Human Approval Outreach Queue */}
+        {/* Right Column: Inbound Inquiries + Scouted Leads Queue + Human Approval Outreach Queue */}
         <section class="space-y-6 lg:col-span-8">
+          {/* Inbound Claims & Free Preview Requests Inbox */}
+          <details
+            id="inbound-inquiries-panel"
+            open={activeInquiries.length > 0}
+            class="glass-panel anisotropic-border rounded-2xl border border-emerald-400/30 p-5"
+          >
+            <summary class="flex cursor-pointer select-none flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2.5">
+                <span class="text-lg font-bold text-slate-50">
+                  Inbound Claims &amp; Preview Requests
+                </span>
+                <span
+                  id="inquiries-count-badge"
+                  class={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${
+                    activeInquiries.length > 0
+                      ? 'border-emerald-400/40 bg-emerald-500/20 text-emerald-300'
+                      : 'border-slate-700 bg-slate-800 text-slate-300'
+                  }`}
+                >
+                  {activeInquiries.length} active
+                </span>
+              </div>
+              <span class="text-xs font-semibold text-[#CBD5E1]">
+                Click to collapse / expand
+              </span>
+            </summary>
+
+            <div class="mt-4 space-y-3">
+              {activeInquiries.length === 0 ? (
+                <div class="rounded-xl border border-dashed border-slate-700 p-4 text-center text-xs text-[#CBD5E1]">
+                  No active claims or homepage preview requests yet. Inbound detailer requests from / and /p/[slug] appear here automatically.
+                </div>
+              ) : (
+                activeInquiries.map((inq) => {
+                  const typeBadge =
+                    inq.inquiryType === 'claim_page'
+                      ? { label: 'Page Claim', cls: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40' }
+                      : inq.inquiryType === 'removal_request'
+                        ? { label: 'Removal / Edit Request', cls: 'bg-red-500/20 text-red-200 border-red-400/40' }
+                        : { label: 'Free Preview Request', cls: 'bg-sky-400/15 text-[#7DD3FC] border-sky-400/40' };
+                  return (
+                    <article
+                      class="inquiry-card rounded-xl border border-slate-700/80 bg-[#0C1017]/90 p-4"
+                      data-inquiry-card={inq.id}
+                    >
+                      <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div class="min-w-0 flex-1">
+                          <div class="flex flex-wrap items-center gap-2">
+                            <span class={`rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${typeBadge.cls}`}>
+                              {typeBadge.label}
+                            </span>
+                            <h3 class="text-sm font-bold text-slate-50">
+                              {inq.businessName}
+                            </h3>
+                            {inq.city && (
+                              <span class="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-slate-200">
+                                {inq.city} ({inq.country})
+                              </span>
+                            )}
+                            <span class="inquiry-status-pill rounded-full border border-slate-600 bg-slate-800 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-200">
+                              {inq.status}
+                            </span>
+                          </div>
+                          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#CBD5E1]">
+                            <span>Owner: <strong class="text-slate-100">{inq.ownerName}</strong></span>
+                            <span>Contact: <strong class="text-slate-100">{inq.contactInfo}</strong></span>
+                            <span>Plan: <strong class="text-[#7DD3FC] uppercase">{inq.planTier}</strong></span>
+                            {inq.slug && (
+                              <a
+                                href={`/p/${inq.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="font-bold text-[#7DD3FC] underline underline-offset-2 hover:text-white"
+                              >
+                                /p/{inq.slug}
+                              </a>
+                            )}
+                          </div>
+                          {inq.notes && (
+                            <p class="mt-2 rounded-lg border border-slate-800 bg-[#151D2A]/80 px-3 py-1.5 text-xs text-slate-200">
+                              {inq.notes}
+                            </p>
+                          )}
+                        </div>
+
+                        <div class="flex shrink-0 flex-wrap items-center gap-1.5">
+                          {inq.inquiryType === 'free_preview_request' && (
+                            <button
+                              type="button"
+                              data-inquiry-load={JSON.stringify({
+                                businessName: inq.businessName,
+                                city: inq.city,
+                                country: inq.country,
+                                contactInfo: inq.contactInfo,
+                                notes: inq.notes || '',
+                              })}
+                              class="load-inquiry-btn rounded-lg bg-[#38BDF8] px-2.5 py-1.5 text-[11px] font-bold text-[#06131F] hover:bg-[#7DD3FC]"
+                            >
+                              Load into Form
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            data-inquiry-id={inq.id}
+                            data-inquiry-status="contacted"
+                            class="inquiry-status-btn rounded-lg border border-sky-400/40 bg-sky-400/10 px-2.5 py-1.5 text-[11px] font-bold text-[#7DD3FC] hover:bg-sky-400/20"
+                          >
+                            Contacted
+                          </button>
+                          <button
+                            type="button"
+                            data-inquiry-id={inq.id}
+                            data-inquiry-status="paid"
+                            class="inquiry-status-btn rounded-lg border border-emerald-400/40 bg-emerald-500/15 px-2.5 py-1.5 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25"
+                          >
+                            Paid
+                          </button>
+                          <button
+                            type="button"
+                            data-inquiry-id={inq.id}
+                            data-inquiry-status="archived"
+                            class="inquiry-status-btn rounded-lg border border-slate-600 bg-[#151D2A] px-2.5 py-1.5 text-[11px] font-bold text-slate-300 hover:border-red-400/40 hover:text-red-200"
+                          >
+                            Archive
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })
+              )}
+            </div>
+          </details>
+
           {/* Scouted Leads Staging Queue */}
           <details
             id="scouted-queue-panel"
@@ -783,17 +920,110 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
 
                         <div>
                           <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-200">
-                            Swap Up to 6 Real Owner Job Photo URLs
+                            Editable Service &amp; Mobile Rig Highlights (4 Truthful Points)
                           </div>
                           <div class="mt-1.5 grid gap-2 sm:grid-cols-2">
-                            {prospect.gallery.slice(0, 6).map((slot, idx) => (
+                            {[0, 1, 2, 3].map((tIdx) => (
                               <input
-                                name={`photoUrl_${idx}`}
+                                name={`trustPoint_${tIdx}`}
                                 type="text"
-                                value={slot.imageUrl ?? ''}
-                                placeholder={`Photo #${idx + 1} (${slot.title})`}
+                                aria-label={`Service highlight ${tIdx + 1}`}
+                                value={prospect.trustPoints[tIdx] ?? ''}
+                                placeholder={`Highlight #${tIdx + 1} (e.g. Own Water & Power)`}
                                 class="w-full rounded-lg border border-slate-600/80 bg-[#151D2A] px-2.5 py-1.5 text-xs text-slate-50 placeholder:text-slate-400"
                               />
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-200">
+                              6 Job Proof Cards (R2 Photo Upload + Editable Captions)
+                            </span>
+                            <span class="text-[11px] text-[#CBD5E1]">
+                              Live Mode only displays cards that have a real photo uploaded or linked.
+                            </span>
+                          </div>
+                          <div class="mt-2 grid gap-3 sm:grid-cols-2">
+                            {prospect.gallery.slice(0, 6).map((slot, idx) => (
+                              <div
+                                class="rounded-xl border border-slate-800 bg-[#151D2A]/75 p-3 space-y-2"
+                                data-gallery-slot={idx}
+                              >
+                                <div class="flex items-center justify-between gap-2">
+                                  <span class="font-mono text-[11px] font-bold text-[#7DD3FC]">
+                                    SLOT #0{idx + 1}
+                                  </span>
+                                  <label class="cursor-pointer rounded-md border border-sky-400/40 bg-sky-400/15 px-2 py-1 text-[11px] font-bold text-[#7DD3FC] hover:bg-sky-400/25">
+                                    <span>Upload R2 Photo</span>
+                                    <input
+                                      type="file"
+                                      name={`r2Upload_${idx}`}
+                                      aria-label={`Upload R2 photo for slot ${idx + 1}`}
+                                      accept="image/jpeg,image/png,image/webp"
+                                      data-upload-prospect={prospect.id}
+                                      data-upload-slot={idx}
+                                      class="r2-upload-input hidden"
+                                    />
+                                  </label>
+                                </div>
+
+                                <div class={`slot-thumb-wrap ${slot.imageUrl ? '' : 'hidden'}`}>
+                                  <img
+                                    src={slot.imageUrl ?? ''}
+                                    alt={slot.title}
+                                    class="slot-thumb h-24 w-full rounded-lg border border-slate-700 object-cover"
+                                  />
+                                </div>
+
+                                <input
+                                  name={`photoUrl_${idx}`}
+                                  type="text"
+                                  value={slot.imageUrl ?? ''}
+                                  placeholder="Photo URL (/api/media/... or https://...)"
+                                  class="slot-url-input w-full rounded-lg border border-slate-600/80 bg-[#0C1017] px-2.5 py-1.5 text-xs text-slate-50 placeholder:text-slate-400"
+                                />
+                                <input
+                                  name={`jobTitle_${idx}`}
+                                  type="text"
+                                  value={slot.title}
+                                  placeholder="Job Title (e.g. Black SUV Gloss Reset)"
+                                  class="w-full rounded-lg border border-slate-700 bg-[#0C1017] px-2.5 py-1 text-xs text-slate-100 placeholder:text-slate-400"
+                                />
+                                <div class="grid grid-cols-2 gap-1.5">
+                                  <input
+                                    name={`jobVehicle_${idx}`}
+                                    type="text"
+                                    value={slot.vehicleLabel}
+                                    placeholder="Vehicle (e.g. 2023 BMW X5)"
+                                    class="w-full rounded-lg border border-slate-700 bg-[#0C1017] px-2 py-1 text-[11px] text-slate-100 placeholder:text-slate-400"
+                                  />
+                                  <input
+                                    name={`jobService_${idx}`}
+                                    type="text"
+                                    value={slot.servicePerformed}
+                                    placeholder="Service performed"
+                                    class="w-full rounded-lg border border-slate-700 bg-[#0C1017] px-2 py-1 text-[11px] text-slate-100 placeholder:text-slate-400"
+                                  />
+                                </div>
+                                <div class="grid grid-cols-2 gap-1.5">
+                                  <input
+                                    name={`jobBefore_${idx}`}
+                                    type="text"
+                                    value={slot.beforeNote}
+                                    placeholder="Before note"
+                                    class="w-full rounded-lg border border-slate-700 bg-[#0C1017] px-2 py-1 text-[11px] text-slate-200 placeholder:text-slate-400"
+                                  />
+                                  <input
+                                    name={`jobAfter_${idx}`}
+                                    type="text"
+                                    value={slot.afterNote}
+                                    placeholder="After note"
+                                    class="w-full rounded-lg border border-slate-700 bg-[#0C1017] px-2 py-1 text-[11px] text-slate-200 placeholder:text-slate-400"
+                                  />
+                                </div>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -1354,14 +1584,155 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
         });
       });
 
+      // Inbound Inquiries Inbox handlers
+      document.querySelectorAll('.load-inquiry-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const raw = btn.getAttribute('data-inquiry-load');
+          if (!raw || !form) return;
+          try {
+            const inq = JSON.parse(raw);
+            const setVal = (id, val) => {
+              const el = document.getElementById(id);
+              if (el) el.value = val ?? '';
+            };
+            setVal('businessName', inq.businessName);
+            setVal('city', inq.city);
+            setVal('country', inq.country || 'US');
+            setVal('serviceArea', inq.city ? `${inq.city} & surrounding areas` : '');
+            const contact = String(inq.contactInfo || '').trim();
+            if (contact.startsWith('@') || contact.includes('instagram.com')) {
+              setVal('instagramHandle', contact);
+            } else if (/^[\d\s()+-]{7,}$/.test(contact)) {
+              setVal('phoneDisplay', contact);
+              setVal('instagramHandle', `@${inq.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '')}`);
+            } else {
+              setVal('instagramHandle', `@${inq.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '')}`);
+            }
+            setVal(
+              'personalizationNote',
+              inq.notes || `Requested a custom mobile quote preview directly via QuotesDock (${contact})`
+            );
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showToast('Inquiry loaded into Studio form');
+          } catch {
+            showToast('Could not load inquiry into form.', 'error');
+          }
+        });
+      });
+
+      document.querySelectorAll('.inquiry-status-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-inquiry-id');
+          const status = btn.getAttribute('data-inquiry-status');
+          if (!id || !status) return;
+          btn.setAttribute('disabled', 'true');
+          try {
+            const res = await fetch('/api/inquiries', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id, status }),
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok || !data?.ok) {
+              showToast(data?.error || 'Could not update inquiry.', 'error');
+              return;
+            }
+            const card = document.querySelector(`[data-inquiry-card="${id}"]`);
+            if (status === 'archived') {
+              card?.remove();
+              const remaining = document.querySelectorAll('.inquiry-card').length;
+              const badge = document.getElementById('inquiries-count-badge');
+              if (badge) badge.textContent = `${remaining} active`;
+              showToast('Inquiry archived');
+            } else {
+              const pill = card?.querySelector('.inquiry-status-pill');
+              if (pill) pill.textContent = status;
+              showToast(`Inquiry marked ${status}`);
+            }
+          } catch {
+            showToast('Network error updating inquiry.', 'error');
+          } finally {
+            btn.removeAttribute('disabled');
+          }
+        });
+      });
+
+      // Cloudflare R2 Direct Photo Upload handler
+      document.querySelectorAll('.r2-upload-input').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const file = input.files?.[0];
+          const prospectId = input.getAttribute('data-upload-prospect');
+          if (!file || !prospectId) return;
+
+          const slotBox = input.closest('[data-gallery-slot]');
+          const labelSpan = input.closest('label')?.querySelector('span');
+          const urlInput = slotBox?.querySelector('.slot-url-input');
+          const thumbWrap = slotBox?.querySelector('.slot-thumb-wrap');
+          const thumbImg = slotBox?.querySelector('.slot-thumb');
+
+          const origText = labelSpan?.textContent || 'Upload R2 Photo';
+          if (labelSpan) labelSpan.textContent = 'Uploading...';
+          input.disabled = true;
+
+          try {
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('prospectId', prospectId);
+
+            const res = await fetch('/api/media/upload', {
+              method: 'POST',
+              body: fd,
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok || !data?.ok || !data?.url) {
+              showToast(data?.error || 'Photo upload failed.', 'error');
+              return;
+            }
+
+            if (urlInput) urlInput.value = data.url;
+            if (thumbImg) thumbImg.setAttribute('src', data.url);
+            if (thumbWrap) thumbWrap.classList.remove('hidden');
+            showToast('Uploaded to R2! Click Save Client Changes to publish.');
+          } catch {
+            showToast('Network error uploading photo.', 'error');
+          } finally {
+            if (labelSpan) labelSpan.textContent = origText;
+            input.disabled = false;
+            input.value = '';
+          }
+        });
+      });
+
       async function submitEditForm(editForm, nextMode) {
         const prospectId = editForm.getAttribute('data-prospect-id');
         if (!prospectId) return;
 
         const fd = new FormData(editForm);
-        const photoUrls = [];
+        const galleryItems = [];
         for (let i = 0; i < 6; i += 1) {
-          photoUrls.push(String(fd.get(`photoUrl_${i}`) || '').trim());
+          const title = String(fd.get(`jobTitle_${i}`) || '').trim();
+          const vehicleLabel = String(fd.get(`jobVehicle_${i}`) || '').trim();
+          const servicePerformed = String(fd.get(`jobService_${i}`) || '').trim();
+          const beforeNote = String(fd.get(`jobBefore_${i}`) || '').trim();
+          const afterNote = String(fd.get(`jobAfter_${i}`) || '').trim();
+          const imageUrl = String(fd.get(`photoUrl_${i}`) || '').trim();
+          if (title && vehicleLabel && servicePerformed) {
+            galleryItems.push({
+              id: `job-${i + 1}`,
+              title,
+              vehicleLabel,
+              servicePerformed,
+              beforeNote,
+              afterNote,
+              imageUrl,
+            });
+          }
+        }
+
+        const trustPoints = [];
+        for (let t = 0; t < 4; t += 1) {
+          const pt = String(fd.get(`trustPoint_${t}`) || '').trim();
+          if (pt.length >= 2) trustPoints.push(pt);
         }
 
         const payload = {
@@ -1372,7 +1743,8 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
           baseSedanPrice: fd.get('baseSedanPrice')
             ? Number(fd.get('baseSedanPrice'))
             : undefined,
-          photoUrls,
+          galleryItems,
+          trustPoints: trustPoints.length > 0 ? trustPoints : undefined,
         };
         if (nextMode) {
           payload.mode = nextMode;

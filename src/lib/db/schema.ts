@@ -126,6 +126,9 @@ export interface ParsedProspect extends Omit<
 }
 
 export type CandidateStatus = 'new' | 'promoted' | 'dismissed';
+export type InquiryType = 'free_preview_request' | 'claim_page' | 'removal_request';
+export type InquiryStatus = 'new' | 'contacted' | 'paid' | 'archived';
+export type PlanTier = 'founding' | 'standard';
 
 export const leadCandidates = sqliteTable('lead_candidates', {
   id: text('id').primaryKey(),
@@ -158,3 +161,22 @@ export interface ParsedLeadCandidate extends Omit<
   hasInstantQuote: boolean;
   status: CandidateStatus;
 }
+
+export const inboundInquiries = sqliteTable('inbound_inquiries', {
+  id: text('id').primaryKey(),
+  inquiryType: text('inquiry_type').notNull().default('free_preview_request'),
+  prospectId: text('prospect_id'),
+  slug: text('slug'),
+  businessName: text('business_name').notNull(),
+  ownerName: text('owner_name').notNull(),
+  contactInfo: text('contact_info').notNull(),
+  city: text('city').notNull().default(''),
+  country: text('country').notNull().default('US'),
+  planTier: text('plan_tier').notNull().default('founding'),
+  notes: text('notes'),
+  status: text('status').notNull().default('new'),
+  ipHash: text('ip_hash').notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+export type InboundInquiryRow = typeof inboundInquiries.$inferSelect;
