@@ -5,9 +5,11 @@ export type D1Database = Parameters<typeof drizzle>[0];
 import {
   inboundInquiries,
   leadCandidates,
+  mediaAssets,
   outreachDrafts,
   prospects,
   quoteRequests,
+  type AvailabilityStatus,
   type CandidateStatus,
   type ConditionLevel,
   type CountryCode,
@@ -18,6 +20,8 @@ import {
   type InquiryType,
   type JobProofItem,
   type LeadCandidateRow,
+  type LeadStatus,
+  type MediaAssetRow,
   type OutreachApprovalStatus,
   type OutreachDraftRow,
   type ParsedLeadCandidate,
@@ -52,7 +56,27 @@ function safeParseJson<T>(raw: string, fallback: T): T {
   }
 }
 
+export function generateOwnerPortalToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+export function badgeForAvailability(status: AvailabilityStatus): string {
+  if (status === 'limited') return 'Limited Driveway Slots This Week';
+  if (status === 'booked_out') return 'Booked This Week - Next-Week Waitlist Open';
+  return 'Same-Week Driveway Slots Open';
+}
+
 export function parseProspectRow(row: ProspectRow): ParsedProspect {
+  const availability: AvailabilityStatus =
+    row.availabilityStatus === 'limited'
+      ? 'limited'
+      : row.availabilityStatus === 'booked_out'
+        ? 'booked_out'
+        : 'open';
   return {
     id: row.id,
     slug: row.slug,
@@ -79,6 +103,9 @@ export function parseProspectRow(row: ProspectRow): ParsedProspect {
     personalizationNote: row.personalizationNote,
     mode: (row.mode === 'live' ? 'live' : 'preview') as ProspectMode,
     ownerEmail: row.ownerEmail ?? null,
+    ownerPortalToken: row.ownerPortalToken ?? null,
+    webhookUrl: row.webhookUrl ?? null,
+    availabilityStatus: availability,
     createdAt: row.createdAt,
   };
 }
@@ -117,6 +144,9 @@ async function insertSeedBundle(d1: D1Database, bundle: SeedProspectBundle): Pro
       personalizationNote: p.personalizationNote,
       mode: p.mode,
       ownerEmail: p.ownerEmail,
+      ownerPortalToken: generateOwnerPortalToken(),
+      webhookUrl: null,
+      availabilityStatus: 'open',
       createdAt: p.createdAt,
     })
     .onConflictDoNothing();
@@ -169,9 +199,13 @@ async function createFallbackSchema(d1: D1Database): Promise<void> {
       personalization_note TEXT NOT NULL,
       mode TEXT NOT NULL DEFAULT 'preview',
       owner_email TEXT,
+      owner_portal_token TEXT,
+      webhook_url TEXT,
+      availability_status TEXT NOT NULL DEFAULT 'open',
       created_at TEXT NOT NULL
     )`),
     d1.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_prospects_slug ON prospects (slug)`),
+    d1.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_prospects_owner_portal_token ON prospects (owner_portal_token)`),
     d1.prepare(`CREATE TABLE IF NOT EXISTS quote_requests (
       id TEXT PRIMARY KEY NOT NULL,
       prospect_id TEXT NOT NULL,
@@ -189,6 +223,7 @@ async function createFallbackSchema(d1: D1Database): Promise<void> {
       preferred_timing TEXT NOT NULL,
       notes TEXT,
       is_preview_test INTEGER NOT NULL DEFAULT 1,
+      lead_status TEXT NOT NULL DEFAULT 'new',
       delivery_status TEXT NOT NULL DEFAULT 'not_applicable',
       delivery_error TEXT,
       ip_hash TEXT NOT NULL,
@@ -247,6 +282,15 @@ async function createFallbackSchema(d1: D1Database): Promise<void> {
     )`),
     d1.prepare(`CREATE INDEX IF NOT EXISTS idx_inbound_inquiries_status_created ON inbound_inquiries (status, created_at)`),
     d1.prepare(`CREATE INDEX IF NOT EXISTS idx_inbound_inquiries_ip_created ON inbound_inquiries (ip_hash, created_at)`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS media_assets (
+      key TEXT PRIMARY KEY NOT NULL,
+      prospect_id TEXT NOT NULL,
+      content_type TEXT NOT NULL,
+      data_base64 TEXT NOT NULL,
+      size_bytes INTEGER NOT NULL,
+      created_at TEXT NOT NULL
+    )`),
+    d1.prepare(`CREATE INDEX IF NOT EXISTS idx_media_assets_prospect ON media_assets (prospect_id)`),
   ]);
 }
 
@@ -491,6 +535,7 @@ export async function createQuoteRequest(
     preferredTiming: record.preferredTiming,
     notes: record.notes || null,
     isPreviewTest: record.isPreviewTest ? 1 : 0,
+    leadStatus: 'new',
     deliveryStatus:
       record.deliveryStatus ?? (record.isPreviewTest ? 'preview_only' : 'not_applicable'),
     deliveryError: record.deliveryError ?? null,
@@ -668,6 +713,9 @@ export async function updateProspectMode(
     prospectId: string;
     mode?: ProspectMode;
     ownerEmail?: string;
+    webhookUrl?: string;
+    availabilityStatus?: AvailabilityStatus;
+    rotatePortalToken?: boolean;
     phoneDisplay?: string;
     serviceArea?: string;
     baseSedanPrice?: number;
@@ -757,10 +805,29 @@ export async function updateProspectMode(
     input.ownerEmail !== undefined
       ? input.ownerEmail.trim() || null
       : row.ownerEmail;
+  const nextWebhookUrl =
+    input.webhookUrl !== undefined
+      ? input.webhookUrl.trim() || null
+      : row.webhookUrl;
+  const nextAvailability: AvailabilityStatus =
+    input.availabilityStatus ??
+    (row.availabilityStatus === 'limited'
+      ? 'limited'
+      : row.availabilityStatus === 'booked_out'
+        ? 'booked_out'
+        : 'open');
+  const nextTurnaroundBadge =
+    input.availabilityStatus !== undefined
+      ? badgeForAvailability(nextAvailability)
+      : row.turnaroundBadge;
+  const nextPortalToken =
+    input.rotatePortalToken || !row.ownerPortalToken
+      ? generateOwnerPortalToken()
+      : row.ownerPortalToken;
 
-  if (nextMode === 'live' && !nextOwnerEmail) {
+  if (nextMode === 'live' && !nextOwnerEmail && !nextWebhookUrl) {
     throw new ProspectValidationError(
-      'Add an Owner Alert Email before activating Live Mode so real customer leads are never lost.'
+      'Add an Owner Alert Email or Instant Webhook URL before activating Live Mode so real customer leads are never lost.'
     );
   }
 
@@ -769,6 +836,10 @@ export async function updateProspectMode(
     .set({
       mode: nextMode,
       ownerEmail: nextOwnerEmail,
+      webhookUrl: nextWebhookUrl,
+      ownerPortalToken: nextPortalToken,
+      availabilityStatus: nextAvailability,
+      turnaroundBadge: nextTurnaroundBadge,
       phoneDisplay: nextPhone,
       serviceArea:
         input.serviceArea !== undefined && input.serviceArea.trim()
@@ -801,6 +872,7 @@ export async function deleteProspectById(
   await d1.batch([
     d1.prepare('DELETE FROM quote_requests WHERE prospect_id = ?').bind(prospectId),
     d1.prepare('DELETE FROM outreach_drafts WHERE prospect_id = ?').bind(prospectId),
+    d1.prepare('DELETE FROM media_assets WHERE prospect_id = ?').bind(prospectId),
     d1.prepare('DELETE FROM prospects WHERE id = ?').bind(prospectId),
   ]);
 
@@ -879,21 +951,24 @@ export async function listLeadCandidates(
 
 export async function upsertLeadCandidatesBatch(
   d1: D1Database,
-  items: UpsertCandidateInput[]
+  items: UpsertCandidateInput[],
+  options?: { replaceCity?: boolean }
 ): Promise<{ count: number }> {
   await ensureSchemaAndSeed(d1);
   const db = drizzle(d1);
   const nowIso = new Date().toISOString();
 
-  // Clear unpromoted 'new' rows for these cities so disqualified leads do not linger in the queue
-  const cities = Array.from(
-    new Set(items.map((item) => item.city.trim()).filter(Boolean))
-  );
-  for (const city of cities) {
-    await d1
-      .prepare("DELETE FROM lead_candidates WHERE lower(city) = lower(?) AND status = 'new'")
-      .bind(city)
-      .run();
+  // Only wipe existing 'new' rows for these cities when explicitly requested via --replace-city
+  if (options?.replaceCity) {
+    const cities = Array.from(
+      new Set(items.map((item) => item.city.trim()).filter(Boolean))
+    );
+    for (const city of cities) {
+      await d1
+        .prepare("DELETE FROM lead_candidates WHERE lower(city) = lower(?) AND status = 'new'")
+        .bind(city)
+        .run();
+    }
   }
 
   for (const item of items) {
@@ -1063,4 +1138,169 @@ export async function updateInboundInquiryStatus(
     .set({ status })
     .where(eq(inboundInquiries.id, id));
   return true;
+}
+
+export async function listExistingProspectSummaries(
+  d1: D1Database
+): Promise<Array<{ id: string; slug: string; businessName: string; city: string; phoneDisplay: string }>> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  return db
+    .select({
+      id: prospects.id,
+      slug: prospects.slug,
+      businessName: prospects.businessName,
+      city: prospects.city,
+      phoneDisplay: prospects.phoneDisplay,
+    })
+    .from(prospects)
+    .limit(500);
+}
+
+export async function getProspectByOwnerToken(
+  d1: D1Database,
+  token: string
+): Promise<ParsedProspect | null> {
+  await ensureSchemaAndSeed(d1);
+  const clean = token.trim();
+  if (!clean || clean.length < 32) return null;
+  const db = drizzle(d1);
+  const rows = await db
+    .select()
+    .from(prospects)
+    .where(eq(prospects.ownerPortalToken, clean))
+    .limit(1);
+  if (rows.length === 0) return null;
+  return parseProspectRow(rows[0]);
+}
+
+export async function listQuotesForProspect(
+  d1: D1Database,
+  prospectId: string,
+  limit = 100
+): Promise<QuoteRequestRow[]> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  return db
+    .select()
+    .from(quoteRequests)
+    .where(eq(quoteRequests.prospectId, prospectId))
+    .orderBy(desc(quoteRequests.createdAt))
+    .limit(limit);
+}
+
+export async function updateQuoteLeadStatusForProspect(
+  d1: D1Database,
+  input: { quoteId: string; prospectId: string; leadStatus: LeadStatus }
+): Promise<boolean> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  const existing = await db
+    .select({ id: quoteRequests.id })
+    .from(quoteRequests)
+    .where(
+      and(
+        eq(quoteRequests.id, input.quoteId),
+        eq(quoteRequests.prospectId, input.prospectId)
+      )
+    )
+    .limit(1);
+
+  if (existing.length === 0) return false;
+
+  await db
+    .update(quoteRequests)
+    .set({ leadStatus: input.leadStatus })
+    .where(
+      and(
+        eq(quoteRequests.id, input.quoteId),
+        eq(quoteRequests.prospectId, input.prospectId)
+      )
+    );
+  return true;
+}
+
+export async function updateOwnerSelfSettings(
+  d1: D1Database,
+  input: {
+    prospectId: string;
+    availabilityStatus: AvailabilityStatus;
+    baseSedanPrice?: number;
+    phoneDisplay?: string;
+  }
+): Promise<ParsedProspect | null> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  const existing = await db
+    .select()
+    .from(prospects)
+    .where(eq(prospects.id, input.prospectId))
+    .limit(1);
+
+  if (existing.length === 0) return null;
+  const row = existing[0];
+  const country = (row.country === 'UK' ? 'UK' : 'US') as CountryCode;
+
+  let nextPackagesJson = row.packagesJson;
+  if (input.baseSedanPrice !== undefined) {
+    nextPackagesJson = JSON.stringify(
+      buildPackagesForBasePrice(input.baseSedanPrice, country)
+    );
+  }
+
+  const nextPhone =
+    input.phoneDisplay !== undefined
+      ? input.phoneDisplay.trim() || 'Direct Text / DM'
+      : row.phoneDisplay;
+
+  await db
+    .update(prospects)
+    .set({
+      availabilityStatus: input.availabilityStatus,
+      turnaroundBadge: badgeForAvailability(input.availabilityStatus),
+      packagesJson: nextPackagesJson,
+      phoneDisplay: nextPhone,
+    })
+    .where(eq(prospects.id, input.prospectId));
+
+  return getProspectById(d1, input.prospectId);
+}
+
+export async function saveMediaAssetFallback(
+  d1: D1Database,
+  record: {
+    key: string;
+    prospectId: string;
+    contentType: string;
+    dataBase64: string;
+    sizeBytes: number;
+  }
+): Promise<void> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  await db
+    .insert(mediaAssets)
+    .values({
+      key: record.key,
+      prospectId: record.prospectId,
+      contentType: record.contentType,
+      dataBase64: record.dataBase64,
+      sizeBytes: record.sizeBytes,
+      createdAt: new Date().toISOString(),
+    })
+    .onConflictDoNothing();
+}
+
+export async function getMediaAssetFallback(
+  d1: D1Database,
+  key: string
+): Promise<MediaAssetRow | null> {
+  await ensureSchemaAndSeed(d1);
+  const db = drizzle(d1);
+  const rows = await db
+    .select()
+    .from(mediaAssets)
+    .where(eq(mediaAssets.key, key))
+    .limit(1);
+  return rows[0] ?? null;
 }

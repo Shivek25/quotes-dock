@@ -805,9 +805,9 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
                           >
                             {prospect.mode === 'live' ? 'Live Client Mode' : 'Preview Mode'}
                           </span>
-                          {prospect.mode === 'live' && !prospect.ownerEmail && (
+                          {prospect.mode === 'live' && !prospect.ownerEmail && !prospect.webhookUrl && (
                             <span class="rounded-full bg-red-500/20 px-2.5 py-0.5 text-xs font-bold text-red-200 ring-1 ring-red-400/40">
-                              Missing Owner Alert Email
+                              Missing Alert Email / Webhook
                             </span>
                           )}
                           {previewTestQuotes > 0 ? (
@@ -847,6 +847,23 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
                         >
                           Open Preview (Founder Test)
                         </a>
+                        {prospect.ownerPortalToken ? (
+                          <button
+                            type="button"
+                            data-copy-portal={prospect.ownerPortalToken}
+                            class="copy-portal-btn rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-3 py-2 text-xs font-bold text-emerald-300 transition-colors hover:bg-emerald-500/25"
+                          >
+                            Copy Owner Inbox
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            data-rotate-portal={prospect.id}
+                            class="rotate-portal-btn rounded-xl border border-sky-400/40 bg-sky-400/10 px-3 py-2 text-xs font-bold text-[#7DD3FC] transition-colors hover:bg-sky-400/20"
+                          >
+                            Generate Owner Inbox
+                          </button>
+                        )}
                         <button
                           type="button"
                           data-toggle-mode={prospect.id}
@@ -916,6 +933,18 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
                               class="mt-1 w-full rounded-lg border border-slate-600/80 bg-[#151D2A] px-3 py-1.5 text-xs text-slate-50"
                             />
                           </div>
+                          <div class="sm:col-span-2">
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200">
+                              Instant Alert Webhook URL (Discord / Slack / Make / Zapier - Optional)
+                            </label>
+                            <input
+                              name="webhookUrl"
+                              type="url"
+                              value={prospect.webhookUrl ?? ''}
+                              placeholder="https://discord.com/api/webhooks/... or https://hook.make.com/..."
+                              class="mt-1 w-full rounded-lg border border-slate-600/80 bg-[#151D2A] px-3 py-1.5 text-xs text-slate-50 placeholder:text-slate-400"
+                            />
+                          </div>
                         </div>
 
                         <div>
@@ -956,7 +985,7 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
                                     SLOT #0{idx + 1}
                                   </span>
                                   <label class="cursor-pointer rounded-md border border-sky-400/40 bg-sky-400/15 px-2 py-1 text-[11px] font-bold text-[#7DD3FC] hover:bg-sky-400/25">
-                                    <span>Upload R2 Photo</span>
+                                    <span>Upload Photo</span>
                                     <input
                                       type="file"
                                       name={`r2Upload_${idx}`}
@@ -1043,6 +1072,15 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
                             >
                               Save &amp; Go Live
                             </button>
+                            {prospect.ownerPortalToken && (
+                              <button
+                                type="button"
+                                data-rotate-portal={prospect.id}
+                                class="rotate-portal-btn rounded-lg border border-slate-600 bg-[#151D2A] px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-amber-400/50 hover:text-amber-200"
+                              >
+                                Rotate Owner Link
+                              </button>
+                            )}
                           </div>
 
                           <button
@@ -1546,6 +1584,44 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
         });
       });
 
+      document.querySelectorAll('.copy-portal-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const token = btn.getAttribute('data-copy-portal');
+          if (!token) return;
+          const configuredOrigin = (domainInput?.value || window.location.origin).replace(/\/+$/, '');
+          const portalUrl = `${configuredOrigin}/owner/${token}`;
+          try {
+            await navigator.clipboard.writeText(portalUrl);
+            showToast('Copied private Owner Inbox link');
+          } catch {
+            showToast(`Owner Inbox URL: ${portalUrl}`, 'warn');
+          }
+        });
+      });
+
+      document.querySelectorAll('.rotate-portal-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const prospectId = btn.getAttribute('data-rotate-portal');
+          if (!prospectId) return;
+          btn.setAttribute('disabled', 'true');
+          try {
+            const res = await fetch('/api/prospects', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prospectId, rotatePortalToken: true }),
+            });
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.ok) {
+              window.location.reload();
+            } else {
+              showToast(data?.error || 'Could not rotate owner portal link.', 'error');
+            }
+          } finally {
+            btn.removeAttribute('disabled');
+          }
+        });
+      });
+
       document.querySelectorAll('.toggle-mode-btn').forEach((btn) => {
         btn.addEventListener('click', async () => {
           const prospectId = btn.getAttribute('data-toggle-mode');
@@ -1738,6 +1814,7 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
         const payload = {
           prospectId,
           ownerEmail: String(fd.get('ownerEmail') || '').trim(),
+          webhookUrl: String(fd.get('webhookUrl') || '').trim(),
           phoneDisplay: String(fd.get('phoneDisplay') || '').trim(),
           serviceArea: String(fd.get('serviceArea') || '').trim(),
           baseSedanPrice: fd.get('baseSedanPrice')

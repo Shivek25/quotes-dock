@@ -12,7 +12,10 @@ import {
   hashClientIp,
   isStudioAuthorized,
 } from '../../lib/security/auth';
-import { quoteSubmissionSchema } from '../../lib/validation/schemas';
+import {
+  isSafePublicWebhookUrl,
+  quoteSubmissionSchema,
+} from '../../lib/validation/schemas';
 
 const VEHICLE_LABELS: Record<VehicleSizeKey, string> = {
   sedan: 'Coupe / Sedan',
@@ -78,6 +81,45 @@ async function sendResendEmail(params: {
     return {
       ok: false,
       error: err instanceof Error ? err.message.slice(0, 180) : 'Email request timed out',
+    };
+  }
+}
+
+async function sendWebhookAlert(params: {
+  webhookUrl: string;
+  text: string;
+  payload: Record<string, unknown>;
+}): Promise<{ ok: boolean; error?: string }> {
+  if (!isSafePublicWebhookUrl(params.webhookUrl)) {
+    return { ok: false, error: 'Blocked unsafe webhook URL.' };
+  }
+
+  const lower = params.webhookUrl.toLowerCase();
+  const body = lower.includes('discord.com/api/webhooks') || lower.includes('discordapp.com/api/webhooks')
+    ? { content: params.text }
+    : lower.includes('hooks.slack.com')
+      ? { text: params.text }
+      : { text: params.text, content: params.text, ...params.payload };
+
+  try {
+    const res = await fetch(params.webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(4500),
+    });
+    if (res.ok) {
+      return { ok: true };
+    }
+    const errText = await res.text().catch(() => '');
+    return {
+      ok: false,
+      error: `Webhook HTTP ${res.status}: ${errText.slice(0, 160)}`,
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message.slice(0, 160) : 'Webhook timed out',
     };
   }
 }
@@ -198,6 +240,10 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     const timingLabel = TIMING_LABELS[data.preferredTiming];
     const vehicleLabel = VEHICLE_LABELS[data.vehicleSize];
     const conditionLabel = CONDITION_LABELS[data.conditionLevel];
+    const origin = new URL(request.url).origin;
+    const ownerPortalUrl = prospect.ownerPortalToken
+      ? `${origin}/owner/${prospect.ownerPortalToken}`
+      : '';
 
     const smsPreview =
       `NEW QUOTE LEAD (${prospect.businessName})\n` +
@@ -207,54 +253,108 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       `Condition: ${conditionLabel}\n` +
       `Add-ons: ${addonsSummary}\n` +
       `Est. Shown: ${priceRange}` +
-      (data.notes ? `\nNotes: ${data.notes}` : '');
+      (data.notes ? `\nNotes: ${data.notes}` : '') +
+      (ownerPortalUrl && prospect.mode === 'live' ? `\nManage Lead: ${ownerPortalUrl}` : '');
 
     const emailSubject = `New ${priceRange} Mobile Detail Lead in ${data.customerPostal} (${data.customerName})`;
     let emailDispatched = false;
+    let webhookDispatched = false;
 
     if (prospect.mode === 'live' && !isFounderSelfTest) {
       const resendApiKey = env.RESEND_API_KEY?.trim() || '';
       const resendFromEmail = env.RESEND_FROM_EMAIL?.trim() || '';
       const founderAlertEmail = env.FOUNDER_ALERT_EMAIL?.trim() || '';
+      const errors: string[] = [];
 
-      if (!prospect.ownerEmail) {
-        deliveryStatus = 'no_owner_email';
-        deliveryError = 'No owner alert email configured for this live shop.';
-        console.error(`Live quote ${quoteId} missing ownerEmail on slug ${prospect.slug}`);
-      } else if (!resendApiKey || !resendFromEmail) {
-        deliveryStatus = 'config_missing';
-        deliveryError = 'RESEND_API_KEY or verified RESEND_FROM_EMAIL is not configured.';
-        console.error(`Live quote ${quoteId} skipped email: ${deliveryError}`);
-      } else {
-        const result = await sendResendEmail({
-          apiKey: resendApiKey,
-          from: resendFromEmail,
-          to: prospect.ownerEmail,
-          subject: emailSubject,
+      // 1) Instant Webhook Alert (Discord / Slack / Make / Zapier / Telegram relay)
+      if (prospect.webhookUrl) {
+        const whRes = await sendWebhookAlert({
+          webhookUrl: prospect.webhookUrl,
           text: smsPreview,
+          payload: {
+            event: 'new_quote_lead',
+            quoteId,
+            businessName: prospect.businessName,
+            slug: prospect.slug,
+            customer: {
+              name: data.customerName,
+              phone: data.customerPhone,
+              postal: data.customerPostal,
+            },
+            job: {
+              vehicle: vehicleLabel,
+              packageName: estimate.packageObj.name,
+              condition: conditionLabel,
+              addons: addonNames,
+              estimatedMin: estimate.estimatedMin,
+              estimatedMax: estimate.estimatedMax,
+              priceRange,
+              timing: timingLabel,
+              notes: data.notes,
+            },
+            ownerPortalUrl: ownerPortalUrl || null,
+          },
         });
+        if (whRes.ok) {
+          webhookDispatched = true;
+        } else if (whRes.error) {
+          errors.push(whRes.error);
+          console.error(`Webhook alert failed for ${quoteId}:`, whRes.error);
+        }
+      }
 
-        if (result.ok) {
-          emailDispatched = true;
-          deliveryStatus = 'sent';
-          deliveryError = null;
+      // 2) Email Alert via Resend (if ownerEmail and Resend secrets exist)
+      if (prospect.ownerEmail) {
+        if (!resendApiKey || !resendFromEmail) {
+          if (!webhookDispatched) {
+            deliveryStatus = 'config_missing';
+            errors.push('RESEND_API_KEY or verified RESEND_FROM_EMAIL is not configured.');
+          }
         } else {
-          deliveryStatus = 'failed';
-          deliveryError = result.error || 'Email notification failed.';
-          console.error(`Resend notification failed for ${quoteId}:`, deliveryError);
-
-          if (founderAlertEmail) {
-            await sendResendEmail({
-              apiKey: resendApiKey,
-              from: resendFromEmail,
-              to: founderAlertEmail,
-              subject: `[DELIVERY FAILED] ${emailSubject}`,
-              text:
-                `Failed to deliver live lead ${quoteId} to ${prospect.ownerEmail}.\n` +
-                `Reason: ${deliveryError}\n\n${smsPreview}`,
-            });
+          const emailRes = await sendResendEmail({
+            apiKey: resendApiKey,
+            from: resendFromEmail,
+            to: prospect.ownerEmail,
+            subject: emailSubject,
+            text: smsPreview,
+          });
+          if (emailRes.ok) {
+            emailDispatched = true;
+          } else if (emailRes.error) {
+            errors.push(emailRes.error);
+            console.error(`Resend notification failed for ${quoteId}:`, emailRes.error);
           }
         }
+      }
+
+      if (emailDispatched || webhookDispatched) {
+        deliveryStatus = 'sent';
+        deliveryError = errors.length > 0 ? errors.join(' | ') : null;
+      } else if (!prospect.ownerEmail && !prospect.webhookUrl) {
+        deliveryStatus = 'no_owner_email';
+        deliveryError = 'No owner alert email or webhook URL configured for this live shop.';
+      } else if (deliveryStatus !== 'config_missing') {
+        deliveryStatus = 'failed';
+        deliveryError = errors.join(' | ') || 'Lead alert delivery failed.';
+      } else {
+        deliveryError = errors.join(' | ');
+      }
+
+      if (
+        deliveryStatus === 'failed' &&
+        founderAlertEmail &&
+        resendApiKey &&
+        resendFromEmail
+      ) {
+        await sendResendEmail({
+          apiKey: resendApiKey,
+          from: resendFromEmail,
+          to: founderAlertEmail,
+          subject: `[DELIVERY FAILED] ${emailSubject}`,
+          text:
+            `Failed to deliver live lead ${quoteId} for ${prospect.businessName}.\n` +
+            `Reason: ${deliveryError}\n\n${smsPreview}`,
+        });
       }
 
       await updateQuoteDeliveryStatus(d1, quoteId, deliveryStatus, deliveryError);
@@ -265,6 +365,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       mode: prospect.mode,
       isFounderSelfTest,
       emailDispatched,
+      webhookDispatched,
       quote: {
         id: quoteId,
         customerName: data.customerName,

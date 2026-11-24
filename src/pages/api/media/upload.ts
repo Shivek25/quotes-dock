@@ -1,10 +1,12 @@
 import type { APIRoute } from 'astro';
+import { saveMediaAssetFallback } from '../../../lib/db/repository';
 import {
   isSameOriginStudioRequest,
   isStudioAuthorized,
 } from '../../../lib/security/auth';
 
-const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
+const MAX_R2_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB when R2 is bound
+const MAX_D1_FALLBACK_BYTES = 750 * 1024; // 750 KB when using zero-card D1 fallback
 
 type SupportedImage = {
   ext: 'jpg' | 'png' | 'webp';
@@ -60,6 +62,16 @@ function detectImageByMagicBytes(bytes: Uint8Array): SupportedImage | null {
   return null;
 }
 
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+  return btoa(binary);
+}
+
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const env = locals.runtime.env;
   if (!(await isStudioAuthorized(request, cookies, env))) {
@@ -70,16 +82,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
   }
 
   const bucket = env.MEDIA_BUCKET;
-  if (!bucket) {
-    return jsonResponse(
-      {
-        ok: false,
-        error:
-          'Cloudflare R2 MEDIA_BUCKET binding is not configured in this environment.',
-      },
-      503
-    );
-  }
+  const maxBytes = bucket ? MAX_R2_UPLOAD_BYTES : MAX_D1_FALLBACK_BYTES;
 
   try {
     const formData = await request.formData().catch(() => null);
@@ -97,15 +100,17 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       return jsonResponse({ ok: false, error: 'Invalid prospect ID.' }, 400);
     }
 
-    if (fileEntry.size === 0 || fileEntry.size > MAX_UPLOAD_BYTES) {
+    if (fileEntry.size === 0 || fileEntry.size > maxBytes) {
+      const limitLabel = bucket ? '5 MB' : '750 KB (compress photo or enable R2 for 5 MB)';
       return jsonResponse(
-        { ok: false, error: 'Image must be between 1 byte and 5 MB.' },
+        { ok: false, error: `Image must be between 1 byte and ${limitLabel}.` },
         400
       );
     }
 
     const buffer = await fileEntry.arrayBuffer();
-    const detected = detectImageByMagicBytes(new Uint8Array(buffer));
+    const bytes = new Uint8Array(buffer);
+    const detected = detectImageByMagicBytes(bytes);
     if (!detected) {
       return jsonResponse(
         {
@@ -117,24 +122,36 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     }
 
     const objectKey = `prospects/${rawProspectId}/${crypto.randomUUID()}.${detected.ext}`;
-    await bucket.put(objectKey, buffer, {
-      httpMetadata: {
+
+    if (bucket) {
+      await bucket.put(objectKey, buffer, {
+        httpMetadata: {
+          contentType: detected.contentType,
+          cacheControl: 'public, max-age=31536000, immutable',
+        },
+      });
+    } else {
+      await saveMediaAssetFallback(env.DB, {
+        key: objectKey,
+        prospectId: rawProspectId,
         contentType: detected.contentType,
-        cacheControl: 'public, max-age=31536000, immutable',
-      },
-    });
+        dataBase64: bytesToBase64(bytes),
+        sizeBytes: fileEntry.size,
+      });
+    }
 
     return jsonResponse({
       ok: true,
       key: objectKey,
       url: `/api/media/${objectKey}`,
+      storage: bucket ? 'r2' : 'd1',
       contentType: detected.contentType,
       bytes: fileEntry.size,
     });
   } catch (err) {
     console.error('Error in POST /api/media/upload:', err);
     return jsonResponse(
-      { ok: false, error: 'Could not upload photo to R2 storage.' },
+      { ok: false, error: 'Could not upload photo right now.' },
       500
     );
   }

@@ -4,6 +4,8 @@ export type VehicleSizeKey = 'sedan' | 'suv' | 'truck_xl';
 export type ConditionLevel = 'standard' | 'pet_hair' | 'heavy_soil';
 export type CountryCode = 'US' | 'UK';
 export type ProspectMode = 'preview' | 'live';
+export type AvailabilityStatus = 'open' | 'limited' | 'booked_out';
+export type LeadStatus = 'new' | 'contacted' | 'booked' | 'archived';
 export type OutreachChannel = 'instagram_dm' | 'facebook_msg' | 'email';
 export type OutreachApprovalStatus = 'draft' | 'approved' | 'sent_manually' | 'replied';
 export type QuoteDeliveryStatus =
@@ -70,6 +72,9 @@ export const prospects = sqliteTable('prospects', {
   personalizationNote: text('personalization_note').notNull(),
   mode: text('mode').notNull().default('preview'),
   ownerEmail: text('owner_email'),
+  ownerPortalToken: text('owner_portal_token'),
+  webhookUrl: text('webhook_url'),
+  availabilityStatus: text('availability_status').notNull().default('open'),
   createdAt: text('created_at').notNull(),
 });
 
@@ -90,6 +95,7 @@ export const quoteRequests = sqliteTable('quote_requests', {
   preferredTiming: text('preferred_timing').notNull(),
   notes: text('notes'),
   isPreviewTest: integer('is_preview_test').notNull().default(1),
+  leadStatus: text('lead_status').notNull().default('new'),
   deliveryStatus: text('delivery_status').notNull().default('not_applicable'),
   deliveryError: text('delivery_error'),
   ipHash: text('ip_hash').notNull(),
@@ -115,10 +121,11 @@ export type OutreachDraftRow = typeof outreachDrafts.$inferSelect;
 
 export interface ParsedProspect extends Omit<
   ProspectRow,
-  'packagesJson' | 'addonsJson' | 'galleryJson' | 'trustPointsJson' | 'country' | 'mode'
+  'packagesJson' | 'addonsJson' | 'galleryJson' | 'trustPointsJson' | 'country' | 'mode' | 'availabilityStatus'
 > {
   country: CountryCode;
   mode: ProspectMode;
+  availabilityStatus: AvailabilityStatus;
   packages: DetailingPackage[];
   addons: DetailingAddon[];
   gallery: JobProofItem[];
@@ -180,3 +187,14 @@ export const inboundInquiries = sqliteTable('inbound_inquiries', {
 });
 
 export type InboundInquiryRow = typeof inboundInquiries.$inferSelect;
+
+export const mediaAssets = sqliteTable('media_assets', {
+  key: text('key').primaryKey(),
+  prospectId: text('prospect_id').notNull(),
+  contentType: text('content_type').notNull(),
+  dataBase64: text('data_base64').notNull(),
+  sizeBytes: integer('size_bytes').notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+export type MediaAssetRow = typeof mediaAssets.$inferSelect;

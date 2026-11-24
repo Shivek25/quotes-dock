@@ -7,14 +7,8 @@
     {
       "binding": "DB",
       "database_name": "quotes-dock-db",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "842889a2-8f3e-4ded-b6a0-586cc215bcf1",
       "migrations_dir": "drizzle/migrations"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "MEDIA_BUCKET",
-      "bucket_name": "quotes-dock-media"
     }
   ]
 }

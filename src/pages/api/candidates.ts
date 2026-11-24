@@ -64,7 +64,9 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       );
     }
 
-    const result = await upsertLeadCandidatesBatch(env.DB, parsed.data.candidates);
+    const result = await upsertLeadCandidatesBatch(env.DB, parsed.data.candidates, {
+      replaceCity: parsed.data.replaceCity,
+    });
     const candidates = await listLeadCandidates(env.DB);
     return jsonResponse({ ok: true, count: result.count, candidates });
   } catch (err) {

@@ -87,6 +87,55 @@ const safePhotoUrlSchema = z
     'Photo URLs must start with https:// or /'
   );
 
+export function isSafePublicWebhookUrl(raw: string): boolean {
+  const trimmed = raw.trim();
+  if (!trimmed) return true;
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'https:') return false;
+    if (parsed.username || parsed.password) return false;
+    const host = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, '');
+    if (!host || !host.includes('.')) return false;
+    if (
+      host === 'localhost' ||
+      host === '::1' ||
+      host.endsWith('.local') ||
+      host.endsWith('.internal') ||
+      host.endsWith('.localhost')
+    ) {
+      return false;
+    }
+    // Block IPv4 private / loopback / link-local ranges
+    const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
+    if (ipv4) {
+      const a = Number(ipv4[1]);
+      const b = Number(ipv4[2]);
+      if (
+        a === 0 ||
+        a === 10 ||
+        a === 127 ||
+        (a === 169 && b === 254) ||
+        (a === 172 && b >= 16 && b <= 31) ||
+        (a === 192 && b === 168)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const safeWebhookUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .refine(
+    isSafePublicWebhookUrl,
+    'Webhook URL must be a valid public https:// URL (localhost and private IPs are blocked)'
+  );
+
 export const galleryItemEditSchema = z.object({
   id: z.string().trim().min(1).max(40).optional(),
   title: z.string().trim().min(2, 'Job title is too short').max(100),
@@ -108,6 +157,9 @@ export const updateProspectModeSchema = z.object({
     .email('Please enter a valid owner email address')
     .optional()
     .or(z.literal('')),
+  webhookUrl: safeWebhookUrlSchema.optional(),
+  availabilityStatus: z.enum(['open', 'limited', 'booked_out']).optional(),
+  rotatePortalToken: z.boolean().optional(),
   phoneDisplay: z.string().trim().max(30).optional(),
   serviceArea: z.string().trim().min(3, 'Service area is too short').max(160).optional(),
   baseSedanPrice: z.preprocess(
@@ -145,11 +197,34 @@ export const candidateItemSchema = z.object({
 
 export const upsertCandidatesBatchSchema = z.object({
   candidates: z.array(candidateItemSchema).min(1).max(10),
+  replaceCity: z.boolean().optional().default(false),
 });
 
 export const updateCandidateStatusSchema = z.object({
   id: z.string().trim().min(2).max(80),
   status: z.enum(['new', 'promoted', 'dismissed']),
+});
+
+export const ownerLeadUpdateSchema = z.object({
+  ownerToken: z
+    .string()
+    .trim()
+    .regex(/^[a-f0-9]{32,128}$/, 'Invalid owner portal token'),
+  quoteId: z.string().trim().min(2).max(80),
+  leadStatus: z.enum(['new', 'contacted', 'booked', 'archived']),
+});
+
+export const ownerSettingsUpdateSchema = z.object({
+  ownerToken: z
+    .string()
+    .trim()
+    .regex(/^[a-f0-9]{32,128}$/, 'Invalid owner portal token'),
+  availabilityStatus: z.enum(['open', 'limited', 'booked_out']),
+  baseSedanPrice: z.preprocess(
+    (val) => (val === '' || val === null || val === undefined ? undefined : val),
+    z.coerce.number().int().min(45).max(1000).optional()
+  ),
+  phoneDisplay: z.string().trim().max(30).optional(),
 });
 
 export const newInquirySchema = z.object({

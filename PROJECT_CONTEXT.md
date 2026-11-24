@@ -2,6 +2,11 @@
 
 > **Maintainer Rule**: Read this file at the start of every new session to get full context. Update this document before committing any completed milestone or version branch (`SH_QD_V*`). Never use em dashes in documentation, copy, or code.
 
+> **CLOUDFLARE PRODUCTION SAFETY GUARDRAIL (STRICT)**:
+> On Cloudflare account `cacc7c265bab0b2a28df673386174fca` (`shiveksharma200225@gmail.com`), there is an active live production site: Pages/Worker `fall-asleep` and DNS zone `fallasleeep.com` (`www.fallasleeep.com`, `fall-asleep.pages.dev`).
+> **NEVER modify, redeploy, delete, or touch any resource, DNS record, route, or setting related to `fall-asleep` or `fallasleeep.com`.**
+> QuotesDock MUST stay 100% isolated under its own dedicated resources: Pages project `quotes-dock` (`quotes-dock.pages.dev`), D1 database `quotes-dock-db`, and (when R2 is enabled in the future) R2 bucket `quotes-dock-media`.
+
 ---
 
 ## 1. What We Are Building
@@ -19,7 +24,8 @@
 - **Framework**: Astro 5 (`output: 'server'`, `@astrojs/cloudflare`, `session: { driver: 'memory' }`)
 - **Styling**: Tailwind CSS v4 (`@tailwindcss/vite`)
 - **Database**: Cloudflare D1 (SQLite) + Drizzle ORM + SQL migrations in `drizzle/migrations/`
-- **Media Storage**: Cloudflare R2 (`MEDIA_BUCKET` binding, served via `/api/media/[...key]`)
+- **Media Storage**: Zero-card D1 fallback (`media_assets` table, 750 KB max per photo) served via `/api/media/[...key]`, automatically upgrading to Cloudflare R2 (`MEDIA_BUCKET` binding, 5 MB max per photo) as soon as R2 is enabled in the Cloudflare Dashboard and bound in `wrangler.jsonc`.
+- **Client Retention & Alerts**: Private magic-link Client Lead Inbox (`/owner/[token]`) with tenant-scoped self-service status & availability controls, plus instant SSRF-safe HTTPS Webhook alerts (Discord / Slack / Make / Zapier / Telegram relay) alongside optional Resend email alerts.
 - **Validation & Security**: Zod schemas, HMAC-SHA256 Studio session cookie, CSRF Origin/Referer checks, salted SHA-256 IP hashing for rate limits, CSP + security headers middleware (`src/middleware.ts`)
 - **Email Alerts**: Resend HTTP API (verified `RESEND_FROM_EMAIL` required; optional `FOUNDER_ALERT_EMAIL` fallback)
 - **Lead Scout CLI**: `scripts/scout.ts` (Serper Places/Search + optional Gemini Interactions API via `@google/genai`)
@@ -50,12 +56,19 @@
   - Added permanent 30-case E2E & security regression suite (`scripts/e2e-test.ts`, `npm run test:e2e`) covering open mode (22 cases) and locked `ADMIN_STUDIO_KEY` mode (8 cases), with automatic D1 cleanup.
   - Fixed 3 Lead Scout CLI bugs caught during live `Bristol, UK` testing (`scripts/scout.ts`): `/places/` directory detection, brand-key substring false positives in cross-checks, and explicit `socialPlatform` grounding in the Stage 3 Gemini prompt.
   - Completed full Chrome Desktop (1280x800) + Mobile (390x844) visual/interactive QA (Suite 7) and applied polish fixes: added `public/favicon.svg`, immediate `#quote-calculator` fold visibility, consistent post-submit quote form reset, and Studio input `aria-label` accessibility attributes.
-- **P2 / V6 (planned)**:
-  - Replace stock `public/images/hero-wetbay.jpg` (which has a faint background wall sign) with a brand-neutral mobile detailing hero image.
-  - Production Cloudflare deployment (provision real D1 database ID, R2 bucket `quotes-dock-media`, custom domain, Resend verified domain, Polar.sh / Lemon Squeezy checkout links & webhook sync).
-  - Private magic-link Client Lead Inbox (`/owner/[token]`) so paying detailers can view leads and update availability/prices on mobile.
-  - Instant SMS / WhatsApp / Telegram webhook lead alerts alongside email.
-  - Lead Scout CLI upgrades (remove hardcoded Gloucestershire tokens, deduplicate against `prospects`, preserve unreviewed candidates across city re-runs, parallel Stage 2 checks).
+- **P2 / V6 (`SH_QD_V6`, completed & deployed live at `https://quotes-dock.pages.dev`)**:
+  - Replaced stock `public/images/hero-wetbay.jpg` with a brand-neutral obsidian/cyan mobile detailing photograph (zero wall signs, logos, or text).
+  - Added migration `0003_owner_portal_webhooks_media.sql` (`owner_portal_token`, `webhook_url`, `availability_status` on `prospects`; `lead_status` on `quote_requests`; `media_assets` D1 fallback table).
+  - Built private magic-link Client Lead Inbox (`/owner/[token]`, `PATCH /api/owner/leads`, `PATCH /api/owner/settings`) with strict per-shop tenant scoping, 1-tap SMS/Call customer links, lead status tracking (`new` / `contacted` / `booked` / `archived`), and live slot availability + base price controls.
+  - Added SSRF-safe instant HTTPS Webhook alerts (Discord, Slack, Make, Zapier, generic JSON) in `POST /api/quotes` alongside Resend email, and updated Live Mode Guard to allow going live with either `ownerEmail` or `webhookUrl`.
+  - Upgraded `/api/media/upload` and `/api/media/[...key]` with automatic zero-card D1 `media_assets` fallback when `MEDIA_BUCKET` is not bound (future R2 switch: enable R2 in Cloudflare Dashboard -> create `quotes-dock-media` -> re-add `r2_buckets` binding in `wrangler.jsonc` & Pages settings).
+  - Upgraded Studio UI with Copy/Rotate Owner Inbox link and Webhook URL fields.
+  - Upgraded Lead Scout CLI V2 (`scripts/scout.ts`): removed hardcoded Gloucestershire tokens, added prospect deduplication (`GET /api/prospects`), added opt-in `--replace-city` flag (default preserves unreviewed candidates), and parallelized Stage 2 cross-checks (`concurrency=3`).
+  - Extended E2E regression suite to 32 cases (24 open + 8 locked, all passing).
+  - Provisioned isolated Cloudflare D1 (`quotes-dock-db`, UUID `842889a2-8f3e-4ded-b6a0-586cc215bcf1`), applied migrations `0000` through `0003` remotely, created isolated Pages project `quotes-dock`, uploaded production secrets (`ADMIN_STUDIO_KEY`, `IP_HASH_SALT`), deployed live to `https://quotes-dock.pages.dev`, and verified `https://fallasleeep.com` untouched.
+- **Future Upgrades (Post-Launch / P3)**:
+  - Enable Cloudflare R2 in Cloudflare Dashboard, create `quotes-dock-media`, and re-enable `r2_buckets` in `wrangler.jsonc` to lift photo uploads from 750 KB (D1 fallback) to 5 MB (R2).
+  - Attach a dedicated QuotesDock custom domain + verified Resend sending domain (`RESEND_FROM_EMAIL`) + Polar.sh / Lemon Squeezy checkout URLs (`FOUNDING_CHECKOUT_URL`, `STANDARD_CHECKOUT_URL`).
 
 ---
 
@@ -73,6 +86,9 @@
 | `src/lib/validation/schemas.ts` | Zod schemas for quotes, prospects, drafts, candidates, and inbound inquiries |
 | `src/pages/index.astro` | Public marketing landing page, interactive sandbox links, pricing, and free preview / claim intake form |
 | `src/pages/p/[slug].astro` | Dynamic private detailer 60-second quote configurator, job-proof gallery, and preview claim flow |
+| `src/pages/owner/[token].astro` | Private magic-link Client Lead Inbox (1-tap SMS/Call, lead statuses, availability & price self-controls) |
+| `src/pages/api/owner/leads.ts` | Tenant-scoped `PATCH` for owner lead status updates |
+| `src/pages/api/owner/settings.ts` | Tenant-scoped `PATCH` for owner availability badge, base price, and phone updates |
 | `src/pages/studio.astro` | Founder Outreach Studio: inbound inquiries, scout queue, prospect creator, full client editor + R2 uploader, outreach approval queue |
 | `src/pages/api/quotes.ts` | Public quote submission endpoint (Zod, honeypot, rate limit, server math, Resend delivery tracking) |
 | `src/pages/api/prospects.ts` | Studio CRUD for prospects + live-mode email guard |
@@ -86,19 +102,19 @@
 
 ---
 
-## 4. Production Deployment Checklist (Before Going Live)
+## 4. Production Environment & Future Upgrades
 
-1. Provision real D1 database (`npx wrangler d1 create quotes-dock-db`) and replace placeholder `database_id` in `wrangler.jsonc`.
-2. Provision Cloudflare R2 bucket (`npx wrangler r2 bucket create quotes-dock-media`).
-3. Apply all migrations remotely: `npx wrangler d1 migrations apply quotes-dock-db --remote`.
-4. Set Cloudflare Pages / Workers secrets:
-   - `ADMIN_STUDIO_KEY` (strong random 32+ char key)
-   - `IP_HASH_SALT` (distinct random 32+ char secret)
-   - `RESEND_API_KEY`
-   - `RESEND_FROM_EMAIL` (verified sender domain, e.g. `QuotesDock Alerts <alerts@quotesdock.com>`)
-   - `FOUNDER_ALERT_EMAIL` (founder inbox for inbound claims + delivery failure alerts)
-   - Optional: `FOUNDING_CHECKOUT_URL` and `STANDARD_CHECKOUT_URL` (Polar.sh / Lemon Squeezy checkout links)
-5. Build and deploy (`npm run build` + `npx wrangler pages deploy dist`).
+- **Live Production URL**: `https://quotes-dock.pages.dev` (Cloudflare Pages project `quotes-dock`)
+- **Production D1 Database**: `quotes-dock-db` (`842889a2-8f3e-4ded-b6a0-586cc215bcf1`, region APAC)
+- **Active Production Secrets**: `ADMIN_STUDIO_KEY`, `IP_HASH_SALT` (set via `wrangler pages secret`)
+- **Optional Future Secrets (Add Whenever Ready)**:
+  - `RESEND_API_KEY` + verified `RESEND_FROM_EMAIL` (for email alerts alongside instant webhooks)
+  - `FOUNDER_ALERT_EMAIL` (founder inbox for inbound claims + delivery failure alerts)
+  - `FOUNDING_CHECKOUT_URL` / `STANDARD_CHECKOUT_URL` (Polar.sh / Lemon Squeezy checkout links)
+- **Future R2 Storage Upgrade**:
+  1. Enable R2 once in Cloudflare Dashboard.
+  2. Run `npx wrangler r2 bucket create quotes-dock-media`.
+  3. Add `r2_buckets: [{ binding: "MEDIA_BUCKET", bucket_name: "quotes-dock-media" }]` back to `wrangler.jsonc` and redeploy (`npm run build` + `npx wrangler pages deploy dist --project-name=quotes-dock --branch=main`). Existing D1 fallback photos continue serving automatically via `/api/media/[...key]`.
 
 ---
 

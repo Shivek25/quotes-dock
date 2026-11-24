@@ -1,0 +1,397 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  getProspectByOwnerToken,
+  listQuotesForProspect,
+} from '../../lib/db/repository';
+
+const { token } = Astro.params;
+const d1 = Astro.locals.runtime.env.DB;
+const prospect = token ? await getProspectByOwnerToken(d1, token) : null;
+
+if (!prospect) {
+  Astro.response.status = 404;
+}
+
+const quotes = prospect ? await listQuotesForProspect(d1, prospect.id, 100) : [];
+const visibleQuotes = quotes.filter((q) => q.leadStatus !== 'archived');
+const newCount = visibleQuotes.filter((q) => q.leadStatus === 'new').length;
+const bookedCount = visibleQuotes.filter((q) => q.leadStatus === 'booked').length;
+
+const fullPkg =
+  prospect?.packages.find((p) => p.id === 'pkg-full-reset') ??
+  prospect?.packages[1] ??
+  prospect?.packages[0] ??
+  null;
+const currentBasePrice = fullPkg ? fullPkg.prices.sedan : 145;
+
+const leadStatusMeta: Record<string, { label: string; classes: string }> = {
+  new: {
+    label: 'New Lead',
+    classes: 'bg-sky-400/15 text-[#7DD3FC] border-sky-400/40',
+  },
+  contacted: {
+    label: 'Contacted',
+    classes: 'bg-amber-400/15 text-amber-200 border-amber-400/40',
+  },
+  booked: {
+    label: 'Booked',
+    classes: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40',
+  },
+  archived: {
+    label: 'Archived',
+    classes: 'bg-slate-800 text-slate-400 border-slate-700',
+  },
+};
+
+function cleanDialDigits(raw: string): string {
+  return raw.replace(/[^+\d]/g, '');
+}
+---
+
+{!prospect ? (
+  <BaseLayout
+    title="Portal Link Not Found | QuotesDock"
+    description="This private owner portal link is invalid or has been rotated."
+    noindex={true}
+  >
+    <main class="carbon-mesh mx-auto flex min-h-screen flex-col items-center justify-center px-6 py-16 text-center">
+      <div class="glass-panel w-full max-w-md rounded-2xl p-8">
+        <span class="inline-flex rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
+          QuotesDock Owner Portal
+        </span>
+        <h1 class="mt-4 text-2xl font-bold text-slate-50">
+          This private inbox link is no longer active
+        </h1>
+        <p class="mt-2.5 text-sm leading-relaxed text-[#CBD5E1]">
+          Check your latest private link from QuotesDock, or contact support if your link was rotated for security.
+        </p>
+      </div>
+    </main>
+  </BaseLayout>
+) : (
+  <BaseLayout
+    title={`${prospect.businessName} | Owner Lead Inbox`}
+    description={`Private mobile quote inbox for ${prospect.businessName}.`}
+    noindex={true}
+  >
+    <header class="sticky top-0 z-40 border-b border-slate-800/90 bg-[#0C1017]/95 backdrop-blur-xl">
+      <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-6">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="font-display truncate text-base font-bold text-slate-50 sm:text-lg">
+              {prospect.businessName}
+            </span>
+            <span class="rounded-full border border-emerald-400/35 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
+              Owner Inbox
+            </span>
+          </div>
+          <div class="text-xs text-[#CBD5E1]">
+            {prospect.city} · {prospect.turnaroundBadge}
+          </div>
+        </div>
+
+        <a
+          href={`/p/${prospect.slug}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded-xl bg-[#38BDF8] px-3.5 py-2 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC]"
+        >
+          View Live Quote Page
+        </a>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-4 py-7 sm:px-6 space-y-6">
+      {/* KPI Strip */}
+      <section class="grid grid-cols-3 gap-3 sm:gap-4">
+        <div class="glass-panel rounded-2xl p-4">
+          <div class="text-[11px] font-semibold text-[#CBD5E1]">New Leads</div>
+          <div class="font-display tabular-nums mt-1 text-2xl font-bold text-[#38BDF8] sm:text-3xl">
+            {newCount}
+          </div>
+        </div>
+        <div class="glass-panel rounded-2xl p-4">
+          <div class="text-[11px] font-semibold text-[#CBD5E1]">Booked Jobs</div>
+          <div class="font-display tabular-nums mt-1 text-2xl font-bold text-emerald-300 sm:text-3xl">
+            {bookedCount}
+          </div>
+        </div>
+        <div class="glass-panel rounded-2xl p-4">
+          <div class="text-[11px] font-semibold text-[#CBD5E1]">Total Quotes</div>
+          <div class="font-display tabular-nums mt-1 text-2xl font-bold text-slate-50 sm:text-3xl">
+            {quotes.length}
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Shop Controls */}
+      <section class="glass-panel anisotropic-border rounded-2xl p-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-slate-50">Quick Shop Controls</h2>
+            <p class="text-xs text-[#CBD5E1]">
+              Updates your live quote page immediately (bookmark this private URL on your phone).
+            </p>
+          </div>
+        </div>
+
+        <form id="owner-settings-form" class="mt-4 grid gap-3 sm:grid-cols-3">
+          <div>
+            <label for="ownerAvailability" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200">
+              Slot Availability Badge
+            </label>
+            <select
+              id="ownerAvailability"
+              name="availabilityStatus"
+              class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs text-slate-50"
+            >
+              <option value="open" selected={prospect.availabilityStatus === 'open'}>
+                Same-Week Driveway Slots Open
+              </option>
+              <option value="limited" selected={prospect.availabilityStatus === 'limited'}>
+                Limited Driveway Slots This Week
+              </option>
+              <option value="booked_out" selected={prospect.availabilityStatus === 'booked_out'}>
+                Booked This Week (Next-Week Waitlist)
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label for="ownerBasePrice" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200">
+              Base Full Detail ({prospect.currencySymbol})
+            </label>
+            <input
+              id="ownerBasePrice"
+              name="baseSedanPrice"
+              type="number"
+              min="45"
+              max="1000"
+              value={currentBasePrice}
+              class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs text-slate-50"
+            />
+          </div>
+
+          <div>
+            <label for="ownerPhone" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200">
+              Public Text / Call Number
+            </label>
+            <input
+              id="ownerPhone"
+              name="phoneDisplay"
+              type="text"
+              value={prospect.phoneDisplay === 'Direct Text / DM' ? '' : prospect.phoneDisplay}
+              placeholder="Leave blank if DM-only"
+              class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
+            />
+          </div>
+
+          <div class="sm:col-span-3 flex flex-wrap items-center justify-between gap-2 pt-1">
+            <span id="owner-settings-feedback" class="text-xs font-semibold text-emerald-300" />
+            <button
+              id="owner-settings-btn"
+              type="submit"
+              class="rounded-xl bg-[#38BDF8] px-4 py-2 text-xs font-bold text-[#06131F] hover:bg-[#7DD3FC]"
+            >
+              Save Live Page Updates
+            </button>
+          </div>
+        </form>
+      </section>
+
+      {/* Incoming Quote Leads */}
+      <section class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold text-slate-50">Incoming Driveway Quote Leads</h2>
+          <span class="text-xs text-[#CBD5E1]">{visibleQuotes.length} active</span>
+        </div>
+
+        {visibleQuotes.length === 0 ? (
+          <div class="glass-panel rounded-2xl border border-dashed border-slate-700 p-8 text-center">
+            <p class="text-sm font-semibold text-slate-100">No active quote leads yet</p>
+            <p class="mt-1 text-xs text-[#CBD5E1]">
+              Share your quote page link (/p/{prospect.slug}) in your Instagram bio and Google Business profile to start capturing leads here.
+            </p>
+          </div>
+        ) : (
+          <div class="space-y-3">
+            {visibleQuotes.map((q) => {
+              const meta = leadStatusMeta[q.leadStatus] || leadStatusMeta.new;
+              const dial = cleanDialDigits(q.customerPhone);
+              const replyText = `Hi ${q.customerName}, thanks for requesting a ${q.packageName} quote with ${prospect.businessName} (${prospect.currencySymbol}${q.estimatedMin}-${prospect.currencySymbol}${q.estimatedMax}). What day works best for your driveway slot?`;
+              return (
+                <article
+                  class="owner-lead-card glass-panel anisotropic-border rounded-2xl p-4 sm:p-5"
+                  data-quote-card={q.id}
+                >
+                  <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div class="min-w-0 flex-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-base font-bold text-slate-50">{q.customerName}</h3>
+                        <span class={`lead-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${meta.classes}`}>
+                          {meta.label}
+                        </span>
+                        {q.isPreviewTest === 1 && (
+                          <span class="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
+                            Preview Test
+                          </span>
+                        )}
+                      </div>
+                      <div class="mt-1.5 text-xs text-[#CBD5E1]">
+                        <strong class="text-slate-100">{q.packageName}</strong> · {q.vehicleSize.toUpperCase()} · {q.conditionLevel.replace('_', ' ')} · {prospect.postalLabel}: <strong class="text-slate-100">{q.customerPostal}</strong> · Timing: {q.preferredTiming.replace('_', ' ')}
+                      </div>
+                      {q.notes && (
+                        <p class="mt-2 rounded-lg border border-slate-800 bg-[#0C1017]/80 px-3 py-1.5 text-xs text-slate-200">
+                          Notes: {q.notes}
+                        </p>
+                      )}
+                    </div>
+
+                    <div class="text-right">
+                      <div class="font-display tabular-nums text-xl font-bold text-[#38BDF8]">
+                        {prospect.currencySymbol}{q.estimatedMin} - {prospect.currencySymbol}{q.estimatedMax}
+                      </div>
+                      <div class="text-[11px] text-slate-400">
+                        {q.customerPhone}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800 pt-3">
+                    <div class="flex flex-wrap gap-2">
+                      {dial && (
+                        <>
+                          <a
+                            href={`sms:${dial}?body=${encodeURIComponent(replyText)}`}
+                            class="rounded-lg bg-[#38BDF8] px-3 py-1.5 text-xs font-bold text-[#06131F] hover:bg-[#7DD3FC]"
+                          >
+                            Text Customer
+                          </a>
+                          <a
+                            href={`tel:${dial}`}
+                            class="rounded-lg border border-slate-600 bg-[#0C1017] px-3 py-1.5 text-xs font-semibold text-slate-100 hover:border-sky-400/50"
+                          >
+                            Call
+                          </a>
+                        </>
+                      )}
+                    </div>
+
+                    <div class="flex flex-wrap gap-1.5">
+                      <button
+                        type="button"
+                        data-lead-id={q.id}
+                        data-lead-status="contacted"
+                        class="lead-status-btn rounded-lg border border-amber-400/40 bg-amber-400/15 px-2.5 py-1 text-[11px] font-bold text-amber-200 hover:bg-amber-400/25"
+                      >
+                        Contacted
+                      </button>
+                      <button
+                        type="button"
+                        data-lead-id={q.id}
+                        data-lead-status="booked"
+                        class="lead-status-btn rounded-lg border border-emerald-400/40 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/30"
+                      >
+                        Booked
+                      </button>
+                      <button
+                        type="button"
+                        data-lead-id={q.id}
+                        data-lead-status="archived"
+                        class="lead-status-btn rounded-lg border border-slate-600 bg-[#0C1017] px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:border-red-400/40 hover:text-red-200"
+                      >
+                        Archive
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </main>
+
+    <script is:inline define:vars={{ ownerToken: prospect.ownerPortalToken || '' }}>
+      (function () {
+        const settingsForm = document.getElementById('owner-settings-form');
+        const settingsFeedback = document.getElementById('owner-settings-feedback');
+        const settingsBtn = document.getElementById('owner-settings-btn');
+
+        settingsForm?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          if (!settingsForm || !settingsBtn || !settingsFeedback) return;
+          const fd = new FormData(settingsForm);
+          const orig = settingsBtn.textContent;
+          settingsBtn.setAttribute('disabled', 'true');
+          settingsBtn.textContent = 'Saving...';
+          settingsFeedback.textContent = '';
+
+          try {
+            const res = await fetch('/api/owner/settings', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ownerToken,
+                availabilityStatus: String(fd.get('availabilityStatus') || 'open'),
+                baseSedanPrice: fd.get('baseSedanPrice')
+                  ? Number(fd.get('baseSedanPrice'))
+                  : undefined,
+                phoneDisplay: String(fd.get('phoneDisplay') || ''),
+              }),
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok || !data?.ok) {
+              settingsFeedback.className = 'text-xs font-semibold text-red-300';
+              settingsFeedback.textContent = data?.error || 'Could not save settings.';
+              return;
+            }
+            settingsFeedback.className = 'text-xs font-semibold text-emerald-300';
+            settingsFeedback.textContent = `Saved! Live badge: ${data.turnaroundBadge}`;
+          } catch {
+            settingsFeedback.className = 'text-xs font-semibold text-red-300';
+            settingsFeedback.textContent = 'Network error saving settings.';
+          } finally {
+            settingsBtn.removeAttribute('disabled');
+            settingsBtn.textContent = orig;
+          }
+        });
+
+        document.querySelectorAll('.lead-status-btn').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const quoteId = btn.getAttribute('data-lead-id');
+            const leadStatus = btn.getAttribute('data-lead-status');
+            if (!quoteId || !leadStatus) return;
+            btn.setAttribute('disabled', 'true');
+            try {
+              const res = await fetch('/api/owner/leads', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ownerToken, quoteId, leadStatus }),
+              });
+              const data = await res.json().catch(() => null);
+              if (res.ok && data?.ok) {
+                const card = document.querySelector(`[data-quote-card="${quoteId}"]`);
+                if (leadStatus === 'archived') {
+                  card?.remove();
+                } else {
+                  const pill = card?.querySelector('.lead-status-pill');
+                  if (pill) {
+                    pill.textContent = leadStatus === 'booked' ? 'Booked' : 'Contacted';
+                    pill.className =
+                      leadStatus === 'booked'
+                        ? 'lead-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+                        : 'lead-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold bg-amber-400/15 text-amber-200 border-amber-400/40';
+                  }
+                }
+              }
+            } finally {
+              btn.removeAttribute('disabled');
+            }
+          });
+        });
+      })();
+    </script>
+  </BaseLayout>
+)}

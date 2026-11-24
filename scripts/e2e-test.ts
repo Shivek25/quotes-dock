@@ -835,6 +835,149 @@ async function runOpenSuites(baseUrl: string): Promise<void> {
       });
       assert.equal(secondDel.status, 404);
     });
+
+    console.log('\n=== Suite 8: Owner Portal Isolation, Webhooks SSRF & Token Rotation ===');
+
+    await test('Owner portal 404s invalid tokens, enforces cross-tenant isolation, updates settings, and rotates tokens', async () => {
+      const invalidPortal = await fetch(`${baseUrl}/owner/0000000000000000000000000000000000000000`);
+      assert.equal(invalidPortal.status, 404);
+      const invHtml = await invalidPortal.text();
+      assert.ok(invHtml.includes('content="noindex, nofollow"'));
+
+      // Create Shop A and Shop B
+      const makeShop = async (label: string) => {
+        const res = await fetch(`${baseUrl}/api/prospects`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Origin: baseUrl },
+          body: JSON.stringify({
+            businessName: `${testRunTag} Portal ${label}`,
+            city: 'Denver, CO',
+            country: 'US',
+            serviceArea: 'Denver',
+            instagramHandle: `@portal${label.toLowerCase()}`,
+            personalizationNote: `Testing owner portal isolation for ${label}`,
+          }),
+        });
+        assert.equal(res.status, 200);
+        const json = await res.json();
+        createdProspectIds.push(json.prospect.id);
+        return json.prospect as { id: string; slug: string; ownerPortalToken: string };
+      };
+
+      const shopA = await makeShop('Alpha');
+      const shopB = await makeShop('Beta');
+      assert.ok(shopA.ownerPortalToken && shopA.ownerPortalToken.length === 64);
+
+      // Submit 1 quote to Shop B
+      const qBRes = await fetch(`${baseUrl}/api/quotes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-forwarded-for': '198.51.100.231' },
+        body: JSON.stringify({
+          slug: shopB.slug,
+          customerName: 'Shop B Customer',
+          customerPhone: '303-555-0144',
+          customerPostal: '80202',
+          vehicleSize: 'sedan',
+          packageId: 'pkg-full-reset',
+          conditionLevel: 'standard',
+          addonsSelected: [],
+          preferredTiming: 'this_week',
+          isFounderSelfTest: false,
+        }),
+      });
+      assert.equal(qBRes.status, 200);
+      const quoteBId = (await qBRes.json()).quote.id;
+
+      // Cross-tenant attack: Shop A token trying to mutate Shop B's quote MUST fail 404
+      const crossTenant = await fetch(`${baseUrl}/api/owner/leads`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Origin: baseUrl },
+        body: JSON.stringify({
+          ownerToken: shopA.ownerPortalToken,
+          quoteId: quoteBId,
+          leadStatus: 'booked',
+        }),
+      });
+      assert.equal(crossTenant.status, 404, 'Shop A must never mutate Shop B quote');
+
+      // Shop B token updates its own quote -> 200
+      const ownUpdate = await fetch(`${baseUrl}/api/owner/leads`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Origin: baseUrl },
+        body: JSON.stringify({
+          ownerToken: shopB.ownerPortalToken,
+          quoteId: quoteBId,
+          leadStatus: 'booked',
+        }),
+      });
+      assert.equal(ownUpdate.status, 200);
+
+      // Shop B portal page renders cleanly with noindex and Booked status
+      const portalRes = await fetch(`${baseUrl}/owner/${shopB.ownerPortalToken}`);
+      assert.equal(portalRes.status, 200);
+      const portalHtml = await portalRes.text();
+      assert.ok(portalHtml.includes('content="noindex, nofollow"'));
+      assert.ok(portalHtml.includes('Shop B Customer'));
+      assert.ok(portalHtml.includes('Booked'));
+
+      // Shop A updates own availability & base price -> reflected on /p/[slug]
+      const setRes = await fetch(`${baseUrl}/api/owner/settings`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Origin: baseUrl },
+        body: JSON.stringify({
+          ownerToken: shopA.ownerPortalToken,
+          availabilityStatus: 'limited',
+          baseSedanPrice: 185,
+        }),
+      });
+      assert.equal(setRes.status, 200);
+      const shopAPage = await (await fetch(`${baseUrl}/p/${shopA.slug}`)).text();
+      assert.ok(shopAPage.includes('Limited Driveway Slots This Week'));
+      assert.ok(shopAPage.includes('$185'));
+
+      // Rotate Shop A token -> old token returns 404, new token returns 200
+      const rotRes = await fetch(`${baseUrl}/api/prospects`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Origin: baseUrl },
+        body: JSON.stringify({ prospectId: shopA.id, rotatePortalToken: true }),
+      });
+      assert.equal(rotRes.status, 200);
+      const newToken = (await rotRes.json()).prospect.ownerPortalToken;
+      assert.notEqual(newToken, shopA.ownerPortalToken);
+      assert.equal((await fetch(`${baseUrl}/owner/${shopA.ownerPortalToken}`)).status, 404);
+      assert.equal((await fetch(`${baseUrl}/owner/${newToken}`)).status, 200);
+    });
+
+    await test('Webhook SSRF protection blocks unsafe URLs and Live Mode Guard accepts public https webhookUrl', async () => {
+      const targetId = createdProspectIds[createdProspectIds.length - 1];
+      for (const badHook of [
+        'http://hooks.example.com/test',
+        'https://localhost/hook',
+        'https://127.0.0.1/hook',
+        'https://169.254.169.254/latest/meta-data',
+        'https://192.168.1.5/hook',
+      ]) {
+        const res = await fetch(`${baseUrl}/api/prospects`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Origin: baseUrl },
+          body: JSON.stringify({ prospectId: targetId, webhookUrl: badHook }),
+        });
+        assert.equal(res.status, 400, `Expected 400 SSRF block for ${badHook}, got ${res.status}`);
+      }
+
+      // Valid public https webhookUrl unlocks live mode even without ownerEmail
+      const liveViaWebhook = await fetch(`${baseUrl}/api/prospects`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Origin: baseUrl },
+        body: JSON.stringify({
+          prospectId: targetId,
+          mode: 'live',
+          ownerEmail: '',
+          webhookUrl: 'https://hooks.slack.com/services/T000/B000/XXXX',
+        }),
+      });
+      assert.equal(liveViaWebhook.status, 200);
+    });
   } finally {
     console.log('\n[Cleanup] Removing temporary E2E test records from local D1...');
     for (const pid of createdProspectIds) {
@@ -877,6 +1020,7 @@ async function runLockedAuthSuite(baseUrl: string, studioKey: string): Promise<v
         ['/api/candidates', 'GET'],
         ['/api/candidates', 'POST'],
         ['/api/candidates', 'PATCH'],
+        ['/api/prospects', 'GET'],
         ['/api/prospects', 'POST'],
         ['/api/prospects', 'PATCH'],
         ['/api/prospects', 'DELETE'],

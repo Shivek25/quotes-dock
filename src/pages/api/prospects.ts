@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import {
   createProspectWithDrafts,
   deleteProspectById,
+  listExistingProspectSummaries,
   ProspectValidationError,
   updateProspectMode,
 } from '../../lib/db/repository';
@@ -24,6 +25,21 @@ function jsonResponse(payload: unknown, status = 200): Response {
     },
   });
 }
+
+export const GET: APIRoute = async ({ request, cookies, locals }) => {
+  const env = locals.runtime.env;
+  if (!(await isStudioAuthorized(request, cookies, env))) {
+    return jsonResponse({ ok: false, error: 'Unauthorized studio access.' }, 401);
+  }
+
+  try {
+    const items = await listExistingProspectSummaries(env.DB);
+    return jsonResponse({ ok: true, prospects: items });
+  } catch (err) {
+    console.error('Error in GET /api/prospects:', err);
+    return jsonResponse({ ok: false, error: 'Could not list prospects.' }, 500);
+  }
+};
 
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const env = locals.runtime.env;
@@ -105,6 +121,9 @@ export const PATCH: APIRoute = async ({ request, cookies, locals }) => {
       prospectId: parsed.data.prospectId,
       mode: parsed.data.mode,
       ownerEmail: parsed.data.ownerEmail,
+      webhookUrl: parsed.data.webhookUrl,
+      availabilityStatus: parsed.data.availabilityStatus,
+      rotatePortalToken: parsed.data.rotatePortalToken,
       phoneDisplay: parsed.data.phoneDisplay,
       serviceArea: parsed.data.serviceArea,
       baseSedanPrice: parsed.data.baseSedanPrice,

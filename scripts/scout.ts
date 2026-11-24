@@ -10,6 +10,7 @@ interface CliOptions {
   city: string;
   country: CountryCode;
   limit: number;
+  replaceCity: boolean;
 }
 
 interface SerperPlace {
@@ -240,15 +241,6 @@ const STOP_WORDS = new Set([
   'us',
   'the',
   'and',
-  'cheltenham',
-  'stroud',
-  'tewkesbury',
-  'cirencester',
-  'coleford',
-  'mitcheldean',
-  'quedgeley',
-  'churchdown',
-  'glos',
 ]);
 
 const PARKED_DOMAIN_MARKERS = [
@@ -353,6 +345,7 @@ function parseCliArgs(argv: string[]): CliOptions {
   let city = '';
   let explicitCountry: string | undefined;
   let limit = 5;
+  let replaceCity = false;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -373,6 +366,8 @@ function parseCliArgs(argv: string[]): CliOptions {
     } else if (arg.startsWith('--limit=')) {
       const parsed = Number(arg.slice('--limit='.length));
       if (!Number.isNaN(parsed)) limit = parsed;
+    } else if (arg === '--replace-city') {
+      replaceCity = true;
     } else if (!arg.startsWith('--') && !city) {
       city = arg.trim();
     }
@@ -380,7 +375,7 @@ function parseCliArgs(argv: string[]): CliOptions {
 
   if (!city) {
     console.error(
-      'Usage: npm run scout -- --city "Austin, TX" [--country US|UK] [--limit 5]'
+      'Usage: npm run scout -- --city "Austin, TX" [--country US|UK] [--limit 5] [--replace-city]'
     );
     process.exit(1);
   }
@@ -389,6 +384,7 @@ function parseCliArgs(argv: string[]): CliOptions {
     city: stripEmDashes(city),
     country: detectCountry(city, explicitCountry),
     limit: Math.max(1, Math.min(10, Math.round(limit))),
+    replaceCity,
   };
 }
 
@@ -1108,9 +1104,7 @@ function doesOrganicResultBelongToCandidate(
   if (!brandMatch) return false;
 
   const cityShort = (city.split(',')[0] || city).trim().toLowerCase();
-  const mentionsLocalCity =
-    (cityShort.length >= 3 && combined.includes(cityShort)) ||
-    combined.includes('gloucestershire');
+  const mentionsLocalCity = cityShort.length >= 3 && combined.includes(cityShort);
 
   return mentionsLocalCity || organicIndex < 3;
 }
@@ -1550,7 +1544,45 @@ function sqlQuote(value: string): string {
   return `'${value.replace(/'/g, "''")}'`;
 }
 
-async function persistCandidates(candidates: FinalCandidate[]): Promise<'api' | 'wrangler'> {
+async function fetchExistingProspectKeys(city: string): Promise<{
+  brandKeys: Set<string>;
+  phoneKeys: Set<string>;
+}> {
+  const brandKeys = new Set<string>();
+  const phoneKeys = new Set<string>();
+  const configuredUrl = (process.env.QUOTES_DOCK_URL || 'http://localhost:4321').replace(
+    /\/+$/,
+    ''
+  );
+  const studioKey = process.env.ADMIN_STUDIO_KEY || '';
+  try {
+    const res = await fetch(`${configuredUrl}/api/prospects`, {
+      headers: studioKey ? { 'x-studio-key': studioKey } : undefined,
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) return { brandKeys, phoneKeys };
+    const data = (await res.json().catch(() => null)) as {
+      ok?: boolean;
+      prospects?: Array<{ businessName: string; city: string; phoneDisplay: string }>;
+    } | null;
+    if (data?.ok && Array.isArray(data.prospects)) {
+      for (const p of data.prospects) {
+        const bk = extractCoreBrandKey(p.businessName, p.city || city);
+        const pk = normalizePhoneKey(p.phoneDisplay || '');
+        if (bk) brandKeys.add(bk);
+        if (pk) phoneKeys.add(pk);
+      }
+    }
+  } catch {
+    // Dev server offline; proceed without live prospect dedupe
+  }
+  return { brandKeys, phoneKeys };
+}
+
+async function persistCandidates(
+  candidates: FinalCandidate[],
+  replaceCity: boolean
+): Promise<'api' | 'wrangler'> {
   const configuredUrl = (process.env.QUOTES_DOCK_URL || 'http://localhost:4321').replace(
     /\/+$/,
     ''
@@ -1569,7 +1601,7 @@ async function persistCandidates(candidates: FinalCandidate[]): Promise<'api' | 
           'Content-Type': 'application/json',
           ...(studioKey ? { 'x-studio-key': studioKey } : {}),
         },
-        body: JSON.stringify({ candidates }),
+        body: JSON.stringify({ candidates, replaceCity }),
         signal: AbortSignal.timeout(4000),
       });
 
@@ -1617,13 +1649,15 @@ async function persistCandidates(candidates: FinalCandidate[]): Promise<'api' | 
     `CREATE UNIQUE INDEX IF NOT EXISTS idx_lead_candidates_dedupe ON lead_candidates (dedupe_key);`,
   ];
 
-  const distinctCities = Array.from(
-    new Set(candidates.map((c) => c.city.trim()).filter(Boolean))
-  );
-  for (const city of distinctCities) {
-    statements.push(
-      `DELETE FROM lead_candidates WHERE lower(city) = lower(${sqlQuote(city)}) AND status = 'new';`
+  if (replaceCity) {
+    const distinctCities = Array.from(
+      new Set(candidates.map((c) => c.city.trim()).filter(Boolean))
     );
+    for (const city of distinctCities) {
+      statements.push(
+        `DELETE FROM lead_candidates WHERE lower(city) = lower(${sqlQuote(city)}) AND status = 'new';`
+      );
+    }
   }
 
   for (const item of candidates) {
@@ -1722,24 +1756,49 @@ async function main(): Promise<void> {
     return;
   }
 
+  const existingProspects = await fetchExistingProspectKeys(options.city);
+  const filteredLeads = leads.filter((lead) => {
+    const alreadyPitched =
+      (lead.coreBrandKey && existingProspects.brandKeys.has(lead.coreBrandKey)) ||
+      (lead.phoneKey && existingProspects.phoneKeys.has(lead.phoneKey));
+    if (alreadyPitched) {
+      console.log(`  [-] Skipping ${lead.businessName}: already exists in prospects`);
+      return false;
+    }
+    return true;
+  });
+
+  if (filteredLeads.length === 0) {
+    console.log(`All discovered candidates for "${options.city}" already exist in prospects.`);
+    return;
+  }
+
   console.log(
-    `[Stage 2] Running Google cross-checks on up to ${leads.length} candidates to eliminate hidden websites...`
+    `[Stage 2] Running Google cross-checks on up to ${filteredLeads.length} candidates (concurrency=3) to eliminate hidden websites...`
   );
   const inspectedList: InspectedCandidate[] = [];
   const targetPoolSize = Math.max(options.limit + 2, 7);
+  const CONCURRENCY = 3;
 
-  for (let i = 0; i < leads.length; i += 1) {
+  for (let i = 0; i < filteredLeads.length; i += CONCURRENCY) {
     if (inspectedList.length >= targetPoolSize) break;
-    const inspected = await inspectCandidateWithCrossCheck(
-      leads[i],
-      i,
-      options,
-      serperApiKey,
-      knownWebsiteBrandKeys,
-      knownWebsitePhones
+    const batch = filteredLeads.slice(i, i + CONCURRENCY);
+    const results = await Promise.all(
+      batch.map((lead, offset) =>
+        inspectCandidateWithCrossCheck(
+          lead,
+          i + offset,
+          options,
+          serperApiKey,
+          knownWebsiteBrandKeys,
+          knownWebsitePhones
+        )
+      )
     );
-    if (inspected) {
-      inspectedList.push(inspected);
+    for (const inspected of results) {
+      if (inspected && inspectedList.length < targetPoolSize) {
+        inspectedList.push(inspected);
+      }
     }
   }
 
@@ -1754,7 +1813,7 @@ async function main(): Promise<void> {
     geminiApiKey
   );
 
-  await persistCandidates(topCandidates);
+  await persistCandidates(topCandidates, options.replaceCity);
   printSummaryTable(topCandidates);
 }
 
