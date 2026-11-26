@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getProspectBySlug } from "../../lib/db/repository";
+import { isSandboxDemoSlug } from "../../lib/db/seed-data";
 import { isStudioAuthorized } from "../../lib/security/auth";
 
 const { slug } = Astro.params;
@@ -17,6 +18,7 @@ const defaultPkg =
 const initialMin = defaultPkg ? defaultPkg.prices.sedan : 145;
 const initialMax = initialMin + 20;
 const isPreview = prospect?.mode === "preview";
+const isSandboxDemo = prospect ? isSandboxDemoSlug(prospect.slug) : false;
 const studioAuthed = await isStudioAuthorized(
   Astro.request,
   Astro.cookies,
@@ -109,11 +111,13 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
               <strong class="text-[#7DD3FC]">
                 {isFounderSelfTest
                   ? "Founder Test Mode"
-                  : "Live Custom Preview"}
+                  : isSandboxDemo
+                    ? "Interactive Sandbox Demo"
+                    : "Live Custom Preview"}
               </strong>{" "}
-              prepared for <strong>{prospect.businessName}</strong> (
-              {prospect.city}) - sample prices shown for demonstration until
-              confirmed by owner
+              {isSandboxDemo
+                ? `for ${prospect.businessName} (${prospect.city}) - fictional sample page showing how your shop's 60-second quote flow works`
+                : `prepared for ${prospect.businessName} (${prospect.city}) - sample prices shown for demonstration until confirmed by owner`}
             </span>
           </div>
           <div class="flex shrink-0 items-center gap-4">
@@ -916,9 +920,11 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
 
             <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p class="text-xs text-[#CBD5E1]">
-                {isPreview
-                  ? "Preview Mode Safety: Submitting runs a live test without sending emails."
-                  : `Dispatched straight to ${prospect.businessName} for rapid confirmation.`}
+                {isSandboxDemo
+                  ? "Interactive Demo: Submitting previews the instant owner lead alert (no real booking is sent)."
+                  : isPreview
+                    ? "Preview Mode: Submitting previews the instant owner lead alert (no message is sent during preview)."
+                    : `Dispatched straight to ${prospect.businessName} for rapid confirmation.`}
               </p>
               <button
                 id="submit-quote-btn"
@@ -1316,7 +1322,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
       </div>
     </aside>
 
-    {/* Owner Lead Notification Simulator Modal */}
+    {/* Quote Confirmation & Owner Lead Alert Modal */}
     <div
       id="quote-success-modal"
       class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-md"
@@ -1324,29 +1330,33 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
       aria-modal="true"
       aria-labelledby="modal-heading"
     >
-      <div class="glass-panel cyan-glow max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-sky-400/40 bg-[#151D2A] p-6">
-        <div class="flex items-start justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20 font-bold text-emerald-300 ring-1 ring-emerald-400/40">
+      <div class="glass-panel cyan-glow max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-cyan-400/40 bg-[#111622] p-5 sm:p-6">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex min-w-0 items-start gap-3">
+            <span class="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 font-bold text-emerald-300 ring-1 ring-emerald-400/40">
               ✓
             </span>
-            <div>
-              <h3 id="modal-heading" class="text-lg font-bold text-slate-50">
-                {isPreview
-                  ? "Test Quote Logged (Preview Simulator)"
-                  : `Quote Request Sent to ${prospect.businessName}`}
+            <div class="min-w-0">
+              <h3 id="modal-heading" class="text-lg font-bold leading-snug text-slate-50">
+                {!isPreview
+                  ? `Quote Request Sent to ${prospect.businessName}`
+                  : isSandboxDemo
+                    ? "Your 60-Second Quote Is Ready"
+                    : "Preview Quote Ready"}
               </h3>
-              <p class="text-xs text-[#CBD5E1]">
-                {isPreview
-                  ? `${prospect.businessName} (${prospect.city})`
-                  : "We received your vehicle details and will text or call you shortly to confirm your driveway slot."}
+              <p class="mt-0.5 text-xs leading-relaxed text-[#CBD5E1]">
+                {!isPreview
+                  ? "We received your vehicle details and will text or call you shortly to confirm your driveway slot."
+                  : isSandboxDemo
+                    ? "Interactive Demo: here is the exact instant alert your detailing shop receives."
+                    : `Here is the exact instant lead alert ${prospect.businessName} gets when a driver requests a quote.`}
               </p>
             </div>
           </div>
           <button
             id="close-modal-btn"
             type="button"
-            class="rounded-lg border border-slate-600/80 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-sky-400/40 hover:text-white"
+            class="shrink-0 rounded-lg border border-slate-600/80 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/45 hover:text-white"
           >
             Close
           </button>
@@ -1354,116 +1364,156 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
 
         <div
           id="modal-customer-summary"
-          class="mt-5 rounded-xl border border-slate-700/80 bg-[#0C1017] p-4 text-sm text-slate-100"
+          class="mt-4 rounded-xl border border-slate-700/80 bg-[#090C12] p-4 text-sm text-slate-100"
         />
 
         {isPreview ? (
           <>
-            <div class="mt-5">
-              <div class="flex items-center justify-between">
+            <div class="mt-4">
+              <div class="flex items-center justify-between gap-2">
                 <span class="text-xs font-bold text-[#7DD3FC]">
-                  What the Business Owner Receives Instantly:
+                  Owner Lead Alert Preview
                 </span>
-                <span class="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 ring-1 ring-emerald-400/30">
-                  Instant Lead Alert
+                <span class="shrink-0 whitespace-nowrap rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 ring-1 ring-emerald-400/30">
+                  Instant Alert
                 </span>
               </div>
-              <pre
-                id="modal-owner-sms"
-                class="mt-2 whitespace-pre-wrap rounded-xl border border-slate-800 bg-[#090D13] p-4 font-mono text-xs leading-relaxed text-sky-100"
-              />
+              <div class="mt-2 rounded-xl border border-cyan-400/25 bg-[#090C12] p-4">
+                <div class="flex items-center justify-between gap-2 border-b border-slate-800/90 pb-2.5 text-[11px]">
+                  <span class="flex items-center gap-1.5 font-semibold text-slate-200">
+                    <span class="h-2 w-2 rounded-full bg-[#00F2FE]" />
+                    <span>QuotesDock Instant Alert</span>
+                  </span>
+                  <span class="text-slate-400">Just now</span>
+                </div>
+                <pre
+                  id="modal-owner-sms"
+                  class="mt-2.5 whitespace-pre-wrap font-sans text-xs leading-relaxed text-slate-100"
+                />
+              </div>
             </div>
 
-            <div class="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3.5 text-xs leading-relaxed text-amber-100">
-              <strong>Preview Mode Safety:</strong> No automated email or SMS
-              was sent. Once {prospect.businessName} activates this page (
-              {foundingSetupText}), real customer leads route straight to your
-              inbox with your real job photos live.
-            </div>
-
-            <div class="mt-4 flex flex-wrap gap-2.5">
-              <button
-                id="modal-claim-btn"
-                type="button"
-                class="inline-flex items-center justify-center rounded-xl bg-emerald-400 px-4 py-2.5 text-xs font-bold text-[#051B11] transition-colors hover:bg-emerald-300"
-              >
-                Claim &amp; Activate This Page
-              </button>
-              {foundingCheckoutUrl && (
-                <a
-                  href={foundingCheckoutUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-4 py-2.5 text-xs font-bold text-emerald-200 transition-colors hover:bg-emerald-500/25"
-                >
-                  Direct Founding Checkout
-                </a>
-              )}
-            </div>
-          </>
-        ) : (
-          <div class="mt-5 rounded-xl border border-sky-400/30 bg-[#0C1017] p-4">
-            <div class="text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
-              {hasDialablePhone
-                ? "Want Priority Dispatch? Text Your Quote Directly"
-                : "Want Priority Dispatch? Share Your Quote Summary"}
-            </div>
-            <p class="mt-1.5 text-xs leading-relaxed text-[#CBD5E1]">
-              {hasDialablePhone
-                ? `Zero upfront payment is due today. Tap below to open a pre-filled text message directly to ${prospect.businessName}.`
-                : `Zero upfront payment is due today. Copy your quote summary below and message ${prospect.instagramHandle} directly for faster confirmation.`}
-            </p>
-            <div class="mt-3.5 flex flex-wrap gap-2.5">
-              {hasDialablePhone ? (
+            <div class="mt-4 rounded-xl border border-cyan-400/25 bg-cyan-400/8 p-3.5 text-xs leading-relaxed text-slate-200">
+              {isSandboxDemo ? (
                 <>
-                  <a
-                    id="modal-live-sms-link"
-                    href="#"
-                    class="inline-flex items-center justify-center rounded-xl bg-[#38BDF8] px-4 py-2.5 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
-                  >
-                    Text My Quote to {prospect.businessName} Now
-                  </a>
-                  <a
-                    href={telHref}
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#151D2A] px-4 py-2.5 text-xs font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
-                  >
-                    Call {prospect.phoneDisplay}
-                  </a>
+                  <strong class="text-[#7DD3FC]">Demo Preview:</strong> No real
+                  booking was sent. Want a private 60-second quote page built for
+                  your own shop with your custom prices and up to 6 real job
+                  photos ({foundingSetupText})?
                 </>
               ) : (
                 <>
-                  <button
-                    id="modal-copy-quote-btn"
-                    type="button"
-                    class="inline-flex items-center justify-center rounded-xl bg-[#38BDF8] px-4 py-2.5 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
-                  >
-                    Copy Quote Summary
-                  </button>
-                  {igProfileUrl && (
-                    <a
-                      href={igProfileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#151D2A] px-4 py-2.5 text-xs font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
-                    >
-                      Message {prospect.instagramHandle}
-                    </a>
-                  )}
+                  <strong class="text-[#7DD3FC]">Preview Only:</strong> No
+                  message was sent to anyone. Ready to go live with{" "}
+                  {prospect.businessName}&apos;s real job photos and custom
+                  prices in 24 hours ({foundingSetupText})?
                 </>
               )}
             </div>
-          </div>
-        )}
 
-        <div class="mt-5 flex justify-end">
-          <button
-            id="done-modal-btn"
-            type="button"
-            class="rounded-xl bg-[#38BDF8] px-5 py-2.5 text-sm font-bold text-[#06131F] hover:bg-[#7DD3FC]"
-          >
-            Done
-          </button>
-        </div>
+            <div class="mt-5 flex flex-col-reverse gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+              <button
+                id="done-modal-btn"
+                type="button"
+                class="inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#090C12] px-5 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+              >
+                Done
+              </button>
+              <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                {foundingCheckoutUrl && (
+                  <a
+                    href={foundingCheckoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-4 py-2.5 text-xs font-bold text-emerald-200 transition-colors hover:bg-emerald-500/25"
+                  >
+                    Direct Founding Checkout
+                  </a>
+                )}
+                {isSandboxDemo ? (
+                  <a
+                    href="/#request-preview"
+                    class="btn-hydro-primary inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-bold"
+                  >
+                    Get a Free Preview for My Shop
+                  </a>
+                ) : (
+                  <button
+                    id="modal-claim-btn"
+                    type="button"
+                    class="btn-hydro-primary inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-bold"
+                  >
+                    Activate This Page for My Shop
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div class="mt-5 rounded-xl border border-cyan-400/30 bg-[#090C12] p-4">
+              <div class="text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
+                {hasDialablePhone
+                  ? "Want Priority Dispatch? Text Your Quote Directly"
+                  : "Want Priority Dispatch? Share Your Quote Summary"}
+              </div>
+              <p class="mt-1.5 text-xs leading-relaxed text-[#CBD5E1]">
+                {hasDialablePhone
+                  ? `Zero upfront payment is due today. Tap below to open a pre-filled text message directly to ${prospect.businessName}.`
+                  : `Zero upfront payment is due today. Copy your quote summary below and message ${prospect.instagramHandle} directly for faster confirmation.`}
+              </p>
+              <div class="mt-3.5 flex flex-wrap gap-2.5">
+                {hasDialablePhone ? (
+                  <>
+                    <a
+                      id="modal-live-sms-link"
+                      href="#"
+                      class="btn-hydro-primary inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-xs font-bold"
+                    >
+                      Text My Quote to {prospect.businessName} Now
+                    </a>
+                    <a
+                      href={telHref}
+                      class="inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#111622] px-4 py-2.5 text-xs font-semibold text-slate-100 transition-colors hover:border-cyan-400/50 hover:text-white"
+                    >
+                      Call {prospect.phoneDisplay}
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      id="modal-copy-quote-btn"
+                      type="button"
+                      class="btn-hydro-primary inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-xs font-bold"
+                    >
+                      Copy Quote Summary
+                    </button>
+                    {igProfileUrl && (
+                      <a
+                        href={igProfileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#111622] px-4 py-2.5 text-xs font-semibold text-slate-100 transition-colors hover:border-cyan-400/50 hover:text-white"
+                      >
+                        Message {prospect.instagramHandle}
+                      </a>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div class="mt-5 flex justify-end">
+              <button
+                id="done-modal-btn"
+                type="button"
+                class="btn-hydro-primary rounded-xl px-5 py-2.5 text-sm font-bold"
+              >
+                Done
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
 
