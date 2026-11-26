@@ -11,74 +11,81 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
 <BaseLayout
   title="QuotesDock | Dedicated 60-Second Driveway Quote Pages for Mobile Car Detailers"
   description="Turn Instagram and Google profile clicks into private, pre-qualified detailing bookings with a 60-second quote configurator built for US and UK mobile car detailers."
+  showScrollLaser={true}
 >
-  <nav class="sticky top-0 z-40 border-b border-slate-800/90 bg-[#0C1017]/92 backdrop-blur-xl">
-    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
-      <div class="flex min-w-0 items-center gap-3">
-        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-400/10 text-[#38BDF8] cyan-glow-sm">
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 2L20 6.5V17.5L12 22L4 17.5V6.5L12 2Z" />
-            <path d="M12 7L16 9.5V14.5L12 17L8 14.5V9.5L12 7Z" />
-          </svg>
+  <div class="sticky top-0 z-40 px-3 pt-3 sm:px-6">
+    <nav class="mx-auto max-w-7xl rounded-2xl border border-slate-800/90 bg-[#090C12]/88 px-4 py-3 backdrop-blur-xl shadow-[0_14px_36px_-18px_rgba(0,0,0,0.9)] sm:px-5">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex min-w-0 items-center gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-400/10 text-[#00F2FE] cyan-glow-sm">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 2L20 6.5V17.5L12 22L4 17.5V6.5L12 2Z" />
+              <path d="M12 7L16 9.5V14.5L12 17L8 14.5V9.5L12 7Z" />
+            </svg>
+          </div>
+          <span class="font-display text-lg font-bold tracking-tight text-slate-50">
+            QuotesDock
+          </span>
+          <span class="hidden items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#7DD3FC] sm:inline-flex">
+            <span class="relative flex h-1.5 w-1.5">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-70" />
+              <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#00F2FE]" />
+            </span>
+            For Mobile Detailers &amp; Valeters
+          </span>
         </div>
-        <span class="font-display text-lg font-bold tracking-tight text-slate-50">
-          QuotesDock
-        </span>
-        <span class="hidden rounded-full border border-sky-400/30 bg-sky-400/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#7DD3FC] sm:inline-flex">
-          For Mobile Detailers &amp; Valeters
-        </span>
+
+        <div class="flex items-center gap-4 sm:gap-6">
+          <a
+            href="#why-it-works"
+            class="hidden text-xs font-semibold text-[#CBD5E1] transition-colors hover:text-white md:inline"
+          >
+            Why It Works
+          </a>
+          <a
+            href="#how-it-works"
+            class="hidden text-xs font-semibold text-[#CBD5E1] transition-colors hover:text-white lg:inline"
+          >
+            24-Hour Setup
+          </a>
+          <a
+            href="#demo"
+            class="hidden text-xs font-semibold text-[#CBD5E1] transition-colors hover:text-white sm:inline sm:text-sm"
+          >
+            Interactive Demo
+          </a>
+          <a
+            href="#pricing"
+            class="text-xs font-semibold text-[#CBD5E1] transition-colors hover:text-white sm:text-sm"
+          >
+            Pricing
+          </a>
+          <a
+            href="/p/apex-gloss-austin"
+            class="btn-hydro-primary rounded-xl px-4 py-2 text-xs font-bold sm:text-sm"
+          >
+            Try Sample Quote Page
+          </a>
+        </div>
       </div>
+    </nav>
+  </div>
 
-      <div class="flex items-center gap-4 sm:gap-6">
-        <a
-          href="#why-it-works"
-          class="hidden text-xs font-semibold text-[#CBD5E1] transition-colors hover:text-white md:inline"
-        >
-          Why It Works
-        </a>
-        <a
-          href="#how-it-works"
-          class="hidden text-xs font-semibold text-[#CBD5E1] transition-colors hover:text-white lg:inline"
-        >
-          24-Hour Setup
-        </a>
-        <a
-          href="#demo"
-          class="hidden text-xs font-semibold text-[#CBD5E1] transition-colors hover:text-white sm:inline sm:text-sm"
-        >
-          Interactive Demo
-        </a>
-        <a
-          href="#pricing"
-          class="text-xs font-semibold text-[#CBD5E1] transition-colors hover:text-white sm:text-sm"
-        >
-          Pricing
-        </a>
-        <a
-          href="/p/apex-gloss-austin"
-          class="rounded-xl bg-[#38BDF8] px-4 py-2 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm sm:text-sm"
-        >
-          Try Sample Quote Page
-        </a>
-      </div>
-    </div>
-  </nav>
-
-  <header class="carbon-mesh relative overflow-hidden border-b border-slate-800/90">
-    <div class="tunnel-ambient pointer-events-none absolute -top-32 left-1/2 h-80 w-[90vw] max-w-[760px] -translate-x-1/2 rounded-full bg-sky-400/10 blur-[130px]" />
-
-    <div class="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-16">
+  <header class="wetbay-stage relative overflow-hidden border-b border-slate-800/80">
+    <div class="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14">
       <div class="grid items-center gap-10 lg:grid-cols-12">
         <div class="reveal-up is-visible min-w-0 lg:col-span-7">
-          <div class="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-3.5 py-1.5 text-xs font-semibold text-[#7DD3FC]">
+          <div class="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-1.5 text-xs font-semibold text-[#7DD3FC]">
             <span class="relative flex h-2 w-2">
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-[#38BDF8]" />
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-75" />
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
             </span>
             <span>Built for US &amp; UK Mobile Car Detailers</span>
           </div>
 
-          <h1 class="mt-5 max-w-[19ch] text-3xl font-bold leading-[1.12] tracking-tight text-slate-50 sm:text-5xl lg:text-[52px]">
-            Turn Instagram &amp; Google Clicks Into 60-Second Driveway Quotes
+          <h1 class="mt-5 max-w-[19ch] text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-slate-50 sm:text-5xl lg:text-[54px]">
+            Turn Instagram &amp; Google Clicks Into{' '}
+            <span class="text-hydro-sheen">60-Second Driveway Quotes</span>
           </h1>
 
           <p class="mt-4 max-w-xl text-base leading-relaxed text-[#CBD5E1] sm:text-lg">
@@ -88,7 +95,8 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
           <div class="mt-7 flex flex-wrap gap-3.5">
             <a
               href="/p/apex-gloss-austin"
-              class="group inline-flex items-center gap-2 rounded-xl bg-[#38BDF8] px-6 py-4 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow sm:text-base"
+              data-magnetic="4"
+              class="btn-hydro-primary group inline-flex items-center gap-2 rounded-xl px-6 py-4 text-sm font-bold sm:text-base"
             >
               <span>Try Interactive Quote Demo</span>
               <svg
@@ -106,16 +114,42 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
             </a>
             <a
               href="#request-preview"
-              class="rounded-xl border border-slate-600/80 bg-[#151D2A] px-5 py-4 text-sm font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white sm:text-base"
+              class="rounded-xl border border-slate-600/80 bg-[#111622]/90 px-5 py-4 text-sm font-semibold text-slate-100 backdrop-blur-md transition-colors hover:border-cyan-400/55 hover:text-white sm:text-base"
             >
               Request Free Custom Preview
             </a>
           </div>
+
+          {/* Micro-Telemetry Authority Strip */}
+          <div class="mt-8 grid max-w-xl grid-cols-3 gap-3 border-t border-slate-800/90 pt-5">
+            <div class="rounded-xl border border-slate-800/80 bg-[#111622]/70 px-3.5 py-2.5">
+              <div class="font-display tabular-nums text-sm font-bold text-[#00F2FE] sm:text-base">
+                &lt; 1s Load
+              </div>
+              <div class="mt-0.5 text-[11px] text-[#CBD5E1]">Cloudflare Edge</div>
+            </div>
+            <div class="rounded-xl border border-slate-800/80 bg-[#111622]/70 px-3.5 py-2.5">
+              <div class="font-display text-sm font-bold text-slate-50 sm:text-base">
+                US ($) &amp; UK (£)
+              </div>
+              <div class="mt-0.5 text-[11px] text-[#CBD5E1]">Zip &amp; Postcode Native</div>
+            </div>
+            <div class="rounded-xl border border-slate-800/80 bg-[#111622]/70 px-3.5 py-2.5">
+              <div class="font-display text-sm font-bold text-emerald-300 sm:text-base">
+                0% Commission
+              </div>
+              <div class="mt-0.5 text-[11px] text-[#CBD5E1]">100% Isolated Shop Link</div>
+            </div>
+          </div>
         </div>
 
+        {/* Right Column: Playable Live 60s Quote Micro-Simulator */}
         <div class="reveal-up is-visible stagger-1 min-w-0 lg:col-span-5">
-          <div class="glass-panel anisotropic-border overflow-hidden rounded-2xl p-2">
-            <div class="relative aspect-[16/10] overflow-hidden rounded-xl bg-[#090D13]">
+          <div
+            data-tilt-card="2.5"
+            class="glass-panel anisotropic-border spotlight-card overflow-hidden rounded-2xl p-2"
+          >
+            <div class="relative aspect-[16/9] overflow-hidden rounded-xl bg-[#090C12]">
               <img
                 src="/images/hero-wetbay.jpg"
                 alt="Mobile detailing wet-bay lighting showcase"
@@ -123,14 +157,18 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
               />
               <div
                 class="pointer-events-none absolute inset-0"
-                style="background: linear-gradient(125deg, rgba(12,16,23,0.9) 0%, rgba(12,16,23,0.42) 50%, rgba(12,16,23,0.12) 100%), linear-gradient(to top, rgba(12,16,23,0.94) 0%, transparent 55%);"
+                style="background: linear-gradient(125deg, rgba(9,12,18,0.92) 0%, rgba(9,12,18,0.45) 52%, rgba(9,12,18,0.14) 100%), linear-gradient(to top, rgba(9,12,18,0.96) 0%, transparent 58%);"
               />
-              <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 rounded-xl border border-slate-700/80 bg-[#0C1017]/90 px-4 py-2.5 backdrop-blur-md">
+              <div class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/35 bg-[#090C12]/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#7DD3FC] backdrop-blur-md">
+                <span class="h-1.5 w-1.5 rounded-full bg-[#00F2FE]" />
+                <span>Live Interactive Simulator</span>
+              </div>
+              <div class="absolute bottom-2.5 left-3 right-3 flex items-center justify-between gap-2 rounded-xl border border-slate-700/80 bg-[#090C12]/90 px-3.5 py-2 backdrop-blur-md">
                 <div class="min-w-0">
-                  <div class="text-[11px] font-bold uppercase tracking-wider text-[#7DD3FC]">
+                  <div class="text-[10px] font-bold uppercase tracking-wider text-[#7DD3FC]">
                     Founding Detailer Offer
                   </div>
-                  <div class="font-display tabular-nums text-lg font-bold text-slate-50 sm:text-xl">
+                  <div class="font-display tabular-nums text-base font-bold text-slate-50 sm:text-lg">
                     $50 setup + $15/mo
                   </div>
                 </div>
@@ -140,22 +178,145 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
               </div>
             </div>
 
-            <div class="grid gap-2.5 p-4 text-xs text-slate-200 sm:grid-cols-2">
-              <div class="flex items-center gap-2 rounded-lg bg-[#0C1017]/80 px-3 py-2">
-                <span class="shrink-0 font-bold text-[#38BDF8]">✓</span>
-                <span>100% isolated shop page - zero rival links</span>
+            {/* Interactive Vehicle & Add-on Console */}
+            <div class="p-3.5 sm:p-4 space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-mono text-[11px] font-bold uppercase tracking-wider text-[#7DD3FC]">
+                  Tap Vehicle Size to Test
+                </span>
+                <button
+                  id="hero-sim-addon"
+                  type="button"
+                  aria-pressed="false"
+                  class="rounded-full border border-slate-700/90 bg-[#090C12]/90 px-2.5 py-1 text-[11px] font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
+                >
+                  + Ceramic Sealant (+$35)
+                </button>
               </div>
-              <div class="flex items-center gap-2 rounded-lg bg-[#0C1017]/80 px-3 py-2">
-                <span class="shrink-0 font-bold text-[#38BDF8]">✓</span>
-                <span>Custom Sedan / SUV / Truck price configurator</span>
+
+              <div class="grid grid-cols-3 gap-2" role="group" aria-label="Simulator vehicle size">
+                <button
+                  type="button"
+                  data-sim-vehicle="sedan"
+                  data-sim-label="Coupe / Sedan"
+                  data-sim-min="155"
+                  data-sim-max="175"
+                  data-sim-duration="2.5 - 3 hrs"
+                  aria-pressed="false"
+                  class="hero-sim-vehicle rounded-xl border border-slate-700/80 bg-[#090C12]/85 px-2.5 py-2 text-center text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50"
+                >
+                  Coupe / Sedan
+                </button>
+                <button
+                  type="button"
+                  data-sim-vehicle="suv"
+                  data-sim-label="Mid-Size SUV"
+                  data-sim-min="190"
+                  data-sim-max="210"
+                  data-sim-duration="3 - 3.5 hrs"
+                  aria-pressed="true"
+                  class="hero-sim-vehicle rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/12 px-2.5 py-2 text-center text-xs font-bold text-white transition-colors"
+                >
+                  Mid-Size SUV
+                </button>
+                <button
+                  type="button"
+                  data-sim-vehicle="truck_xl"
+                  data-sim-label="3-Row Truck"
+                  data-sim-min="225"
+                  data-sim-max="245"
+                  data-sim-duration="3.5 - 4.5 hrs"
+                  aria-pressed="false"
+                  class="hero-sim-vehicle rounded-xl border border-slate-700/80 bg-[#090C12]/85 px-2.5 py-2 text-center text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50"
+                >
+                  3-Row Truck
+                </button>
               </div>
-              <div class="flex items-center gap-2 rounded-lg bg-[#0C1017]/80 px-3 py-2">
-                <span class="shrink-0 font-bold text-[#38BDF8]">✓</span>
-                <span>Showcases up to 6 of your real job photos</span>
+
+              {/* Illuminated Studio Bay Readout */}
+              <div class="bay-floor-glow flex items-center justify-between gap-3 rounded-xl border border-slate-800/90 bg-[#090C12]/95 px-4 py-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="relative flex h-11 w-20 shrink-0 items-center justify-center">
+                    <svg
+                      id="hero-sim-svg-sedan"
+                      class="hidden h-9 w-20 text-[#00F2FE]"
+                      viewBox="0 0 120 44"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M10 30H22M40 30H82M100 30H110L112 24L104 20L82 18L66 10H36L20 18L10 21V30Z" />
+                      <circle cx="31" cy="30" r="7" />
+                      <circle cx="91" cy="30" r="7" />
+                    </svg>
+                    <svg
+                      id="hero-sim-svg-suv"
+                      class="h-9 w-20 text-[#00F2FE]"
+                      viewBox="0 0 120 44"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M10 30H22M40 30H82M100 30H110L112 22L104 18L90 17L76 9H30L18 18L10 21V30Z" />
+                      <circle cx="31" cy="30" r="7.5" />
+                      <circle cx="91" cy="30" r="7.5" />
+                    </svg>
+                    <svg
+                      id="hero-sim-svg-truck_xl"
+                      class="hidden h-9 w-20 text-[#00F2FE]"
+                      viewBox="0 0 120 44"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M8 30H21M39 30H83M101 30H113V19H72V9H34L20 18L8 21V30Z" />
+                      <circle cx="30" cy="30" r="8" />
+                      <circle cx="92" cy="30" r="8" />
+                    </svg>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="text-[10px] font-semibold uppercase tracking-wider text-[#CBD5E1]">
+                      Full Reset Estimate
+                    </div>
+                    <div
+                      id="hero-sim-estimate"
+                      class="font-display tabular-nums text-xl font-bold text-[#00F2FE] sm:text-2xl"
+                    >
+                      $190 - $210
+                    </div>
+                  </div>
+                </div>
+                <div class="shrink-0 text-right">
+                  <div id="hero-sim-duration" class="font-mono text-xs font-semibold text-slate-200">
+                    3 - 3.5 hrs
+                  </div>
+                  <a
+                    href="/p/apex-gloss-austin"
+                    class="mt-0.5 inline-block text-[11px] font-semibold text-[#7DD3FC] underline decoration-cyan-400/40 underline-offset-4 hover:text-white"
+                  >
+                    Open Full Configurator -&gt;
+                  </a>
+                </div>
               </div>
-              <div class="flex items-center gap-2 rounded-lg bg-[#0C1017]/80 px-3 py-2">
-                <span class="shrink-0 font-bold text-[#38BDF8]">✓</span>
-                <span>Done-for-you setup in 24 hours</span>
+
+              {/* Simulated Instant Owner Lead Alert */}
+              <div class="flex items-center justify-between gap-2 rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-[11px] text-emerald-200">
+                <div class="flex min-w-0 items-center gap-2">
+                  <span class="h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
+                  <span id="hero-sim-alert" class="truncate font-mono">
+                    Alert -&gt; Mid-Size SUV · $190 - $210 · 78704
+                  </span>
+                </div>
+                <span class="shrink-0 font-semibold text-emerald-300">Ready</span>
               </div>
             </div>
           </div>
@@ -164,100 +325,191 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
     </div>
   </header>
 
-  <main class="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-    {/* Why Detailers Use QuotesDock */}
+  <main class="studio-frame-rails relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-6 left-1/2 -z-10 h-72 w-[85%] -translate-x-1/2 rounded-full bg-cyan-500/[0.045] blur-[90px]"
+    />
+    {/* Why Detailers Switch: Asymmetric Bento Grid */}
     <section id="why-it-works" class="reveal-up mb-16">
       <div class="max-w-2xl">
-        <span class="inline-flex rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
+        <span class="inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
           Built to Protect Your Brand &amp; Convert Traffic
         </span>
-        <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+        <h2 class="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-50 sm:text-4xl">
           Why Mobile Detailers Switch from Generic Links to QuotesDock
         </h2>
       </div>
 
-      <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="glass-panel anisotropic-border rounded-2xl border-sky-400/35 p-6">
-          <div class="font-mono text-xs font-bold text-[#7DD3FC]">01 / PRIVATE BRANDING</div>
-          <h3 class="mt-2 text-lg font-bold text-slate-50">100% Private &amp; Isolated (Never a Marketplace)</h3>
-          <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
-            Zero competitor listings, zero shared leads, and zero cross-promotion of other shops. When customers tap your link, they only see your detailing business.
+      <div class="mt-7 grid gap-5 lg:grid-cols-12">
+        {/* Bento 1 (Wide): Private Branding vs Marketplace */}
+        <div class="glass-panel anisotropic-border spotlight-card rounded-2xl border-cyan-400/30 p-6 sm:p-7 lg:col-span-7">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
+              Private Branding
+            </span>
+            <span class="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+              Never a Marketplace
+            </span>
+          </div>
+          <h3 class="mt-2.5 text-xl font-bold text-slate-50 sm:text-2xl">
+            100% Private &amp; Isolated Shop Page
+          </h3>
+          <p class="mt-2 max-w-xl text-sm leading-relaxed text-[#CBD5E1]">
+            Zero competitor listings, zero shared leads, and zero cross-promotion of other shops. When customers tap your bio link, they only see your detailing business.
           </p>
+
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-xl border border-slate-800 bg-[#090C12]/80 px-3.5 py-3 text-xs text-slate-400">
+              <div class="font-mono text-[10px] font-bold uppercase text-slate-400">Generic Directories</div>
+              <div class="mt-1 line-through opacity-75">4 rival shops listed next to you</div>
+            </div>
+            <div class="rounded-xl border border-cyan-400/35 bg-cyan-400/8 px-3.5 py-3 text-xs text-slate-100">
+              <div class="font-mono text-[10px] font-bold uppercase text-[#00F2FE]">Your QuotesDock URL</div>
+              <div class="mt-1 font-semibold text-white">Exclusive /p/your-shop quote lock</div>
+            </div>
+          </div>
         </div>
 
-        <div class="glass-panel anisotropic-border rounded-2xl p-6">
-          <div class="font-mono text-xs font-bold text-[#7DD3FC]">02 / PRE-QUALIFIED LEADS</div>
-          <h3 class="mt-2 text-lg font-bold text-slate-50">End "How Much?" DM Tag</h3>
+        {/* Bento 2 (Compact): Pre-Qualified Leads */}
+        <div class="glass-panel anisotropic-border spotlight-card rounded-2xl p-6 sm:p-7 lg:col-span-5">
+          <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
+            Pre-Qualified Leads
+          </span>
+          <h3 class="mt-2.5 text-xl font-bold text-slate-50">
+            End "How Much?" DM Tag
+          </h3>
           <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
             Car owners see your Sedan, SUV, and 3-Row Truck starting ranges upfront before submitting, filtering out tire-kickers automatically.
           </p>
+
+          <div class="mt-5 grid grid-cols-3 gap-2 text-center font-mono text-[11px]">
+            <div class="rounded-lg border border-slate-800 bg-[#090C12]/90 px-2 py-2">
+              <div class="text-slate-400">Sedan</div>
+              <div class="mt-0.5 font-bold text-[#7DD3FC]">$155+</div>
+            </div>
+            <div class="rounded-lg border border-cyan-400/30 bg-[#090C12]/90 px-2 py-2">
+              <div class="text-slate-300">SUV</div>
+              <div class="mt-0.5 font-bold text-[#00F2FE]">$190+</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-[#090C12]/90 px-2 py-2">
+              <div class="text-slate-400">3-Row</div>
+              <div class="mt-0.5 font-bold text-[#7DD3FC]">$225+</div>
+            </div>
+          </div>
         </div>
 
-        <div class="glass-panel anisotropic-border rounded-2xl p-6">
-          <div class="font-mono text-xs font-bold text-[#7DD3FC]">03 / THUMB-FIRST MOBILE UX</div>
-          <h3 class="mt-2 text-lg font-bold text-slate-50">Built for Instagram Bio &amp; Google Links</h3>
+        {/* Bento 3 (Compact): Thumb-First Mobile UX */}
+        <div class="glass-panel anisotropic-border spotlight-card rounded-2xl p-6 sm:p-7 lg:col-span-5">
+          <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
+            Thumb-First Mobile UX
+          </span>
+          <h3 class="mt-2.5 text-xl font-bold text-slate-50">
+            Built for Instagram Bio &amp; Google Links
+          </h3>
           <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
             Loads in under a second on mobile with interactive vehicle silhouettes, condition upgrades, and a sticky quote bar.
           </p>
+
+          <div class="mt-5 flex items-center justify-between rounded-xl border border-slate-800 bg-[#090C12]/90 px-3.5 py-2.5 text-xs">
+            <span class="text-slate-300">Sticky Mobile Quote Dock</span>
+            <span class="rounded-lg bg-[#00F2FE] px-2.5 py-1 text-[11px] font-bold text-[#041019]">
+              Lock In Quote
+            </span>
+          </div>
         </div>
 
-        <div class="glass-panel anisotropic-border rounded-2xl p-6">
-          <div class="font-mono text-xs font-bold text-[#7DD3FC]">04 / VERIFIED JOB PROOF</div>
-          <h3 class="mt-2 text-lg font-bold text-slate-50">Show Your Gloss &amp; Rig Specs</h3>
-          <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
+        {/* Bento 4 (Wide): Verified Job Proof */}
+        <div class="glass-panel anisotropic-border spotlight-card rounded-2xl p-6 sm:p-7 lg:col-span-7">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
+              Verified Job Proof
+            </span>
+            <span class="font-mono text-[11px] text-slate-300">
+              6 Real Photo Slots + Rig Specs
+            </span>
+          </div>
+          <h3 class="mt-2.5 text-xl font-bold text-slate-50 sm:text-2xl">
+            Show Your Real Gloss &amp; Rig Specs
+          </h3>
+          <p class="mt-2 max-w-xl text-sm leading-relaxed text-[#CBD5E1]">
             Display 6 of your real before-and-after details plus your onboard deionized water and power specs right above the booking form.
           </p>
+
+          <div class="mt-5 flex flex-wrap gap-2 text-xs">
+            <span class="rounded-lg border border-slate-700/80 bg-[#090C12]/90 px-3 py-1.5 text-slate-200">
+              Before / After Toggle Cards
+            </span>
+            <span class="rounded-lg border border-slate-700/80 bg-[#090C12]/90 px-3 py-1.5 text-slate-200">
+              Self-Contained Water &amp; Power Badges
+            </span>
+            <span class="rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-3 py-1.5 font-semibold text-[#7DD3FC]">
+              Private Owner Lead Inbox
+            </span>
+          </div>
         </div>
       </div>
     </section>
 
-    {/* 24-Hour Setup Workflow */}
+    {/* 24-Hour Setup Workflow (Connected Sequential Timeline) */}
     <section id="how-it-works" class="reveal-up mb-16">
       <div class="max-w-2xl">
-        <span class="inline-flex rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
+        <span class="inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
           Fast 24-Hour Onboarding
         </span>
-        <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+        <h2 class="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-50 sm:text-4xl">
           How Your Detailer Page Goes Live Without Any Tech Headache
         </h2>
       </div>
 
-      <div class="mt-6 grid gap-5 md:grid-cols-3">
-        <div class="glass-panel anisotropic-border rounded-2xl p-6">
-          <div class="font-mono text-xs font-bold text-[#7DD3FC]">STEP 01</div>
-          <h3 class="mt-2 text-lg font-bold text-slate-50">Test Your Custom Preview Link</h3>
-          <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
-            If we sent you a preview link for your detailing business, tap through the vehicle sizes and submit a test quote to see how your customer alerts work.
-          </p>
-        </div>
+      <div class="relative mt-7">
+        <div
+          aria-hidden="true"
+          class="pointer-events-none absolute left-10 right-10 top-9 hidden h-px bg-gradient-to-r from-cyan-400/10 via-cyan-400/45 to-cyan-400/10 md:block"
+        />
+        <div class="grid gap-5 md:grid-cols-3">
+          <div class="glass-panel anisotropic-border spotlight-card relative rounded-2xl p-6">
+            <div class="inline-flex items-center gap-2 rounded-full border border-cyan-400/35 bg-[#090C12] px-3 py-1 font-mono text-xs font-bold text-[#00F2FE]">
+              <span>STEP 01</span>
+            </div>
+            <h3 class="mt-3 text-lg font-bold text-slate-50">Test Your Custom Preview Link</h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
+              If we sent you a preview link for your detailing business, tap through the vehicle sizes and submit a test quote to see how your customer alerts work.
+            </p>
+          </div>
 
-        <div class="glass-panel anisotropic-border rounded-2xl p-6">
-          <div class="font-mono text-xs font-bold text-[#7DD3FC]">STEP 02</div>
-          <h3 class="mt-2 text-lg font-bold text-slate-50">Send 6 Job Photos &amp; Confirm Prices</h3>
-          <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
-            Tell us any package price adjustments you want and send up to 6 photos of your best interior/exterior work.
-          </p>
-        </div>
+          <div class="glass-panel anisotropic-border spotlight-card relative rounded-2xl p-6">
+            <div class="inline-flex items-center gap-2 rounded-full border border-cyan-400/35 bg-[#090C12] px-3 py-1 font-mono text-xs font-bold text-[#00F2FE]">
+              <span>STEP 02</span>
+            </div>
+            <h3 class="mt-3 text-lg font-bold text-slate-50">Send 6 Job Photos &amp; Confirm Prices</h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
+              Tell us any package price adjustments you want and send up to 6 photos of your best interior/exterior work.
+            </p>
+          </div>
 
-        <div class="glass-panel anisotropic-border rounded-2xl p-6">
-          <div class="font-mono text-xs font-bold text-[#7DD3FC]">STEP 03</div>
-          <h3 class="mt-2 text-lg font-bold text-slate-50">Drop the Link in Your Bio &amp; Get Bookings</h3>
-          <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
-            We switch your page to Live Mode within 24 hours so you can paste it into your Instagram, Facebook, and Google profiles.
-          </p>
+          <div class="glass-panel anisotropic-border spotlight-card relative rounded-2xl p-6">
+            <div class="inline-flex items-center gap-2 rounded-full border border-emerald-400/35 bg-[#090C12] px-3 py-1 font-mono text-xs font-bold text-emerald-300">
+              <span>STEP 03</span>
+            </div>
+            <h3 class="mt-3 text-lg font-bold text-slate-50">Drop the Link in Your Bio &amp; Get Bookings</h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
+              We switch your page to Live Mode within 24 hours so you can paste it into your Instagram, Facebook, and Google profiles.
+            </p>
+          </div>
         </div>
       </div>
     </section>
 
     {/* Single Fictional Template Sandbox (Zero Competitor Directory) */}
     <section id="demo" class="reveal-up mb-16">
-      <div class="glass-panel anisotropic-border rounded-2xl border-sky-400/35 p-6 sm:p-10">
+      <div class="glass-panel anisotropic-border spotlight-card rounded-2xl border-cyan-400/35 p-6 sm:p-10">
         <div class="grid items-center gap-8 lg:grid-cols-12">
           <div class="min-w-0 lg:col-span-7">
-            <div class="inline-flex flex-wrap items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
+            <div class="inline-flex flex-wrap items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
               Fictional Software Demo (Not a Business Directory)
             </div>
-            <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+            <h2 class="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-50 sm:text-4xl">
               Interactive Template Sandbox
             </h2>
             <p class="mt-2.5 max-w-2xl text-sm leading-relaxed text-[#CBD5E1] sm:text-base">
@@ -267,13 +519,14 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
             <div class="mt-6 flex flex-wrap gap-3.5">
               <a
                 href="/p/apex-gloss-austin"
-                class="inline-flex items-center justify-center rounded-xl bg-[#38BDF8] px-5 py-3 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
+                data-magnetic="4"
+                class="btn-hydro-primary inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-bold"
               >
                 Launch US ($) Sandbox Demo
               </a>
               <a
                 href="/p/cotswold-valet-uk"
-                class="inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#0C1017]/90 px-5 py-3 text-sm font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
+                class="inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#090C12]/90 px-5 py-3 text-sm font-semibold text-slate-100 transition-colors hover:border-cyan-400/55 hover:text-white"
               >
                 Launch UK (£) Sandbox Demo
               </a>
@@ -281,25 +534,25 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
           </div>
 
           <div class="min-w-0 lg:col-span-5">
-            <div class="rounded-xl border border-slate-700/80 bg-[#0C1017]/90 p-5">
+            <div class="rounded-xl border border-slate-700/80 bg-[#090C12]/90 p-5">
               <div class="font-mono text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
                 Inside Every Private Client Page
               </div>
               <ul class="mt-4 space-y-3 text-xs text-slate-200 sm:text-sm">
-                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#151D2A]/90 px-3.5 py-2.5">
-                  <span class="font-mono font-bold text-[#38BDF8]">01</span>
+                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#111622]/90 px-3.5 py-2.5">
+                  <span class="font-mono font-bold text-[#00F2FE]">01</span>
                   <span>Interactive Sedan / Mid-Size SUV / 3-Row Truck SVG silhouettes</span>
                 </li>
-                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#151D2A]/90 px-3.5 py-2.5">
-                  <span class="font-mono font-bold text-[#38BDF8]">02</span>
+                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#111622]/90 px-3.5 py-2.5">
+                  <span class="font-mono font-bold text-[#00F2FE]">02</span>
                   <span>Dynamic 3-tier detailing package pricing matrix</span>
                 </li>
-                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#151D2A]/90 px-3.5 py-2.5">
-                  <span class="font-mono font-bold text-[#38BDF8]">03</span>
+                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#111622]/90 px-3.5 py-2.5">
+                  <span class="font-mono font-bold text-[#00F2FE]">03</span>
                   <span>Condition upgrades + interactive Before/After gloss proof</span>
                 </li>
-                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#151D2A]/90 px-3.5 py-2.5">
-                  <span class="font-mono font-bold text-[#38BDF8]">04</span>
+                <li class="flex items-start gap-2.5 rounded-lg border border-slate-800/90 bg-[#111622]/90 px-3.5 py-2.5">
+                  <span class="font-mono font-bold text-[#00F2FE]">04</span>
                   <span>60-second driveway request form + instant owner lead alert</span>
                 </li>
               </ul>
@@ -310,12 +563,16 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
     </section>
 
     {/* Founding Pricing Comparison */}
-    <section id="pricing" class="reveal-up">
+    <section id="pricing" class="reveal-up relative">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute -top-10 left-1/2 -z-10 h-64 w-[80%] -translate-x-1/2 rounded-full bg-emerald-500/[0.04] blur-[95px]"
+      />
       <div class="max-w-2xl">
         <span class="inline-flex rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
           Simple Transparent Pricing
         </span>
-        <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+        <h2 class="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-50 sm:text-4xl">
           Lock In Our Founding Detailer Rate
         </h2>
         <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
@@ -324,7 +581,14 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
       </div>
 
       <div class="mt-7 grid gap-6 md:grid-cols-2">
-        <div class="glass-panel anisotropic-border relative flex min-w-0 flex-col justify-between rounded-2xl border-sky-400/45 p-7">
+        <div
+          data-tilt-card="2"
+          class="glass-panel anisotropic-border spotlight-card relative flex min-w-0 flex-col justify-between overflow-hidden rounded-2xl border-cyan-400/45 p-7"
+        >
+          <div
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#00F2FE] to-transparent"
+          />
           <div>
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
@@ -337,7 +601,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
 
             <h3 class="mt-3 text-xl font-bold text-slate-50">Founding Detailer Plan</h3>
             <div class="mt-3 flex flex-wrap items-baseline gap-2">
-              <span class="font-display tabular-nums text-4xl font-bold text-[#38BDF8]">
+              <span class="font-display tabular-nums text-4xl font-bold text-[#00F2FE]">
                 $50
               </span>
               <span class="text-sm text-slate-200">one-time setup</span>
@@ -349,19 +613,19 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
 
             <ul class="mt-6 space-y-2.5 text-sm text-slate-200">
               <li class="flex items-start gap-2.5">
-                <span class="font-bold text-[#38BDF8]">✓</span>
+                <span class="font-bold text-[#00F2FE]">✓</span>
                 <span>1 dedicated 60-second quote page (/p/your-shop) with zero rival links</span>
               </li>
               <li class="flex items-start gap-2.5">
-                <span class="font-bold text-[#38BDF8]">✓</span>
+                <span class="font-bold text-[#00F2FE]">✓</span>
                 <span>Up to 6 of your real before-and-after job photos swapped in</span>
               </li>
               <li class="flex items-start gap-2.5">
-                <span class="font-bold text-[#38BDF8]">✓</span>
+                <span class="font-bold text-[#00F2FE]">✓</span>
                 <span>Custom Sedan, Mid-Size SUV &amp; 3-Row Truck pricing matrix</span>
               </li>
               <li class="flex items-start gap-2.5">
-                <span class="font-bold text-[#38BDF8]">✓</span>
+                <span class="font-bold text-[#00F2FE]">✓</span>
                 <span>1 round of copy &amp; price edits + instant lead notifications</span>
               </li>
             </ul>
@@ -373,7 +637,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                 href={foundingCheckoutUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center justify-center rounded-xl bg-[#38BDF8] px-5 py-3 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
+                class="btn-hydro-primary inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-bold"
               >
                 Claim Founding Spot ($50 + $15/mo)
               </a>
@@ -381,27 +645,30 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
               <a
                 href="#request-preview"
                 data-select-plan="founding"
-                class="plan-jump-link inline-flex items-center justify-center rounded-xl bg-[#38BDF8] px-5 py-3 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
+                class="plan-jump-link btn-hydro-primary inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-bold"
               >
                 Request Free Preview &amp; Lock Founding Rate
               </a>
             )}
             <a
               href="/p/apex-gloss-austin"
-              class="inline-flex items-center justify-center rounded-xl border border-slate-700/80 bg-[#0C1017]/80 px-5 py-2.5 text-xs font-semibold text-slate-200 transition-colors hover:border-sky-400/50 hover:text-white"
+              class="inline-flex items-center justify-center rounded-xl border border-slate-700/80 bg-[#090C12]/80 px-5 py-2.5 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white"
             >
               Try Interactive Sandbox First
             </a>
           </div>
         </div>
 
-        <div class="glass-panel flex min-w-0 flex-col justify-between rounded-2xl border-slate-700/80 p-7">
+        <div
+          data-tilt-card="2"
+          class="glass-panel spotlight-card flex min-w-0 flex-col justify-between rounded-2xl border-slate-700/80 p-7"
+        >
           <div>
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-300">
                 After Founding Spots Fill
               </span>
-              <span class="rounded-full border border-slate-700 bg-[#0C1017] px-3 py-0.5 text-[11px] font-semibold text-slate-200">
+              <span class="rounded-full border border-slate-700 bg-[#090C12] px-3 py-0.5 text-[11px] font-semibold text-slate-200">
                 Standard Rate
               </span>
             </div>
@@ -444,7 +711,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                 href={standardCheckoutUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center justify-center rounded-xl border border-sky-400/50 bg-[#0C1017]/90 px-5 py-3 text-sm font-bold text-slate-100 transition-colors hover:border-[#38BDF8] hover:text-white"
+                class="inline-flex items-center justify-center rounded-xl border border-cyan-400/50 bg-[#090C12]/90 px-5 py-3 text-sm font-bold text-slate-100 transition-colors hover:border-[#00F2FE] hover:text-white"
               >
                 Start Standard Shop Plan
               </a>
@@ -452,7 +719,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
               <a
                 href="#request-preview"
                 data-select-plan="standard"
-                class="plan-jump-link inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#0C1017]/90 px-5 py-3 text-sm font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
+                class="plan-jump-link inline-flex items-center justify-center rounded-xl border border-slate-600/80 bg-[#090C12]/90 px-5 py-3 text-sm font-semibold text-slate-100 transition-colors hover:border-cyan-400/50 hover:text-white"
               >
                 Request Custom Preview for Your Shop
               </a>
@@ -464,13 +731,13 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
 
     {/* Request Your Free Custom Preview / Claim Founding Spot */}
     <section id="request-preview" class="reveal-up mt-16">
-      <div class="glass-panel anisotropic-border rounded-2xl border-sky-400/35 p-6 sm:p-10">
+      <div class="glass-panel anisotropic-border spotlight-card rounded-2xl border-cyan-400/35 p-6 sm:p-10">
         <div class="grid items-start gap-8 lg:grid-cols-12">
           <div class="lg:col-span-5">
             <span class="inline-flex rounded-full border border-emerald-400/35 bg-emerald-500/15 px-3 py-1 text-xs font-bold text-emerald-300">
               Free Custom Preview (No Card Needed)
             </span>
-            <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+            <h2 class="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-50 sm:text-3xl">
               Get a Working Quote Page Preview Built for Your Shop
             </h2>
             <p class="mt-2.5 text-sm leading-relaxed text-[#CBD5E1]">
@@ -478,15 +745,15 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
             </p>
             <ul class="mt-5 space-y-2 text-xs text-slate-200 sm:text-sm">
               <li class="flex items-start gap-2">
-                <span class="font-bold text-[#38BDF8]">✓</span>
+                <span class="font-bold text-[#00F2FE]">✓</span>
                 <span>Delivered within 24 hours with zero obligation</span>
               </li>
               <li class="flex items-start gap-2">
-                <span class="font-bold text-[#38BDF8]">✓</span>
+                <span class="font-bold text-[#00F2FE]">✓</span>
                 <span>Supports US ($) Zip Codes and UK (£) Postcodes</span>
               </li>
               <li class="flex items-start gap-2">
-                <span class="font-bold text-[#38BDF8]">✓</span>
+                <span class="font-bold text-[#00F2FE]">✓</span>
                 <span>Only pay if you love your preview and want to go live</span>
               </li>
             </ul>
@@ -495,7 +762,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
           <div class="lg:col-span-7">
             <form
               id="home-inquiry-form"
-              class="rounded-2xl border border-slate-700/80 bg-[#0C1017]/90 p-5 sm:p-6 space-y-4"
+              class="rounded-2xl border border-slate-700/80 bg-[#090C12]/90 p-5 sm:p-6 space-y-4"
             >
               <div class="hidden" aria-hidden="true">
                 <label for="home_website_url">Leave blank</label>
@@ -520,7 +787,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                     type="text"
                     required
                     placeholder="Precision Mobile Detailing"
-                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
+                    class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                   />
                 </div>
                 <div>
@@ -533,7 +800,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                     type="text"
                     required
                     placeholder="Marcus"
-                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
+                    class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                   />
                 </div>
                 <div>
@@ -546,7 +813,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                     type="text"
                     required
                     placeholder="Tampa, FL or Bristol, UK"
-                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
+                    class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                   />
                 </div>
                 <div>
@@ -556,7 +823,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                   <select
                     id="inqCountry"
                     name="country"
-                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50"
+                    class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50"
                   >
                     <option value="US">United States ($ / Zip Code)</option>
                     <option value="UK">United Kingdom (£ / Postcode)</option>
@@ -572,7 +839,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                     type="text"
                     required
                     placeholder="@yourshop or owner@shop.com"
-                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
+                    class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                   />
                 </div>
                 <div>
@@ -582,7 +849,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                   <select
                     id="inqPlanTier"
                     name="planTier"
-                    class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50"
+                    class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50"
                   >
                     <option value="founding">Founding Rate ($50 / £39 setup + $15 / £12 mo)</option>
                     <option value="standard">Standard Shop Plan ($150 setup + $29/mo)</option>
@@ -599,7 +866,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                   name="notes"
                   type="text"
                   placeholder="e.g. Full detail starts at $165, mainly SUVs and ceramic coatings"
-                  class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
+                  class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                 />
               </div>
 
@@ -616,7 +883,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
                 <button
                   id="home-inquiry-btn"
                   type="submit"
-                  class="inline-flex items-center justify-center rounded-xl bg-[#38BDF8] px-6 py-3 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm disabled:opacity-60"
+                  class="btn-hydro-primary inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-bold disabled:opacity-60"
                 >
                   Request My Free Preview
                 </button>
@@ -630,6 +897,110 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
 
   <script is:inline>
     (function () {
+      const reducedMotion =
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Hero 60s Quote Micro-Simulator
+      const simVehicleBtns = document.querySelectorAll('.hero-sim-vehicle');
+      const simAddonBtn = document.getElementById('hero-sim-addon');
+      const simEstEl = document.getElementById('hero-sim-estimate');
+      const simDurEl = document.getElementById('hero-sim-duration');
+      const simAlertEl = document.getElementById('hero-sim-alert');
+      const simSvgs = {
+        sedan: document.getElementById('hero-sim-svg-sedan'),
+        suv: document.getElementById('hero-sim-svg-suv'),
+        truck_xl: document.getElementById('hero-sim-svg-truck_xl'),
+      };
+
+      let simVehicle = 'suv';
+      let simLabel = 'Mid-Size SUV';
+      let simMin = 190;
+      let simMax = 210;
+      let simDur = '3 - 3.5 hrs';
+      let simAddonActive = false;
+      let displayedMin = 190;
+      let displayedMax = 210;
+      let simRaf = 0;
+
+      function renderSimRange(targetMin, targetMax) {
+        if (!simEstEl) return;
+        if (reducedMotion) {
+          displayedMin = targetMin;
+          displayedMax = targetMax;
+          simEstEl.textContent = `$${targetMin} - $${targetMax}`;
+          return;
+        }
+        if (simRaf) window.cancelAnimationFrame(simRaf);
+        const startMin = displayedMin;
+        const startMax = displayedMax;
+        const startTime = performance.now();
+        const durationMs = 240;
+
+        const step = (now) => {
+          const t = Math.min(1, (now - startTime) / durationMs);
+          const eased = 1 - Math.pow(1 - t, 3);
+          const curMin = Math.round(startMin + (targetMin - startMin) * eased);
+          const curMax = Math.round(startMax + (targetMax - startMax) * eased);
+          displayedMin = curMin;
+          displayedMax = curMax;
+          simEstEl.textContent = `$${curMin} - $${curMax}`;
+          if (t < 1) {
+            simRaf = window.requestAnimationFrame(step);
+          } else {
+            simRaf = 0;
+          }
+        };
+        simRaf = window.requestAnimationFrame(step);
+      }
+
+      function updateHeroSimulator() {
+        const extra = simAddonActive ? 35 : 0;
+        const targetMin = simMin + extra;
+        const targetMax = simMax + extra;
+
+        renderSimRange(targetMin, targetMax);
+        if (simDurEl) simDurEl.textContent = simDur;
+        if (simAlertEl) {
+          const addonText = simAddonActive ? ' + Sealant' : '';
+          simAlertEl.textContent = `Alert -> ${simLabel}${addonText} · $${targetMin} - $${targetMax} · 78704`;
+        }
+
+        Object.entries(simSvgs).forEach(([key, svg]) => {
+          if (!svg) return;
+          svg.classList.toggle('hidden', key !== simVehicle);
+        });
+      }
+
+      simVehicleBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          simVehicle = btn.getAttribute('data-sim-vehicle') || 'suv';
+          simLabel = btn.getAttribute('data-sim-label') || 'Mid-Size SUV';
+          simMin = Number(btn.getAttribute('data-sim-min') || '190');
+          simMax = Number(btn.getAttribute('data-sim-max') || '210');
+          simDur = btn.getAttribute('data-sim-duration') || '3 - 3.5 hrs';
+
+          simVehicleBtns.forEach((b) => {
+            const active = b === btn;
+            b.setAttribute('aria-pressed', active ? 'true' : 'false');
+            b.className = active
+              ? 'hero-sim-vehicle rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/12 px-2.5 py-2 text-center text-xs font-bold text-white transition-colors'
+              : 'hero-sim-vehicle rounded-xl border border-slate-700/80 bg-[#090C12]/85 px-2.5 py-2 text-center text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50';
+          });
+          updateHeroSimulator();
+        });
+      });
+
+      simAddonBtn?.addEventListener('click', () => {
+        simAddonActive = !simAddonActive;
+        simAddonBtn.setAttribute('aria-pressed', simAddonActive ? 'true' : 'false');
+        simAddonBtn.className = simAddonActive
+          ? 'rounded-full border border-[#00F2FE] bg-[#00F2FE]/15 px-2.5 py-1 text-[11px] font-bold text-[#7DD3FC] transition-colors'
+          : 'rounded-full border border-slate-700/90 bg-[#090C12]/90 px-2.5 py-1 text-[11px] font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-white';
+        updateHeroSimulator();
+      });
+
+      // Intake Form Submission
       const form = document.getElementById('home-inquiry-form');
       const feedback = document.getElementById('home-inquiry-feedback');
       const btn = document.getElementById('home-inquiry-btn');
@@ -695,7 +1066,7 @@ const standardCheckoutUrl = rawStandardUrl.startsWith('https://') ? rawStandardU
     })();
   </script>
 
-  <footer class="border-t border-slate-800/90 bg-[#090D13] px-4 py-8 sm:px-6">
+  <footer class="border-t border-slate-800/90 bg-[#06080D]/85 px-4 py-8 backdrop-blur-md sm:px-6">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 text-xs text-[#CBD5E1]">
       <div>
         <span class="font-display font-bold text-slate-50">QuotesDock</span>

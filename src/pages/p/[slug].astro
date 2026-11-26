@@ -95,13 +95,15 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
     title={`${prospect.businessName} | Instant 60-Second Driveway Quote`}
     description={prospect.tagline}
     noindex={isPreview}
+    showScrollLaser={true}
   >
     {isPreview && (
-      <div class="border-b border-sky-400/30 bg-[#0F1B2B] px-4 py-2 text-xs text-sky-50 sm:text-sm">
+      <div class="border-b border-cyan-400/30 bg-[#0D1626] px-4 py-2 text-xs text-sky-50 sm:text-sm">
         <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2">
           <div class="flex min-w-0 max-w-full flex-1 items-start gap-2.5 sm:items-center">
             <span class="relative mt-1 flex h-2 w-2 shrink-0 sm:mt-0">
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-[#38BDF8]" />
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-75" />
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
             </span>
             <span class="leading-snug">
               <strong class="text-[#7DD3FC]">
@@ -117,13 +119,13 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           <div class="flex shrink-0 items-center gap-4">
             <a
               href="#quote-calculator"
-              class="font-semibold text-[#7DD3FC] underline decoration-sky-400/50 underline-offset-4 hover:text-white"
+              class="font-semibold text-[#7DD3FC] underline decoration-cyan-400/50 underline-offset-4 hover:text-white"
             >
               Run Quote Test
             </a>
             <a
               href="#claim-preview"
-              class="rounded-lg bg-[#38BDF8] px-3 py-1 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC]"
+              class="btn-hydro-primary rounded-lg px-3 py-1 text-xs font-bold"
             >
               Claim Page
             </a>
@@ -133,10 +135,10 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
     )}
 
     {/* Sticky Glass Navigation Bar */}
-    <nav class="sticky top-0 z-40 border-b border-slate-800/90 bg-[#0C1017]/92 backdrop-blur-xl">
+    <nav class="sticky top-0 z-40 border-b border-slate-800/90 bg-[#090C12]/90 backdrop-blur-xl">
       <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
         <div class="flex min-w-0 items-center gap-3.5">
-          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-400/10 text-[#38BDF8] cyan-glow-sm">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-400/10 text-[#00F2FE] cyan-glow-sm">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -186,18 +188,18 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           {hasDialablePhone ? (
             <a
               href={telHref}
-              class="hidden rounded-lg border border-slate-600/80 bg-[#151D2A] px-3.5 py-2 text-xs font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white sm:inline-flex"
+              class="hidden rounded-lg border border-slate-600/80 bg-[#111622] px-3.5 py-2 text-xs font-semibold text-slate-100 transition-colors hover:border-cyan-400/50 hover:text-white sm:inline-flex"
             >
               {prospect.phoneDisplay}
             </a>
           ) : (
-            <span class="hidden rounded-lg border border-slate-600/80 bg-[#151D2A] px-3.5 py-2 text-xs font-semibold text-slate-200 sm:inline-flex">
+            <span class="hidden rounded-lg border border-slate-600/80 bg-[#111622] px-3.5 py-2 text-xs font-semibold text-slate-200 sm:inline-flex">
               Direct DM / Text Dispatch
             </span>
           )}
           <a
             href="#quote-calculator"
-            class="rounded-lg bg-[#38BDF8] px-4 py-2 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm sm:text-sm"
+            class="btn-hydro-primary rounded-lg px-4 py-2 text-xs font-bold sm:text-sm"
           >
             Get 60s Quote
           </a>
@@ -206,16 +208,15 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
     </nav>
 
     {/* Atmospheric Wet-Bay Studio Hero */}
-    <header class="carbon-mesh relative overflow-hidden border-b border-slate-800/90">
-      <div class="tunnel-ambient pointer-events-none absolute -top-32 left-1/2 h-80 w-[90vw] max-w-[720px] -translate-x-1/2 rounded-full bg-sky-400/10 blur-[120px]" />
-
+    <header class="wetbay-stage relative overflow-hidden border-b border-slate-800/80">
       <div class="mx-auto max-w-7xl px-4 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-14">
         <div class="grid items-center gap-10 lg:grid-cols-12">
           {/* Left Copy & Metrics */}
           <div class="reveal-up is-visible min-w-0 lg:col-span-7">
-            <div class="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-3.5 py-1.5 text-xs">
+            <div class="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-1.5 text-xs">
               <span class="relative flex h-2 w-2">
-                <span class="relative inline-flex h-2 w-2 rounded-full bg-[#38BDF8]" />
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-75" />
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
               </span>
               <span class="font-semibold text-slate-50">
                 {prospect.turnaroundBadge}
@@ -231,7 +232,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
               <span class="text-[#7DD3FC]">{prospect.instagramHandle}</span>
             </div>
 
-            <h1 class="mt-5 max-w-[20ch] text-3xl font-bold leading-[1.12] tracking-tight text-slate-50 sm:text-5xl lg:text-[52px]">
+            <h1 class="mt-5 max-w-[20ch] text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-slate-50 sm:text-5xl lg:text-[54px]">
               {prospect.heroHeadline}
             </h1>
 
@@ -242,7 +243,8 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
             <div class="mt-7 flex flex-wrap items-center gap-4">
               <a
                 href="#quote-calculator"
-                class="group inline-flex items-center gap-2.5 rounded-xl bg-[#38BDF8] px-6 py-4 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow sm:text-base"
+                data-magnetic="4"
+                class="btn-hydro-primary group inline-flex items-center gap-2.5 rounded-xl px-6 py-4 text-sm font-bold sm:text-base"
               >
                 <span>Configure Driveway Quote</span>
                 <svg
@@ -261,7 +263,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
               {visibleGallery.length > 0 && (
                 <a
                   href="#job-proof"
-                  class="inline-flex items-center gap-2 rounded-xl border border-slate-600/80 bg-[#151D2A] px-5 py-4 text-sm font-semibold text-slate-100 transition-colors hover:border-sky-400/50 hover:text-white"
+                  class="inline-flex items-center gap-2 rounded-xl border border-slate-600/80 bg-[#111622]/90 px-5 py-4 text-sm font-semibold text-slate-100 backdrop-blur-md transition-colors hover:border-cyan-400/55 hover:text-white"
                 >
                   View Recent Work
                 </a>
@@ -270,15 +272,15 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
 
             {/* 4-Card Honest Summary Strip */}
             <div class="mt-8 grid grid-cols-2 gap-3 border-t border-slate-800/90 pt-6 sm:grid-cols-4">
-              <div class="glass-panel rounded-xl p-3.5">
-                <div class="font-display tabular-nums text-lg font-bold text-[#38BDF8]">
+              <div class="glass-panel spotlight-card rounded-xl p-3.5">
+                <div class="font-display tabular-nums text-lg font-bold text-[#00F2FE]">
                   ★ {prospect.ratingScore}
                 </div>
                 <div class="mt-0.5 text-[11px] font-medium text-[#CBD5E1]">
                   {prospect.reviewCount}+ Public Reviews
                 </div>
               </div>
-              <div class="glass-panel rounded-xl p-3.5">
+              <div class="glass-panel spotlight-card rounded-xl p-3.5">
                 <div class="font-display tabular-nums text-lg font-bold text-slate-50">
                   {prospect.packages.length} Tiers
                 </div>
@@ -286,15 +288,15 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                   Sedan, SUV &amp; Truck
                 </div>
               </div>
-              <div class="glass-panel rounded-xl p-3.5">
-                <div class="font-display text-lg font-bold text-[#38BDF8]">
+              <div class="glass-panel spotlight-card rounded-xl p-3.5">
+                <div class="font-display text-lg font-bold text-[#00F2FE]">
                   {hasSelfContainedWater ? "Self-Contained" : "On-Site"}
                 </div>
                 <div class="mt-0.5 text-[11px] font-medium text-[#CBD5E1]">
                   {hasSelfContainedWater ? "Water & Power Ready" : "Home or Workplace"}
                 </div>
               </div>
-              <div class="glass-panel rounded-xl p-3.5">
+              <div class="glass-panel spotlight-card rounded-xl p-3.5">
                 <div class="font-display text-lg font-bold text-emerald-300">
                   60 Sec
                 </div>
@@ -307,8 +309,11 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
 
           {/* Right Bay Preview Frame */}
           <div class="reveal-up is-visible stagger-1 lg:col-span-5">
-            <div class="glass-panel anisotropic-border relative overflow-hidden rounded-2xl p-2">
-              <div class="relative aspect-[4/3] overflow-hidden rounded-xl bg-[#090D13]">
+            <div
+              data-tilt-card="2.5"
+              class="glass-panel anisotropic-border spotlight-card relative overflow-hidden rounded-2xl p-2"
+            >
+              <div class="relative aspect-[4/3] overflow-hidden rounded-xl bg-[#090C12]">
                 <img
                   src="/images/hero-wetbay.jpg"
                   alt={`${prospect.businessName} mobile detailing showcase`}
@@ -317,13 +322,13 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 {/* Mask upper-left background wall cleanly so image works for every city */}
                 <div
                   class="pointer-events-none absolute inset-0"
-                  style="background: linear-gradient(125deg, rgba(12,16,23,0.9) 0%, rgba(12,16,23,0.42) 45%, rgba(12,16,23,0.08) 100%), linear-gradient(to top, rgba(12,16,23,0.94) 0%, transparent 52%);"
+                  style="background: linear-gradient(125deg, rgba(9,12,18,0.92) 0%, rgba(9,12,18,0.44) 45%, rgba(9,12,18,0.08) 100%), linear-gradient(to top, rgba(9,12,18,0.95) 0%, transparent 52%);"
                 />
 
-                <div class="absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 rounded-xl border border-slate-700/80 bg-[#0C1017]/90 px-4 py-3 backdrop-blur-md">
+                <div class="absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 rounded-xl border border-slate-700/80 bg-[#090C12]/90 px-4 py-3 backdrop-blur-md">
                   <div class="min-w-0">
                     <div class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#7DD3FC]">
-                      <span class="h-1.5 w-1.5 rounded-full bg-[#38BDF8]" />
+                      <span class="h-1.5 w-1.5 rounded-full bg-[#00F2FE]" />
                       {hasSelfContainedWater ? "Self-Contained Mobile Unit" : "Mobile Detailing Service"}
                     </div>
                     <div class="mt-0.5 truncate text-xs text-slate-200">
@@ -348,7 +353,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
     </header>
 
     {/* Main Content */}
-    <main class="mx-auto max-w-7xl px-4 pb-32 pt-12 sm:px-6 sm:pt-16">
+    <main class="studio-frame-rails relative mx-auto max-w-7xl px-4 pb-32 pt-12 sm:px-6 sm:pt-16 lg:px-8">
       {/* Interactive 60-Second Driveway Quote Configurator */}
       <section
         id="quote-calculator"
@@ -356,10 +361,10 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
       >
         <div class="flex flex-wrap items-start justify-between gap-6 border-b border-slate-800 pb-6">
           <div>
-            <div class="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
+            <div class="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
               Real-Time Driveway Estimator
             </div>
-            <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+            <h2 class="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-50 sm:text-3xl">
               60-Second Driveway Quote Configurator
             </h2>
             <p class="mt-1.5 text-sm text-[#CBD5E1]">
@@ -368,13 +373,13 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
             </p>
           </div>
 
-          <div class="rounded-xl border border-sky-400/35 bg-[#0C1017]/90 px-5 py-3.5 cyan-glow-sm">
+          <div class="rounded-xl border border-cyan-400/35 bg-[#090C12]/90 px-5 py-3.5 cyan-glow-sm">
             <div class="text-[11px] font-semibold uppercase tracking-wider text-[#CBD5E1]">
               Live Estimated Range
             </div>
             <div
               id="calc-top-estimate"
-              class="font-display tabular-nums mt-0.5 text-2xl font-bold text-[#38BDF8] sm:text-3xl"
+              class="font-display tabular-nums mt-0.5 text-2xl font-bold text-[#00F2FE] sm:text-3xl"
             >
               {prospect.currencySymbol}
               {initialMin} - {prospect.currencySymbol}
@@ -383,6 +388,42 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
             <div id="calc-top-duration" class="mt-0.5 text-xs text-slate-200">
               {defaultPkg?.durationLabel}
             </div>
+          </div>
+        </div>
+
+        {/* 4-Step Interactive Telemetry Track */}
+        <div
+          id="calc-telemetry-track"
+          aria-label="Quote configurator steps"
+          class="mt-6 grid grid-cols-2 gap-2 rounded-xl border border-slate-800/90 bg-[#090C12]/80 p-2 sm:grid-cols-4"
+        >
+          <div
+            data-step-node="1"
+            class="flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-400/10 px-3 py-2 text-xs font-semibold text-white transition-colors"
+          >
+            <span class="font-mono text-[11px] font-bold text-[#00F2FE]">01</span>
+            <span>Vehicle</span>
+          </div>
+          <div
+            data-step-node="2"
+            class="flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-slate-300 transition-colors"
+          >
+            <span class="font-mono text-[11px] font-bold text-slate-400">02</span>
+            <span>Package</span>
+          </div>
+          <div
+            data-step-node="3"
+            class="flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-slate-300 transition-colors"
+          >
+            <span class="font-mono text-[11px] font-bold text-slate-400">03</span>
+            <span>Condition</span>
+          </div>
+          <div
+            data-step-node="4"
+            class="flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-slate-300 transition-colors"
+          >
+            <span class="font-mono text-[11px] font-bold text-slate-400">04</span>
+            <span>Dispatch</span>
           </div>
         </div>
 
@@ -404,7 +445,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           <div>
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-3">
-                <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#38BDF8] text-xs font-bold text-[#06131F]">
+                <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#041019]">
                   01
                 </span>
                 <h3 class="text-base font-bold text-slate-50 sm:text-lg">
@@ -428,25 +469,30 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 data-vehicle-label="Coupe / Sedan"
                 aria-checked="true"
                 role="radio"
-                class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 p-5 text-left cyan-glow-sm"
+                class="vehicle-btn interactive-card spotlight-card flex flex-col justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/10 p-5 text-left cyan-glow-sm"
               >
-                <div class="flex w-full items-start justify-between gap-3">
+                <div class="bay-floor-glow vehicle-bay-glow flex w-full items-start justify-between gap-3 rounded-lg pb-1">
                   {/* Sedan SVG Silhouette */}
-                  <svg
-                    class="h-10 w-24 text-[#38BDF8]"
-                    viewBox="0 0 120 44"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M10 30H22M40 30H82M100 30H110L112 24L104 20L82 18L66 10H36L20 18L10 21V30Z" />
-                    <circle cx="31" cy="30" r="7" />
-                    <circle cx="91" cy="30" r="7" />
-                  </svg>
-                  <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-[#38BDF8] bg-[#38BDF8]" />
+                  <div class="relative">
+                    <svg class="pointer-events-none -mb-1 h-2 w-24 text-[#00F2FE]/45" viewBox="0 0 120 10" fill="none" aria-hidden="true">
+                      <path d="M12 8C38 2 82 2 108 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                    </svg>
+                    <svg
+                      class="h-10 w-24 text-[#00F2FE]"
+                      viewBox="0 0 120 44"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M10 30H22M40 30H82M100 30H110L112 24L104 20L82 18L66 10H36L20 18L10 21V30Z" />
+                      <circle cx="31" cy="30" r="7" />
+                      <circle cx="91" cy="30" r="7" />
+                    </svg>
+                  </div>
+                  <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-[#00F2FE] bg-[#00F2FE]" />
                 </div>
                 <div class="mt-3">
                   <div class="font-display text-base font-bold text-slate-50">
@@ -467,24 +513,29 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 data-vehicle-label="Mid-Size SUV"
                 aria-checked="false"
                 role="radio"
-                class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-5 text-left hover:border-sky-400/50"
+                class="vehicle-btn interactive-card spotlight-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#090C12]/80 p-5 text-left hover:border-cyan-400/50"
               >
-                <div class="flex w-full items-start justify-between gap-3">
+                <div class="vehicle-bay-glow flex w-full items-start justify-between gap-3 rounded-lg pb-1">
                   {/* Mid-Size SUV SVG Silhouette */}
-                  <svg
-                    class="h-10 w-24 text-slate-300"
-                    viewBox="0 0 120 44"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M10 30H22M40 30H82M100 30H110L112 22L104 18L90 17L76 9H30L18 18L10 21V30Z" />
-                    <circle cx="31" cy="30" r="7.5" />
-                    <circle cx="91" cy="30" r="7.5" />
-                  </svg>
+                  <div class="relative">
+                    <svg class="pointer-events-none -mb-1 h-2 w-24 text-slate-500/35" viewBox="0 0 120 10" fill="none" aria-hidden="true">
+                      <path d="M12 8C38 2 82 2 108 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                    </svg>
+                    <svg
+                      class="h-10 w-24 text-slate-300"
+                      viewBox="0 0 120 44"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M10 30H22M40 30H82M100 30H110L112 22L104 18L90 17L76 9H30L18 18L10 21V30Z" />
+                      <circle cx="31" cy="30" r="7.5" />
+                      <circle cx="91" cy="30" r="7.5" />
+                    </svg>
+                  </div>
                   <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-slate-500" />
                 </div>
                 <div class="mt-3">
@@ -492,7 +543,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                     Mid-Size SUV / Crossover
                   </div>
                   <p class="mt-1 text-xs text-[#CBD5E1]">
-                    2-row SUVs & wagons (RAV4, CR-V, Model Y, Porsche Macan)
+                    2-row SUVs &amp; wagons (RAV4, CR-V, Model Y, Porsche Macan)
                   </p>
                   <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-slate-300">
                     +Mid-Size Surface Area
@@ -506,24 +557,29 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 data-vehicle-label="3-Row SUV / Pickup"
                 aria-checked="false"
                 role="radio"
-                class="vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-5 text-left hover:border-sky-400/50"
+                class="vehicle-btn interactive-card spotlight-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#090C12]/80 p-5 text-left hover:border-cyan-400/50"
               >
-                <div class="flex w-full items-start justify-between gap-3">
+                <div class="vehicle-bay-glow flex w-full items-start justify-between gap-3 rounded-lg pb-1">
                   {/* Pickup / Full-Size Truck SVG Silhouette */}
-                  <svg
-                    class="h-10 w-24 text-slate-300"
-                    viewBox="0 0 120 44"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M8 30H21M39 30H83M101 30H113V19H72V9H34L20 18L8 21V30Z" />
-                    <circle cx="30" cy="30" r="8" />
-                    <circle cx="92" cy="30" r="8" />
-                  </svg>
+                  <div class="relative">
+                    <svg class="pointer-events-none -mb-1 h-2 w-24 text-slate-500/35" viewBox="0 0 120 10" fill="none" aria-hidden="true">
+                      <path d="M12 8C38 2 82 2 108 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                    </svg>
+                    <svg
+                      class="h-10 w-24 text-slate-300"
+                      viewBox="0 0 120 44"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M8 30H21M39 30H83M101 30H113V19H72V9H34L20 18L8 21V30Z" />
+                      <circle cx="30" cy="30" r="8" />
+                      <circle cx="92" cy="30" r="8" />
+                    </svg>
+                  </div>
                   <span class="vehicle-dot h-4 w-4 rounded-full border-2 border-slate-500" />
                 </div>
                 <div class="mt-3">
@@ -531,7 +587,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                     3-Row SUV / Pickup Truck
                   </div>
                   <p class="mt-1 text-xs text-[#CBD5E1]">
-                    Full-size trucks, minivans & XL SUVs (F-150, Tahoe, Range
+                    Full-size trucks, minivans &amp; XL SUVs (F-150, Tahoe, Range
                     Rover)
                   </p>
                   <div class="mt-3 text-[11px] font-bold uppercase tracking-wider text-slate-300">
@@ -546,7 +602,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           <div>
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-3">
-                <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#38BDF8] text-xs font-bold text-[#06131F]">
+                <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#041019]">
                   02
                 </span>
                 <h3 class="text-base font-bold text-slate-50 sm:text-lg">
@@ -573,14 +629,14 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                     data-price-truck_xl={pkg.prices.truck_xl}
                     data-duration={pkg.durationLabel}
                     aria-pressed={isDefault ? "true" : "false"}
-                    class={`package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl p-6 text-left ${
+                    class={`package-btn interactive-card spotlight-card relative flex h-full flex-col justify-between rounded-xl p-6 text-left ${
                       isDefault
-                        ? "border-2 border-[#38BDF8] bg-[#38BDF8]/10 cyan-glow-sm"
-                        : "border border-slate-700/80 bg-[#0C1017]/80 hover:border-sky-400/50"
+                        ? "border-2 border-[#00F2FE] bg-[#00F2FE]/10 cyan-glow-sm"
+                        : "border border-slate-700/80 bg-[#090C12]/80 hover:border-cyan-400/50"
                     }`}
                   >
                     {pkg.popular && (
-                      <span class="absolute -top-3 right-5 rounded-full bg-[#38BDF8] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-[#06131F]">
+                      <span class="absolute -top-3 right-5 rounded-full bg-[#00F2FE] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-[#041019]">
                         Most Booked
                       </span>
                     )}
@@ -593,7 +649,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                         <span
                           class={`pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 ${
                             isDefault
-                              ? "border-[#38BDF8] bg-[#38BDF8]"
+                              ? "border-[#00F2FE] bg-[#00F2FE]"
                               : "border-slate-500"
                           }`}
                         />
@@ -601,7 +657,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                       <p class="mt-1 text-xs text-[#CBD5E1]">{pkg.tagline}</p>
 
                       <div class="mt-4 flex items-baseline gap-2 border-b border-slate-800 pb-4">
-                        <span class="pkg-price-display font-display tabular-nums text-3xl font-bold text-[#38BDF8]">
+                        <span class="pkg-price-display font-display tabular-nums text-3xl font-bold text-[#00F2FE]">
                           {prospect.currencySymbol}
                           {pkg.prices.sedan}
                         </span>
@@ -613,7 +669,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                       <ul class="mt-4 space-y-2.5">
                         {pkg.features.map((feat) => (
                           <li class="flex items-start gap-2.5 text-xs leading-relaxed text-slate-200">
-                            <span class="mt-0.5 font-bold text-[#38BDF8]">
+                            <span class="mt-0.5 font-bold text-[#00F2FE]">
                               ✓
                             </span>
                             <span>{feat}</span>
@@ -631,11 +687,11 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           <div class="grid gap-8 lg:grid-cols-12">
             <div class="lg:col-span-6">
               <div class="flex items-center gap-3">
-                <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#38BDF8] text-xs font-bold text-[#06131F]">
+                <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#041019]">
                   03
                 </span>
                 <h3 class="text-base font-bold text-slate-50 sm:text-lg">
-                  Vehicle Condition & Extras
+                  Vehicle Condition &amp; Extras
                 </h3>
               </div>
 
@@ -643,14 +699,14 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 <button
                   type="button"
                   data-condition="standard"
-                  class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 px-4 py-3.5 text-left"
+                  class="condition-btn interactive-card spotlight-card flex w-full items-center justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/10 px-4 py-3.5 text-left"
                 >
                   <div>
                     <div class="text-sm font-bold text-slate-50">
                       Standard Daily Condition
                     </div>
                     <div class="text-xs text-[#CBD5E1]">
-                      Normal road dust & everyday tidy cabin
+                      Normal road dust &amp; everyday tidy cabin
                     </div>
                   </div>
                   <span class="text-xs font-bold text-emerald-300">
@@ -661,7 +717,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 <button
                   type="button"
                   data-condition="pet_hair"
-                  class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 px-4 py-3.5 text-left hover:border-sky-400/50"
+                  class="condition-btn interactive-card spotlight-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#090C12]/80 px-4 py-3.5 text-left hover:border-cyan-400/50"
                 >
                   <div>
                     <div class="text-sm font-bold text-slate-50">
@@ -679,7 +735,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 <button
                   type="button"
                   data-condition="heavy_soil"
-                  class="condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 px-4 py-3.5 text-left hover:border-sky-400/50"
+                  class="condition-btn interactive-card spotlight-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#090C12]/80 px-4 py-3.5 text-left hover:border-cyan-400/50"
                 >
                   <div>
                     <div class="text-sm font-bold text-slate-50">
@@ -702,13 +758,13 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
               </div>
               <div class="mt-4 grid gap-3 sm:grid-cols-2">
                 {prospect.addons.map((addon) => (
-                  <label class="addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-3.5 hover:border-sky-400/50">
+                  <label class="addon-label interactive-card spotlight-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#090C12]/80 p-3.5 hover:border-cyan-400/50">
                     <input
                       type="checkbox"
                       name="addonsSelected"
                       value={addon.id}
                       data-addon-price={addon.price}
-                      class="addon-checkbox mt-0.5 h-4 w-4 rounded border-slate-500 bg-[#0C1017] text-[#38BDF8]"
+                      class="addon-checkbox mt-0.5 h-4 w-4 rounded border-slate-500 bg-[#090C12] text-[#00F2FE]"
                     />
                     <span class="min-w-0 flex-1">
                       <span class="flex items-center justify-between gap-2 text-xs font-bold text-slate-50">
@@ -729,10 +785,10 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           </div>
 
           {/* Step 04: Driveway Dispatch Form */}
-          <div class="rounded-2xl border border-slate-700/80 bg-[#0C1017]/90 p-5 sm:p-7">
+          <div class="rounded-2xl border border-slate-700/80 bg-[#090C12]/90 p-5 sm:p-7">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
               <div class="flex items-center gap-3">
-                <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#38BDF8] text-xs font-bold text-[#06131F]">
+                <span class="font-display flex h-7 w-7 items-center justify-center rounded-full bg-[#00F2FE] text-xs font-bold text-[#041019]">
                   04
                 </span>
                 <div>
@@ -746,11 +802,11 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 </div>
               </div>
 
-              <div class="rounded-xl border border-sky-400/30 bg-sky-400/10 px-4 py-2">
+              <div class="rounded-xl border border-cyan-400/35 bg-cyan-400/10 px-4 py-2">
                 <span class="text-xs text-slate-200">Estimated Total: </span>
                 <span
                   id="calc-form-estimate"
-                  class="font-display tabular-nums text-lg font-bold text-[#38BDF8]"
+                  class="font-display tabular-nums text-lg font-bold text-[#00F2FE]"
                 >
                   {prospect.currencySymbol}
                   {initialMin} - {prospect.currencySymbol}
@@ -773,7 +829,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                   type="text"
                   required
                   placeholder="Alex Rivera"
-                  class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
+                  class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                 />
               </div>
 
@@ -794,7 +850,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                       ? "07700 900123"
                       : "(512) 555-0199"
                   }
-                  class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
+                  class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                 />
               </div>
 
@@ -811,7 +867,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                   type="text"
                   required
                   placeholder={prospect.country === "UK" ? "GL50 2AA" : "78704"}
-                  class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
+                  class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                 />
               </div>
 
@@ -825,7 +881,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 <select
                   id="preferredTiming"
                   name="preferredTiming"
-                  class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50"
+                  class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50"
                 >
                   <option value="this_week">
                     This Week (Earliest Open Slot)
@@ -840,14 +896,14 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                   for="notes"
                   class="block text-xs font-semibold uppercase tracking-wider text-slate-200"
                 >
-                  Vehicle Make/Model & Driveway Notes (Optional)
+                  Vehicle Make/Model &amp; Driveway Notes (Optional)
                 </label>
                 <input
                   id="notes"
                   name="notes"
                   type="text"
                   placeholder="e.g. 2023 White Toyota RAV4, parked in private driveway"
-                  class="mt-1.5 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
+                  class="input-carbon mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-50 placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -867,7 +923,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
               <button
                 id="submit-quote-btn"
                 type="submit"
-                class="inline-flex items-center justify-center rounded-xl bg-[#38BDF8] px-7 py-3.5 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
+                class="btn-hydro-primary inline-flex items-center justify-center rounded-xl px-7 py-3.5 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
               >
                 Get My 60-Second Quote
               </button>
@@ -881,10 +937,10 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
         <section id="job-proof" class="reveal-up mt-16">
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
                 {isPreview ? "Job Proof Layout Preview" : "Recent Local Work"}
               </span>
-              <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+              <h2 class="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-50 sm:text-3xl">
                 {isPreview
                   ? "Recent Work & Before/After Job Showcase"
                   : `Recent ${prospect.city} Detailing Results`}
@@ -905,24 +961,24 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
               const hasBeforeAfterNotes = Boolean(item.beforeNote || item.afterNote);
               return (
                 <article
-                  class="glass-panel interactive-card anisotropic-border flex flex-col justify-between rounded-2xl p-5"
+                  class="glass-panel interactive-card spotlight-card anisotropic-border flex flex-col justify-between rounded-2xl p-5"
                   data-proof-card={item.id}
                 >
                   <div>
                     {item.imageUrl ? (
-                      <div class="mb-4 aspect-[16/10] overflow-hidden rounded-xl border border-slate-800 bg-[#090D13]">
+                      <div class="mb-4 aspect-[16/10] overflow-hidden rounded-xl border border-slate-800 bg-[#090C12]">
                         <img
                           src={item.imageUrl}
                           alt={item.title}
                           loading="lazy"
                           data-after-src={item.imageUrl}
                           data-before-src={item.beforeImageUrl || ""}
-                          class="proof-img h-full w-full object-cover"
+                          class="proof-img h-full w-full object-cover transition-opacity duration-300"
                         />
                       </div>
                     ) : (
                       isPreview && (
-                        <div class="mb-4 flex aspect-[16/10] flex-col items-center justify-center rounded-xl border border-dashed border-slate-700 bg-[#090D13]/90 px-4 text-center">
+                        <div class="mb-4 flex aspect-[16/10] flex-col items-center justify-center rounded-xl border border-dashed border-slate-700 bg-[#090C12]/90 px-4 text-center">
                           <span class="font-mono text-[11px] font-bold uppercase tracking-wider text-[#7DD3FC]">
                             Your Photo Slot #0{index + 1}
                           </span>
@@ -936,7 +992,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                       <span class="text-xs font-bold uppercase tracking-wider text-[#7DD3FC]">
                         {item.imageUrl ? `Job #0${index + 1}` : `Sample Slot #0${index + 1}`}
                       </span>
-                      <span class="rounded-md border border-slate-700 bg-[#0C1017] px-2.5 py-0.5 text-[11px] font-semibold text-slate-200">
+                      <span class="rounded-md border border-slate-700 bg-[#090C12] px-2.5 py-0.5 text-[11px] font-semibold text-slate-200">
                         {item.vehicleLabel}
                       </span>
                     </div>
@@ -955,12 +1011,12 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                   </div>
 
                   {hasBeforeAfterNotes && (
-                    <div class="mt-5 rounded-xl border border-slate-800 bg-[#0C1017]/90 p-4">
+                    <div class="mt-5 rounded-xl border border-slate-800 bg-[#090C12]/90 p-4">
                       <div class="flex items-center gap-2">
                         <button
                           type="button"
                           data-toggle-proof="after"
-                          class="proof-tab-btn rounded-lg bg-[#38BDF8]/15 px-2.5 py-1 text-[11px] font-bold text-[#7DD3FC] ring-1 ring-sky-400/40"
+                          class="proof-tab-btn rounded-lg bg-[#00F2FE]/15 px-2.5 py-1 text-[11px] font-bold text-[#7DD3FC] ring-1 ring-cyan-400/40"
                         >
                           After Finish
                         </button>
@@ -973,7 +1029,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                         </button>
                       </div>
                       <p
-                        class="proof-note mt-2.5 text-xs leading-snug text-emerald-300"
+                        class="proof-note mt-2.5 text-xs leading-snug text-emerald-300 transition-opacity duration-200"
                         data-before-text={`Before: ${item.beforeNote || "Arrival inspection"}`}
                         data-after-text={`After: ${item.afterNote || "Finished detail"}`}
                       >
@@ -991,10 +1047,10 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
       {/* Service & Mobile Setup Highlights */}
       <section id="rig-specs" class="reveal-up mt-16">
         <div class="max-w-2xl">
-          <span class="inline-flex items-center rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
+          <span class="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
             {hasSelfContainedWater ? "Mobile Rig Highlights" : "Service Highlights"}
           </span>
-          <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+          <h2 class="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-50 sm:text-3xl">
             {hasSelfContainedWater
               ? "Self-Contained Mobile Detailing Setup"
               : `Why Drivers Choose ${prospect.businessName}`}
@@ -1006,7 +1062,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
 
         <div class="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {prospect.trustPoints.map((point, idx) => (
-            <div class="glass-panel anisotropic-border rounded-2xl p-5">
+            <div class="glass-panel anisotropic-border spotlight-card rounded-2xl p-5">
               <div class="font-mono text-xs font-bold text-[#7DD3FC]">
                 HIGHLIGHT 0{idx + 1}
               </div>
@@ -1018,7 +1074,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
 
       {/* FAQ Section */}
       <section id="faq" class="reveal-up mt-16 grid gap-6 md:grid-cols-2">
-        <div class="glass-panel rounded-2xl p-6">
+        <div class="glass-panel spotlight-card rounded-2xl p-6">
           <h3 class="text-base font-bold text-slate-50">
             Do I pay anything online when submitting a quote?
           </h3>
@@ -1028,7 +1084,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
             you pay only after inspecting your car.
           </p>
         </div>
-        <div class="glass-panel rounded-2xl p-6">
+        <div class="glass-panel spotlight-card rounded-2xl p-6">
           <h3 class="text-base font-bold text-slate-50">
             Can you detail at my office or apartment lot?
           </h3>
@@ -1044,14 +1100,14 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
       {isPreview && (
         <section
           id="claim-preview"
-          class="reveal-up mt-16 rounded-2xl border border-sky-400/35 bg-[#111A29] p-6 sm:p-8"
+          class="reveal-up spotlight-card mt-16 rounded-2xl border border-cyan-400/35 bg-[#0F1726] p-6 sm:p-8"
         >
           <div class="grid gap-8 lg:grid-cols-12">
             <div class="lg:col-span-6">
               <span class="inline-flex items-center rounded-full border border-emerald-400/35 bg-emerald-500/15 px-3 py-1 text-xs font-bold text-emerald-300">
                 For {prospect.businessName} Owner
               </span>
-              <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-50">
+              <h2 class="mt-3 text-2xl font-bold tracking-[-0.03em] text-slate-50">
                 Want to Put This Quote Page in Your Bio?
               </h2>
               <p class="mt-2 text-sm leading-relaxed text-[#CBD5E1]">
@@ -1074,7 +1130,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 </div>
               )}
 
-              <details class="mt-6 rounded-xl border border-slate-800 bg-[#0C1017]/80 p-3.5 text-xs">
+              <details class="mt-6 rounded-xl border border-slate-800 bg-[#090C12]/80 p-3.5 text-xs">
                 <summary class="cursor-pointer select-none font-semibold text-slate-300 hover:text-white">
                   Owner of {prospect.businessName}? Request edits or removal
                 </summary>
@@ -1090,14 +1146,14 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                       type="text"
                       required
                       placeholder="Your name"
-                      class="w-full rounded-lg border border-slate-700 bg-[#151D2A] px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
+                      class="input-carbon w-full rounded-lg px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
                     />
                     <input
                       name="contactInfo"
                       type="text"
                       required
                       placeholder="Email or Instagram handle"
-                      class="w-full rounded-lg border border-slate-700 bg-[#151D2A] px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
+                      class="input-carbon w-full rounded-lg px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
                     />
                   </div>
                   <div
@@ -1106,7 +1162,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                   />
                   <button
                     type="submit"
-                    class="rounded-lg border border-slate-600 bg-[#151D2A] px-3.5 py-2 text-xs font-bold text-slate-200 hover:border-red-400/50 hover:text-red-200"
+                    class="rounded-lg border border-slate-600 bg-[#111622] px-3.5 py-2 text-xs font-bold text-slate-200 hover:border-red-400/50 hover:text-red-200"
                   >
                     Submit Removal / Edit Request
                   </button>
@@ -1117,7 +1173,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
             <div class="lg:col-span-6">
               <form
                 id="claim-preview-form"
-                class="rounded-2xl border border-slate-700/80 bg-[#0C1017]/90 p-5 space-y-3.5"
+                class="rounded-2xl border border-slate-700/80 bg-[#090C12]/90 p-5 space-y-3.5"
               >
                 <div class="text-sm font-bold text-slate-50">
                   Claim &amp; Customize This Preview (24-Hr Turnaround)
@@ -1145,7 +1201,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                       type="text"
                       required
                       placeholder="Jordan"
-                      class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
+                      class="input-carbon mt-1 w-full rounded-xl px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
                     />
                   </div>
                   <div>
@@ -1161,7 +1217,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                       type="text"
                       required
                       placeholder="owner@shop.com or phone"
-                      class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
+                      class="input-carbon mt-1 w-full rounded-xl px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -1177,7 +1233,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                     name="notes"
                     type="text"
                     placeholder="e.g. Swap my 6 IG photos and set Full Detail to $175"
-                    class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#151D2A] px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
+                    class="input-carbon mt-1 w-full rounded-xl px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400"
                   />
                 </div>
                 <div
@@ -1187,7 +1243,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
                 <button
                   id="claim-submit-btn"
                   type="submit"
-                  class="w-full rounded-xl bg-[#38BDF8] px-5 py-3 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
+                  class="btn-hydro-primary w-full rounded-xl px-5 py-3 text-sm font-bold"
                 >
                   Claim &amp; Activate My Quote Page
                 </button>
@@ -1199,10 +1255,14 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
     </main>
 
     {/* Persistent Sticky Live Quote Dock */}
-    <aside class="fixed inset-x-0 bottom-0 z-40 border-t border-sky-400/25 bg-[#0C1017]/95 px-4 py-3 backdrop-blur-xl sm:px-6">
+    <aside class="fixed inset-x-0 bottom-0 z-40 border-t border-cyan-400/25 bg-[#090C12]/95 px-4 py-3 backdrop-blur-xl sm:px-6">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#00F2FE]/60 to-transparent"
+      />
       <div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
         <div class="hidden items-center gap-3 md:flex">
-          <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-400/10 text-[#38BDF8]">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-400/35 bg-cyan-400/10 text-[#00F2FE]">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -1216,6 +1276,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           </div>
           <div>
             <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
+              <span class="h-1.5 w-1.5 rounded-full bg-[#00F2FE]" />
               <span id="dock-vehicle-label" class="text-slate-50">
                 Coupe / Sedan
               </span>
@@ -1237,7 +1298,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
             </div>
             <div
               id="mobile-sticky-estimate"
-              class="font-display tabular-nums text-xl font-bold text-[#38BDF8] sm:text-2xl"
+              class="font-display tabular-nums text-xl font-bold text-[#00F2FE] sm:text-2xl"
             >
               {prospect.currencySymbol}
               {initialMin} - {prospect.currencySymbol}
@@ -1247,7 +1308,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           <a
             href="#customerName"
             id="dock-cta-btn"
-            class="rounded-xl bg-[#38BDF8] px-5 py-2.5 text-sm font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC] cyan-glow-sm"
+            class="btn-hydro-primary rounded-xl px-5 py-2.5 text-sm font-bold"
           >
             Lock In Quote
           </a>
@@ -1421,6 +1482,10 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
       }}
     >
       (function () {
+        const reducedMotion =
+          typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
         let selectedVehicle = "sedan";
         let selectedVehicleLabel = "Coupe / Sedan";
         let selectedPackageId = defaultPackageId;
@@ -1431,6 +1496,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
         const packageButtons = document.querySelectorAll(".package-btn");
         const conditionButtons = document.querySelectorAll(".condition-btn");
         const addonCheckboxes = document.querySelectorAll(".addon-checkbox");
+        const stepNodes = document.querySelectorAll("[data-step-node]");
 
         const topEstEl = document.getElementById("calc-top-estimate");
         const topDurEl = document.getElementById("calc-top-duration");
@@ -1454,6 +1520,90 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
         const closeModalBtn = document.getElementById("close-modal-btn");
         const doneModalBtn = document.getElementById("done-modal-btn");
         let latestQuoteSummaryText = "";
+        let maxStepReached = 1;
+
+        const elRafMap = new WeakMap();
+        const rangeStateMap = new WeakMap();
+        const singleStateMap = new WeakMap();
+
+        function setTelemetryStep(stepNum) {
+          if (stepNum > maxStepReached) maxStepReached = stepNum;
+          stepNodes.forEach((node) => {
+            const num = Number(node.getAttribute("data-step-node") || "1");
+            const active = num <= maxStepReached;
+            node.className = active
+              ? "flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-400/10 px-3 py-2 text-xs font-semibold text-white transition-colors"
+              : "flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-slate-300 transition-colors";
+            const badge = node.querySelector("span");
+            if (badge) {
+              badge.className = active
+                ? "font-mono text-[11px] font-bold text-[#00F2FE]"
+                : "font-mono text-[11px] font-bold text-slate-400";
+            }
+          });
+        }
+
+        function animateRange(el, targetMin, targetMax, animate) {
+          if (!el) return;
+          const prev = rangeStateMap.get(el) || { min: targetMin, max: targetMax };
+          const oldRaf = elRafMap.get(el);
+          if (oldRaf) window.cancelAnimationFrame(oldRaf);
+
+          if (!animate || reducedMotion || (prev.min === targetMin && prev.max === targetMax)) {
+            rangeStateMap.set(el, { min: targetMin, max: targetMax });
+            el.textContent = `${currencySymbol}${targetMin} - ${currencySymbol}${targetMax}`;
+            return;
+          }
+
+          const startMin = prev.min;
+          const startMax = prev.max;
+          const startTime = performance.now();
+          const durationMs = 240;
+
+          const tick = (now) => {
+            const t = Math.min(1, (now - startTime) / durationMs);
+            const eased = 1 - Math.pow(1 - t, 3);
+            const curMin = Math.round(startMin + (targetMin - startMin) * eased);
+            const curMax = Math.round(startMax + (targetMax - startMax) * eased);
+            rangeStateMap.set(el, { min: curMin, max: curMax });
+            el.textContent = `${currencySymbol}${curMin} - ${currencySymbol}${curMax}`;
+            if (t < 1) {
+              elRafMap.set(el, window.requestAnimationFrame(tick));
+            } else {
+              elRafMap.delete(el);
+            }
+          };
+          elRafMap.set(el, window.requestAnimationFrame(tick));
+        }
+
+        function animateSingle(el, targetVal, animate) {
+          if (!el) return;
+          const prev = singleStateMap.has(el) ? singleStateMap.get(el) : targetVal;
+          const oldRaf = elRafMap.get(el);
+          if (oldRaf) window.cancelAnimationFrame(oldRaf);
+
+          if (!animate || reducedMotion || prev === targetVal) {
+            singleStateMap.set(el, targetVal);
+            el.textContent = `${currencySymbol}${targetVal}`;
+            return;
+          }
+
+          const startTime = performance.now();
+          const durationMs = 240;
+          const tick = (now) => {
+            const t = Math.min(1, (now - startTime) / durationMs);
+            const eased = 1 - Math.pow(1 - t, 3);
+            const cur = Math.round(prev + (targetVal - prev) * eased);
+            singleStateMap.set(el, cur);
+            el.textContent = `${currencySymbol}${cur}`;
+            if (t < 1) {
+              elRafMap.set(el, window.requestAnimationFrame(tick));
+            } else {
+              elRafMap.delete(el);
+            }
+          };
+          elRafMap.set(el, window.requestAnimationFrame(tick));
+        }
 
         modalCopyQuoteBtn?.addEventListener("click", async () => {
           if (!latestQuoteSummaryText) return;
@@ -1470,7 +1620,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
         });
 
         function pulsePrice(el) {
-          if (!el) return;
+          if (!el || reducedMotion) return;
           el.classList.remove("price-bump");
           void el.offsetWidth;
           el.classList.add("price-bump");
@@ -1482,12 +1632,12 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           return [0, 20];
         }
 
-        function updatePricingDisplay() {
+        function updatePricingDisplay(animate = true) {
           packageButtons.forEach((btn) => {
             const priceAttr = btn.getAttribute(`data-price-${selectedVehicle}`);
             const priceEl = btn.querySelector(".pkg-price-display");
             if (priceAttr && priceEl) {
-              priceEl.textContent = `${currencySymbol}${priceAttr}`;
+              animateSingle(priceEl, Number(priceAttr), animate);
             }
           });
 
@@ -1511,20 +1661,19 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
 
           const estMin = basePrice + condMin + addonsSum;
           const estMax = basePrice + condMax + addonsSum;
-          const formatted = `${currencySymbol}${estMin} - ${currencySymbol}${estMax}`;
 
           if (topEstEl) {
-            topEstEl.textContent = formatted;
-            pulsePrice(topEstEl);
+            animateRange(topEstEl, estMin, estMax, animate);
+            if (animate) pulsePrice(topEstEl);
           }
           if (topDurEl) topDurEl.textContent = duration;
           if (formEstEl) {
-            formEstEl.textContent = formatted;
-            pulsePrice(formEstEl);
+            animateRange(formEstEl, estMin, estMax, animate);
+            if (animate) pulsePrice(formEstEl);
           }
           if (mobileEstEl) {
-            mobileEstEl.textContent = formatted;
-            pulsePrice(mobileEstEl);
+            animateRange(mobileEstEl, estMin, estMax, animate);
+            if (animate) pulsePrice(mobileEstEl);
           }
           if (dockVehicleEl) dockVehicleEl.textContent = selectedVehicleLabel;
           if (dockPackageEl) dockPackageEl.textContent = selectedPackageName;
@@ -1536,59 +1685,77 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
         function setVehicle(size, label) {
           selectedVehicle = size;
           selectedVehicleLabel = label;
+          setTelemetryStep(1);
           vehicleButtons.forEach((btn) => {
             const active = btn.getAttribute("data-vehicle") === size;
             btn.setAttribute("aria-checked", active ? "true" : "false");
             btn.className = active
-              ? "vehicle-btn interactive-card flex flex-col justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 p-5 text-left cyan-glow-sm"
-              : "vehicle-btn interactive-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-5 text-left hover:border-sky-400/50";
-            const svg = btn.querySelector("svg");
-            const dot = btn.querySelector(".vehicle-dot");
-            if (svg) {
-              svg.setAttribute(
+              ? "vehicle-btn interactive-card spotlight-card flex flex-col justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/10 p-5 text-left cyan-glow-sm"
+              : "vehicle-btn interactive-card spotlight-card flex flex-col justify-between rounded-xl border border-slate-700/80 bg-[#090C12]/80 p-5 text-left hover:border-cyan-400/50";
+            const bayGlow = btn.querySelector(".vehicle-bay-glow");
+            if (bayGlow) {
+              bayGlow.className = active
+                ? "bay-floor-glow vehicle-bay-glow flex w-full items-start justify-between gap-3 rounded-lg pb-1"
+                : "vehicle-bay-glow flex w-full items-start justify-between gap-3 rounded-lg pb-1";
+            }
+            const svgs = btn.querySelectorAll("svg");
+            if (svgs[0]) {
+              svgs[0].setAttribute(
                 "class",
                 active
-                  ? "h-10 w-24 text-[#38BDF8]"
+                  ? "pointer-events-none -mb-1 h-2 w-24 text-[#00F2FE]/45"
+                  : "pointer-events-none -mb-1 h-2 w-24 text-slate-500/35",
+              );
+            }
+            const carSvg = svgs[1] || svgs[0];
+            if (carSvg) {
+              carSvg.setAttribute(
+                "class",
+                active
+                  ? "h-10 w-24 text-[#00F2FE]"
                   : "h-10 w-24 text-slate-300",
               );
             }
+            const dot = btn.querySelector(".vehicle-dot");
             if (dot) {
               dot.className = active
-                ? "vehicle-dot h-4 w-4 rounded-full border-2 border-[#38BDF8] bg-[#38BDF8]"
+                ? "vehicle-dot h-4 w-4 rounded-full border-2 border-[#00F2FE] bg-[#00F2FE]"
                 : "vehicle-dot h-4 w-4 rounded-full border-2 border-slate-500";
             }
           });
-          updatePricingDisplay();
+          updatePricingDisplay(true);
         }
 
         function setPackage(pkgId, pkgName) {
           selectedPackageId = pkgId;
           selectedPackageName = pkgName;
+          setTelemetryStep(2);
           packageButtons.forEach((btn) => {
             const active = btn.getAttribute("data-package-id") === pkgId;
             btn.setAttribute("aria-pressed", active ? "true" : "false");
             btn.className = active
-              ? "package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 p-6 text-left cyan-glow-sm"
-              : "package-btn interactive-card relative flex h-full flex-col justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-6 text-left hover:border-sky-400/50";
+              ? "package-btn interactive-card spotlight-card relative flex h-full flex-col justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/10 p-6 text-left cyan-glow-sm"
+              : "package-btn interactive-card spotlight-card relative flex h-full flex-col justify-between rounded-xl border border-slate-700/80 bg-[#090C12]/80 p-6 text-left hover:border-cyan-400/50";
             const dot = btn.querySelector(".pkg-dot");
             if (dot) {
               dot.className = active
-                ? "pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-[#38BDF8] bg-[#38BDF8]"
+                ? "pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-[#00F2FE] bg-[#00F2FE]"
                 : "pkg-dot mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-slate-500";
             }
           });
-          updatePricingDisplay();
+          updatePricingDisplay(true);
         }
 
         function setCondition(cond) {
           selectedCondition = cond;
+          setTelemetryStep(3);
           conditionButtons.forEach((btn) => {
             const active = btn.getAttribute("data-condition") === cond;
             btn.className = active
-              ? "condition-btn interactive-card flex w-full items-center justify-between rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 px-4 py-3.5 text-left"
-              : "condition-btn interactive-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#0C1017]/80 px-4 py-3.5 text-left hover:border-sky-400/50";
+              ? "condition-btn interactive-card spotlight-card flex w-full items-center justify-between rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/10 px-4 py-3.5 text-left"
+              : "condition-btn interactive-card spotlight-card flex w-full items-center justify-between rounded-xl border border-slate-700/80 bg-[#090C12]/80 px-4 py-3.5 text-left hover:border-cyan-400/50";
           });
-          updatePricingDisplay();
+          updatePricingDisplay(true);
         }
 
         vehicleButtons.forEach((btn) => {
@@ -1617,13 +1784,20 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
 
         addonCheckboxes.forEach((cb) => {
           cb.addEventListener("change", () => {
+            setTelemetryStep(3);
             const parentLabel = cb.closest(".addon-label");
             if (parentLabel) {
               parentLabel.className = cb.checked
-                ? "addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border-2 border-[#38BDF8] bg-[#38BDF8]/10 p-3.5"
-                : "addon-label interactive-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#0C1017]/80 p-3.5 hover:border-sky-400/50";
+                ? "addon-label interactive-card spotlight-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border-2 border-[#00F2FE] bg-[#00F2FE]/10 p-3.5"
+                : "addon-label interactive-card spotlight-card flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-slate-700/80 bg-[#090C12]/80 p-3.5 hover:border-cyan-400/50";
             }
-            updatePricingDisplay();
+            updatePricingDisplay(true);
+          });
+        });
+
+        ["customerName", "customerPhone", "customerPostal", "preferredTiming", "notes"].forEach((id) => {
+          document.getElementById(id)?.addEventListener("focus", () => {
+            setTelemetryStep(4);
           });
         });
 
@@ -1640,17 +1814,23 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
               buttons.forEach((b) => {
                 const isActive = b === btn;
                 b.className = isActive
-                  ? "proof-tab-btn rounded-lg bg-[#38BDF8]/15 px-2.5 py-1 text-[11px] font-bold text-[#7DD3FC] ring-1 ring-sky-400/40"
+                  ? "proof-tab-btn rounded-lg bg-[#00F2FE]/15 px-2.5 py-1 text-[11px] font-bold text-[#7DD3FC] ring-1 ring-cyan-400/40"
                   : "proof-tab-btn rounded-lg px-2.5 py-1 text-[11px] font-semibold text-[#CBD5E1] hover:text-white";
               });
+              if (!reducedMotion && noteEl instanceof HTMLElement) {
+                noteEl.style.opacity = "0.4";
+                window.requestAnimationFrame(() => {
+                  noteEl.style.opacity = "1";
+                });
+              }
               if (mode === "before") {
                 noteEl.textContent = noteEl.getAttribute("data-before-text") || "";
-                noteEl.className = "proof-note mt-2.5 text-xs leading-snug text-amber-200";
+                noteEl.className = "proof-note mt-2.5 text-xs leading-snug text-amber-200 transition-opacity duration-200";
                 const beforeSrc = imgEl?.getAttribute("data-before-src");
                 if (imgEl && beforeSrc) imgEl.setAttribute("src", beforeSrc);
               } else {
                 noteEl.textContent = noteEl.getAttribute("data-after-text") || "";
-                noteEl.className = "proof-note mt-2.5 text-xs leading-snug text-emerald-300";
+                noteEl.className = "proof-note mt-2.5 text-xs leading-snug text-emerald-300 transition-opacity duration-200";
                 const afterSrc = imgEl?.getAttribute("data-after-src");
                 if (imgEl && afterSrc) imgEl.setAttribute("src", afterSrc);
               }
@@ -1897,7 +2077,7 @@ const foundingCheckoutUrl = rawFoundingCheckout.startsWith("https://")
           }
         });
 
-        updatePricingDisplay();
+        updatePricingDisplay(false);
       })();
     </script>
   </BaseLayout>
