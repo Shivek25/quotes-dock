@@ -114,24 +114,35 @@ const deliveryStatusBadges: Record<string, { label: string; classes: string }> =
 };
 
 const gmailAppsScriptSnippet = `function doPost(e) {
-  var data = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-  // Optional: set Script Property WEBHOOK_SECRET to match Cloudflare secret
-  var expected = PropertiesService.getScriptProperties().getProperty('WEBHOOK_SECRET');
-  if (expected && data.secret !== expected) {
-    return ContentService.createTextOutput(JSON.stringify({ ok: false }))
+  try {
+    var data = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    // Optional: set Script Property WEBHOOK_SECRET to match Cloudflare secret
+    var expected = PropertiesService.getScriptProperties().getProperty('WEBHOOK_SECRET');
+    if (expected && data.secret !== expected) {
+      return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'WEBHOOK_SECRET mismatch' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var recipient = data.to || data.founderEmail || Session.getEffectiveUser().getEmail();
+    if (!recipient) {
+      return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'No recipient email configured' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var mailOpts = {
+      to: recipient,
+      subject: data.subject || 'New Quote Request',
+      body: data.text || data.content || '',
+      name: data.senderName || 'QuotesDock'
+    };
+    if (data.html) {
+      mailOpts.htmlBody = data.html;
+    }
+    MailApp.sendEmail(mailOpts);
+    return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: String(err) }))
       .setMimeType(ContentService.MimeType.JSON);
   }
-  var recipient = data.to || data.founderEmail || Session.getActiveUser().getEmail();
-  if (recipient) {
-    var plainBody = data.text || data.content || '';
-    var options = { name: data.senderName || 'QuotesDock' };
-    if (data.html) {
-      options.htmlBody = data.html;
-    }
-    GmailApp.sendEmail(recipient, data.subject || 'New Quote Request', plainBody, options);
-  }
-  return ContentService.createTextOutput(JSON.stringify({ ok: true }))
-    .setMimeType(ContentService.MimeType.JSON);
 }`;
 ---
 

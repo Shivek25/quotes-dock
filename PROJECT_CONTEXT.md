@@ -81,6 +81,9 @@
 - **P3 / V11 (`SH_QD_V11`, completed & deployed live at `https://quotes-dock.pages.dev`)**:
   - Added Obsidian HTML & anti-spam email builder (`src/lib/alerts/email-templates.ts`) with table-based dark UI cards, clickable phone/inbox CTAs, HTML escaping, and spam-safe subjects (no currency amounts or raw 64-char hex URLs in plain sight).
   - Updated `sendWebhookAlert()`, `POST /api/quotes`, `POST /api/inquiries`, and the `/studio` Apps Script snippet to send multipart `text/plain` + `text/html` (`htmlBody`) and custom `senderName` via `GmailApp.sendEmail`.
+- **P3 / V12 (`SH_QD_V12`, completed & deployed live at `https://quotes-dock.pages.dev`)**:
+  - Hardened `sendWebhookAlert()` (`src/lib/alerts/webhook.ts`) to inspect response bodies and catch `{ ok: false }` JSON or Google Apps Script HTML exception pages (`<!DOCTYPE html>`) instead of falsely reporting `Alert Sent`.
+  - Updated the `/studio` Apps Script relay snippet (`src/pages/studio.astro`) to use `MailApp.sendEmail({ to, subject, body, htmlBody, name })` with `Session.getEffectiveUser().getEmail()` and structured `try / catch` JSON error reporting, keeping the user's already-authorized `MailApp` permission scope intact.
 - **Future Upgrades (Post-Launch / P3+)**:
   - Enable Cloudflare R2 in Cloudflare Dashboard, create `quotes-dock-media`, and re-enable `r2_buckets` in `wrangler.jsonc` to lift photo uploads from 750 KB (D1 fallback) to 5 MB (R2).
   - Attach a dedicated QuotesDock custom domain + verified Resend sending domain (`RESEND_FROM_EMAIL`) + Polar.sh / Lemon Squeezy checkout URLs (`FOUNDING_CHECKOUT_URL`, `STANDARD_CHECKOUT_URL`).
