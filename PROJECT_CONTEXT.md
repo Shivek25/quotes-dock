@@ -74,6 +74,10 @@
 - **P3 / V8 (`SH_QD_V8`, completed & deployed live at `https://quotes-dock.pages.dev`)**:
   - Upgraded `/p/[slug]` quote confirmation modal (`src/pages/p/[slug].astro`) into 3 distinct context-aware modes using `isSandboxDemoSlug()`: clean white-labeled customer confirmation in `live` mode, friendly shop-owner software demo copy + `/#request-preview` CTA on public sandbox demos, and personalized activation copy + `#claim-preview` scroll CTA on custom outreach previews.
   - Redesigned the Owner Lead Alert Preview inside the modal as a sleek recessed notification card (`whitespace-nowrap` status badge, crisp sender header, fixed price/city parentheses spacing, and mobile-aligned CTA buttons) and refined Step 04 preview helper copy.
+- **P3 / V10 (`SH_QD_V10`, completed & deployed live at `https://quotes-dock.pages.dev`)**:
+  - Extracted SSRF-safe `sendWebhookAlert()` (`src/lib/alerts/webhook.ts`) with `redirect: 'follow'` support for Discord, Slack, Make/Zapier, and zero-domain Google Apps Script Gmail relays (`FOUNDER_WEBHOOK_URL` + optional `WEBHOOK_SECRET`).
+  - Wired `FOUNDER_WEBHOOK_URL` into both `POST /api/quotes` (for live shop quote alerts, including `ownerEmail` in relay payloads) and `POST /api/inquiries` (for free preview requests, claims, and removals).
+  - Updated `/studio` (`src/pages/studio.astro`) so unconfigured Resend setups show a calm `Saved in Owner Inbox` badge instead of an alarming red error, relabeled `sent` to `Alert Sent`, added inline `Owner Alert Email` delivery readiness hints, and added a collapsible zero-domain Gmail relay & webhook setup guide.
 - **Future Upgrades (Post-Launch / P3+)**:
   - Enable Cloudflare R2 in Cloudflare Dashboard, create `quotes-dock-media`, and re-enable `r2_buckets` in `wrangler.jsonc` to lift photo uploads from 750 KB (D1 fallback) to 5 MB (R2).
   - Attach a dedicated QuotesDock custom domain + verified Resend sending domain (`RESEND_FROM_EMAIL`) + Polar.sh / Lemon Squeezy checkout URLs (`FOUNDING_CHECKOUT_URL`, `STANDARD_CHECKOUT_URL`).

@@ -12,10 +12,8 @@ import {
   hashClientIp,
   isStudioAuthorized,
 } from '../../lib/security/auth';
-import {
-  isSafePublicWebhookUrl,
-  quoteSubmissionSchema,
-} from '../../lib/validation/schemas';
+import { sendWebhookAlert } from '../../lib/alerts/webhook';
+import { quoteSubmissionSchema } from '../../lib/validation/schemas';
 
 const VEHICLE_LABELS: Record<VehicleSizeKey, string> = {
   sedan: 'Coupe / Sedan',
@@ -81,45 +79,6 @@ async function sendResendEmail(params: {
     return {
       ok: false,
       error: err instanceof Error ? err.message.slice(0, 180) : 'Email request timed out',
-    };
-  }
-}
-
-async function sendWebhookAlert(params: {
-  webhookUrl: string;
-  text: string;
-  payload: Record<string, unknown>;
-}): Promise<{ ok: boolean; error?: string }> {
-  if (!isSafePublicWebhookUrl(params.webhookUrl)) {
-    return { ok: false, error: 'Blocked unsafe webhook URL.' };
-  }
-
-  const lower = params.webhookUrl.toLowerCase();
-  const body = lower.includes('discord.com/api/webhooks') || lower.includes('discordapp.com/api/webhooks')
-    ? { content: params.text }
-    : lower.includes('hooks.slack.com')
-      ? { text: params.text }
-      : { text: params.text, content: params.text, ...params.payload };
-
-  try {
-    const res = await fetch(params.webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(4500),
-    });
-    if (res.ok) {
-      return { ok: true };
-    }
-    const errText = await res.text().catch(() => '');
-    return {
-      ok: false,
-      error: `Webhook HTTP ${res.status}: ${errText.slice(0, 160)}`,
-    };
-  } catch (err) {
-    return {
-      ok: false,
-      error: err instanceof Error ? err.message.slice(0, 160) : 'Webhook timed out',
     };
   }
 }
@@ -264,36 +223,43 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       const resendApiKey = env.RESEND_API_KEY?.trim() || '';
       const resendFromEmail = env.RESEND_FROM_EMAIL?.trim() || '';
       const founderAlertEmail = env.FOUNDER_ALERT_EMAIL?.trim() || '';
+      const founderWebhookUrl = env.FOUNDER_WEBHOOK_URL?.trim() || '';
+      const webhookSecret = env.WEBHOOK_SECRET?.trim() || '';
       const errors: string[] = [];
 
-      // 1) Instant Webhook Alert (Discord / Slack / Make / Zapier / Telegram relay)
+      const quoteWebhookPayload: Record<string, unknown> = {
+        event: 'new_quote_lead',
+        quoteId,
+        businessName: prospect.businessName,
+        slug: prospect.slug,
+        ownerEmail: prospect.ownerEmail || null,
+        customer: {
+          name: data.customerName,
+          phone: data.customerPhone,
+          postal: data.customerPostal,
+        },
+        job: {
+          vehicle: vehicleLabel,
+          packageName: estimate.packageObj.name,
+          condition: conditionLabel,
+          addons: addonNames,
+          estimatedMin: estimate.estimatedMin,
+          estimatedMax: estimate.estimatedMax,
+          priceRange,
+          timing: timingLabel,
+          notes: data.notes,
+        },
+        ownerPortalUrl: ownerPortalUrl || null,
+      };
+
+      // 1) Shop-level Webhook Alert (Discord / Slack / Make / Zapier)
       if (prospect.webhookUrl) {
         const whRes = await sendWebhookAlert({
           webhookUrl: prospect.webhookUrl,
+          subject: emailSubject,
+          to: prospect.ownerEmail || '',
           text: smsPreview,
-          payload: {
-            event: 'new_quote_lead',
-            quoteId,
-            businessName: prospect.businessName,
-            slug: prospect.slug,
-            customer: {
-              name: data.customerName,
-              phone: data.customerPhone,
-              postal: data.customerPostal,
-            },
-            job: {
-              vehicle: vehicleLabel,
-              packageName: estimate.packageObj.name,
-              condition: conditionLabel,
-              addons: addonNames,
-              estimatedMin: estimate.estimatedMin,
-              estimatedMax: estimate.estimatedMax,
-              priceRange,
-              timing: timingLabel,
-              notes: data.notes,
-            },
-            ownerPortalUrl: ownerPortalUrl || null,
-          },
+          payload: quoteWebhookPayload,
         });
         if (whRes.ok) {
           webhookDispatched = true;
@@ -303,12 +269,30 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
         }
       }
 
-      // 2) Email Alert via Resend (if ownerEmail and Resend secrets exist)
+      // 2) Global Founder Webhook / Zero-Domain Gmail Relay (FOUNDER_WEBHOOK_URL)
+      if (founderWebhookUrl && founderWebhookUrl !== prospect.webhookUrl) {
+        const fwhRes = await sendWebhookAlert({
+          webhookUrl: founderWebhookUrl,
+          subject: emailSubject,
+          to: prospect.ownerEmail || founderAlertEmail,
+          founderEmail: founderAlertEmail,
+          secret: webhookSecret,
+          text: smsPreview,
+          payload: quoteWebhookPayload,
+        });
+        if (fwhRes.ok) {
+          webhookDispatched = true;
+        } else if (fwhRes.error) {
+          errors.push(fwhRes.error);
+          console.error(`Founder webhook failed for ${quoteId}:`, fwhRes.error);
+        }
+      }
+
+      // 3) Direct Email Alert via Resend (when verified domain keys exist)
       if (prospect.ownerEmail) {
         if (!resendApiKey || !resendFromEmail) {
           if (!webhookDispatched) {
             deliveryStatus = 'config_missing';
-            errors.push('RESEND_API_KEY or verified RESEND_FROM_EMAIL is not configured.');
           }
         } else {
           const emailRes = await sendResendEmail({
@@ -330,14 +314,14 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       if (emailDispatched || webhookDispatched) {
         deliveryStatus = 'sent';
         deliveryError = errors.length > 0 ? errors.join(' | ') : null;
-      } else if (!prospect.ownerEmail && !prospect.webhookUrl) {
+      } else if (deliveryStatus === 'config_missing') {
+        deliveryError = null;
+      } else if (!prospect.ownerEmail && !prospect.webhookUrl && !founderWebhookUrl) {
         deliveryStatus = 'no_owner_email';
-        deliveryError = 'No owner alert email or webhook URL configured for this live shop.';
-      } else if (deliveryStatus !== 'config_missing') {
+        deliveryError = 'No alert destination configured for this live shop.';
+      } else {
         deliveryStatus = 'failed';
         deliveryError = errors.join(' | ') || 'Lead alert delivery failed.';
-      } else {
-        deliveryError = errors.join(' | ');
       }
 
       if (

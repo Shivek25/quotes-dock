@@ -11,6 +11,7 @@ import {
   isSameOriginStudioRequest,
   isStudioAuthorized,
 } from '../../lib/security/auth';
+import { sendWebhookAlert } from '../../lib/alerts/webhook';
 import {
   newInquirySchema,
   updateInquiryStatusSchema,
@@ -108,29 +109,61 @@ export const POST: APIRoute = async ({ request, locals }) => {
       ipHash,
     });
 
-    // Notify founder if Resend + FOUNDER_ALERT_EMAIL are configured
+    // Notify founder via optional Resend email and/or FOUNDER_WEBHOOK_URL (Discord / Slack / Gmail relay)
     const resendApiKey = env.RESEND_API_KEY?.trim() || '';
     const resendFromEmail = env.RESEND_FROM_EMAIL?.trim() || '';
     const founderEmail = env.FOUNDER_ALERT_EMAIL?.trim() || '';
+    const founderWebhookUrl = env.FOUNDER_WEBHOOK_URL?.trim() || '';
+    const webhookSecret = env.WEBHOOK_SECRET?.trim() || '';
+
+    const typeLabel =
+      data.inquiryType === 'claim_page'
+        ? 'PAGE CLAIM'
+        : data.inquiryType === 'removal_request'
+          ? 'REMOVAL REQUEST'
+          : 'FREE PREVIEW REQUEST';
+
+    const bodyLines = [
+      `Type: ${typeLabel}`,
+      `Business: ${resolvedBusinessName} (${resolvedCity || 'City not provided'}, ${resolvedCountry})`,
+      `Owner: ${data.ownerName}`,
+      `Contact: ${data.contactInfo}`,
+      `Plan: ${data.planTier}`,
+      data.slug ? `Preview Slug: /p/${data.slug}` : '',
+      data.notes ? `Notes: ${data.notes}` : '',
+    ].filter(Boolean);
+
+    const inquirySubject = `[QuotesDock ${typeLabel}] ${resolvedBusinessName}`;
+    const inquiryText = bodyLines.join('\n');
+
+    if (founderWebhookUrl) {
+      const whRes = await sendWebhookAlert({
+        webhookUrl: founderWebhookUrl,
+        text: `${inquirySubject}\n${inquiryText}`,
+        subject: inquirySubject,
+        to: founderEmail,
+        founderEmail,
+        secret: webhookSecret,
+        payload: {
+          event: 'inbound_inquiry',
+          inquiryId,
+          inquiryType: data.inquiryType,
+          businessName: resolvedBusinessName,
+          ownerName: data.ownerName,
+          contactInfo: data.contactInfo,
+          city: resolvedCity,
+          country: resolvedCountry,
+          planTier: data.planTier,
+          slug: data.slug || null,
+          notes: data.notes || '',
+        },
+      });
+      if (!whRes.ok) {
+        console.error('Founder webhook inquiry notification failed:', whRes.error);
+      }
+    }
 
     if (resendApiKey && resendFromEmail && founderEmail) {
-      const typeLabel =
-        data.inquiryType === 'claim_page'
-          ? 'PAGE CLAIM'
-          : data.inquiryType === 'removal_request'
-            ? 'REMOVAL REQUEST'
-            : 'FREE PREVIEW REQUEST';
-
-      const bodyLines = [
-        `Type: ${typeLabel}`,
-        `Business: ${resolvedBusinessName} (${resolvedCity || 'City not provided'}, ${resolvedCountry})`,
-        `Owner: ${data.ownerName}`,
-        `Contact: ${data.contactInfo}`,
-        `Plan: ${data.planTier}`,
-        data.slug ? `Preview Slug: /p/${data.slug}` : '',
-        data.notes ? `Notes: ${data.notes}` : '',
-      ].filter(Boolean);
-
       await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -140,8 +173,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         body: JSON.stringify({
           from: resendFromEmail,
           to: [founderEmail],
-          subject: `[QuotesDock ${typeLabel}] ${resolvedBusinessName}`,
-          text: bodyLines.join('\n'),
+          subject: inquirySubject,
+          text: inquiryText,
         }),
         signal: AbortSignal.timeout(4000),
       }).catch((err) => {

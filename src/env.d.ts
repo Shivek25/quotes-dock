@@ -35,6 +35,8 @@ interface Env {
   RESEND_API_KEY?: string;
   RESEND_FROM_EMAIL?: string;
   FOUNDER_ALERT_EMAIL?: string;
+  FOUNDER_WEBHOOK_URL?: string;
+  WEBHOOK_SECRET?: string;
   FOUNDING_CHECKOUT_URL?: string;
   STANDARD_CHECKOUT_URL?: string;
 }

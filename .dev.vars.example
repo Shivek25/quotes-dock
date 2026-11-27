@@ -7,6 +7,10 @@ RESEND_API_KEY=
 RESEND_FROM_EMAIL=QuotesDock Alerts <alerts@yourdomain.com>
 # Optional fallback email alerted if a live client email notification fails or a shop requests a preview
 FOUNDER_ALERT_EMAIL=
+# Optional global webhook (Discord, Slack, Make, Zapier, or Google Apps Script Gmail relay) for instant alerts without a custom domain
+FOUNDER_WEBHOOK_URL=
+# Optional shared secret sent to FOUNDER_WEBHOOK_URL (never sent to client-supplied webhooks)
+WEBHOOK_SECRET=
 # Optional Merchant-of-Record checkout links (Polar.sh / Lemon Squeezy)
 FOUNDING_CHECKOUT_URL=
 STANDARD_CHECKOUT_URL=
