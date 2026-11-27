@@ -28,7 +28,8 @@ const currentBasePrice = fullPkg ? fullPkg.prices.sedan : 145;
 const leadStatusMeta: Record<string, { label: string; classes: string }> = {
   new: {
     label: 'New Lead',
-    classes: 'bg-sky-400/15 text-[#7DD3FC] border-sky-400/40',
+    classes:
+      'bg-cyan-400/15 text-[#7DD3FC] border-cyan-400/40 shadow-[0_0_12px_rgba(0,242,254,0.15)]',
   },
   contacted: {
     label: 'Contacted',
@@ -36,7 +37,8 @@ const leadStatusMeta: Record<string, { label: string; classes: string }> = {
   },
   booked: {
     label: 'Booked',
-    classes: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40',
+    classes:
+      'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 shadow-[0_0_12px_rgba(16,185,129,0.16)]',
   },
   archived: {
     label: 'Archived',
@@ -44,8 +46,53 @@ const leadStatusMeta: Record<string, { label: string; classes: string }> = {
   },
 };
 
+const vehicleLabelMap: Record<string, string> = {
+  sedan: 'Coupe / Sedan',
+  suv: 'Mid-Size SUV / Crossover',
+  truck_xl: '3-Row SUV / Pickup',
+};
+
+const conditionLabelMap: Record<string, string> = {
+  standard: 'Standard Daily',
+  pet_hair: 'Pet Hair Removal',
+  heavy_soil: 'Heavy Mud / Soil',
+};
+
+const timingLabelMap: Record<string, string> = {
+  this_week: 'This Week',
+  next_week: 'Next Week',
+  flexible: 'Flexible Window',
+};
+
 function cleanDialDigits(raw: string): string {
   return raw.replace(/[^+\d]/g, '');
+}
+
+function parseAddonNames(raw: string): string[] {
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((item) => (typeof item === 'string' ? item.trim() : ''))
+      .filter((item) => item.length > 0);
+  } catch {
+    return [];
+  }
+}
+
+function formatLeadDate(iso: string): string {
+  try {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    }).format(date);
+  } catch {
+    return '';
+  }
 }
 ---
 
@@ -54,10 +101,18 @@ function cleanDialDigits(raw: string): string {
     title="Portal Link Not Found | QuotesDock"
     description="This private owner portal link is invalid or has been rotated."
     noindex={true}
+    showScrollLaser={true}
   >
-    <main class="carbon-mesh mx-auto flex min-h-screen flex-col items-center justify-center px-6 py-16 text-center">
-      <div class="glass-panel w-full max-w-md rounded-2xl p-8">
-        <span class="inline-flex rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
+    <main class="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 py-16 text-center studio-frame-rails">
+      <div class="glass-panel anisotropic-border spotlight-card reveal-up is-visible w-full max-w-md rounded-2xl p-8">
+        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-cyan-400/40 bg-cyan-400/10 text-[#00F2FE] cyan-glow-sm">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 2L20 6.5V17.5L12 22L4 17.5V6.5L12 2Z" />
+            <path d="M12 8v4" />
+            <circle cx="12" cy="16" r="0.8" fill="currentColor" />
+          </svg>
+        </div>
+        <span class="mt-4 inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-[#7DD3FC]">
           QuotesDock Owner Portal
         </span>
         <h1 class="mt-4 text-2xl font-bold text-slate-50">
@@ -66,6 +121,14 @@ function cleanDialDigits(raw: string): string {
         <p class="mt-2.5 text-sm leading-relaxed text-[#CBD5E1]">
           Check your latest private link from QuotesDock, or contact support if your link was rotated for security.
         </p>
+        <div class="mt-6">
+          <a
+            href="/"
+            class="btn-hydro-primary inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-xs font-bold"
+          >
+            Explore QuotesDock
+          </a>
+        </div>
       </div>
     </main>
   </BaseLayout>
@@ -74,69 +137,120 @@ function cleanDialDigits(raw: string): string {
     title={`${prospect.businessName} | Owner Lead Inbox`}
     description={`Private mobile quote inbox for ${prospect.businessName}.`}
     noindex={true}
+    showScrollLaser={true}
   >
-    <header class="sticky top-0 z-40 border-b border-slate-800/90 bg-[#0C1017]/95 backdrop-blur-xl">
-      <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-6">
-        <div class="min-w-0">
-          <div class="flex items-center gap-2">
-            <span class="font-display truncate text-base font-bold text-slate-50 sm:text-lg">
-              {prospect.businessName}
-            </span>
-            <span class="rounded-full border border-emerald-400/35 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
-              Owner Inbox
-            </span>
+    <div class="sticky top-0 z-40 px-3 pt-3 sm:px-6">
+      <header class="mx-auto max-w-5xl rounded-2xl border border-slate-800/90 bg-[#090C12]/88 px-4 py-3 backdrop-blur-xl shadow-[0_14px_36px_-18px_rgba(0,0,0,0.9)] sm:px-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex min-w-0 items-center gap-3">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-400/10 text-[#00F2FE] cyan-glow-sm">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M12 2L20 6.5V17.5L12 22L4 17.5V6.5L12 2Z" />
+                <path d="M12 7L16 9.5V14.5L12 17L8 14.5V9.5L12 7Z" />
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-display truncate text-base font-bold text-slate-50 sm:text-lg">
+                  {prospect.businessName}
+                </span>
+                <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/35 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
+                  <span class="relative flex h-1.5 w-1.5">
+                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  Owner Inbox
+                </span>
+              </div>
+              <div class="mt-0.5 truncate text-xs text-[#CBD5E1]">
+                {prospect.city} · <span id="header-turnaround-badge">{prospect.turnaroundBadge}</span>
+              </div>
+            </div>
           </div>
-          <div class="text-xs text-[#CBD5E1]">
-            {prospect.city} · {prospect.turnaroundBadge}
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              id="copy-shop-link-btn"
+              type="button"
+              data-shop-slug={prospect.slug}
+              class="inline-flex items-center gap-1.5 rounded-xl border border-slate-700/90 bg-[#111622]/90 px-3 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-[#7DD3FC]"
+            >
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              <span>Copy Bio Link</span>
+            </button>
+            <a
+              href={`/p/${prospect.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-hydro-primary inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold"
+            >
+              <span>View Live Quote Page</span>
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <path d="M7 17L17 7" />
+                <path d="M7 7h10v10" />
+              </svg>
+            </a>
           </div>
         </div>
+      </header>
+    </div>
 
-        <a
-          href={`/p/${prospect.slug}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="rounded-xl bg-[#38BDF8] px-3.5 py-2 text-xs font-bold text-[#06131F] transition-colors hover:bg-[#7DD3FC]"
-        >
-          View Live Quote Page
-        </a>
-      </div>
-    </header>
-
-    <main class="mx-auto max-w-5xl px-4 py-7 sm:px-6 space-y-6">
+    <main class="mx-auto max-w-5xl px-4 pb-16 pt-6 sm:px-6 space-y-6 studio-frame-rails">
       {/* KPI Strip */}
-      <section class="grid grid-cols-3 gap-3 sm:gap-4">
-        <div class="glass-panel rounded-2xl p-4">
-          <div class="text-[11px] font-semibold text-[#CBD5E1]">New Leads</div>
-          <div class="font-display tabular-nums mt-1 text-2xl font-bold text-[#38BDF8] sm:text-3xl">
+      <section class="reveal-up is-visible grid grid-cols-3 gap-3 sm:gap-4">
+        <div class="glass-panel anisotropic-border spotlight-card interactive-card rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-[#CBD5E1]">New Leads</span>
+            <span
+              id="kpi-new-dot"
+              class={`relative flex h-2 w-2 ${newCount > 0 ? '' : 'hidden'}`}
+              aria-hidden="true"
+            >
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F2FE] opacity-75" />
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-[#00F2FE]" />
+            </span>
+          </div>
+          <div id="kpi-new-count" class="font-display tabular-nums mt-1.5 text-2xl font-bold text-[#00F2FE] sm:text-3xl">
             {newCount}
           </div>
+          <div class="mt-0.5 text-[11px] text-slate-400">Awaiting reply</div>
         </div>
-        <div class="glass-panel rounded-2xl p-4">
-          <div class="text-[11px] font-semibold text-[#CBD5E1]">Booked Jobs</div>
-          <div class="font-display tabular-nums mt-1 text-2xl font-bold text-emerald-300 sm:text-3xl">
+
+        <div class="glass-panel anisotropic-border spotlight-card interactive-card rounded-2xl p-4 sm:p-5">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-[#CBD5E1]">Booked Jobs</div>
+          <div id="kpi-booked-count" class="font-display tabular-nums mt-1.5 text-2xl font-bold text-emerald-300 sm:text-3xl">
             {bookedCount}
           </div>
+          <div class="mt-0.5 text-[11px] text-slate-400">Confirmed slots</div>
         </div>
-        <div class="glass-panel rounded-2xl p-4">
-          <div class="text-[11px] font-semibold text-[#CBD5E1]">Total Quotes</div>
-          <div class="font-display tabular-nums mt-1 text-2xl font-bold text-slate-50 sm:text-3xl">
+
+        <div class="glass-panel anisotropic-border spotlight-card interactive-card rounded-2xl p-4 sm:p-5">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-[#CBD5E1]">Total Quotes</div>
+          <div id="kpi-total-count" class="font-display tabular-nums mt-1.5 text-2xl font-bold text-slate-50 sm:text-3xl">
             {quotes.length}
           </div>
+          <div class="mt-0.5 text-[11px] text-slate-400">All-time requests</div>
         </div>
       </section>
 
       {/* Quick Shop Controls */}
-      <section class="glass-panel anisotropic-border rounded-2xl p-5">
+      <section class="glass-panel anisotropic-border spotlight-card reveal-up stagger-1 rounded-2xl p-5 sm:p-6">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 class="text-base font-bold text-slate-50">Quick Shop Controls</h2>
-            <p class="text-xs text-[#CBD5E1]">
+            <h2 class="text-base font-bold text-slate-50 sm:text-lg">Quick Shop Controls</h2>
+            <p class="mt-0.5 text-xs text-[#CBD5E1]">
               Updates your live quote page immediately (bookmark this private URL on your phone).
             </p>
           </div>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-2.5 py-1 text-[11px] font-semibold text-[#7DD3FC]">
+            Instant Live Sync
+          </span>
         </div>
 
-        <form id="owner-settings-form" class="mt-4 grid gap-3 sm:grid-cols-3">
+        <form id="owner-settings-form" class="mt-4 grid gap-3.5 sm:grid-cols-3">
           <div>
             <label for="ownerAvailability" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-200">
               Slot Availability Badge
@@ -144,7 +258,7 @@ function cleanDialDigits(raw: string): string {
             <select
               id="ownerAvailability"
               name="availabilityStatus"
-              class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs text-slate-50"
+              class="input-carbon mt-1.5 w-full rounded-xl px-3 py-2.5 text-xs text-slate-50"
             >
               <option value="open" selected={prospect.availabilityStatus === 'open'}>
                 Same-Week Driveway Slots Open
@@ -169,7 +283,7 @@ function cleanDialDigits(raw: string): string {
               min="45"
               max="1000"
               value={currentBasePrice}
-              class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs text-slate-50"
+              class="input-carbon mt-1.5 w-full rounded-xl px-3 py-2.5 text-xs text-slate-50 tabular-nums"
             />
           </div>
 
@@ -183,7 +297,7 @@ function cleanDialDigits(raw: string): string {
               type="text"
               value={prospect.phoneDisplay === 'Direct Text / DM' ? '' : prospect.phoneDisplay}
               placeholder="Leave blank if DM-only"
-              class="mt-1 w-full rounded-xl border border-slate-600/80 bg-[#0C1017] px-3 py-2 text-xs text-slate-50 placeholder:text-slate-400"
+              class="input-carbon mt-1.5 w-full rounded-xl px-3 py-2.5 text-xs text-slate-50 placeholder:text-slate-500"
             />
           </div>
 
@@ -192,7 +306,7 @@ function cleanDialDigits(raw: string): string {
             <button
               id="owner-settings-btn"
               type="submit"
-              class="rounded-xl bg-[#38BDF8] px-4 py-2 text-xs font-bold text-[#06131F] hover:bg-[#7DD3FC]"
+              class="btn-hydro-primary rounded-xl px-4 py-2.5 text-xs font-bold"
             >
               Save Live Page Updates
             </button>
@@ -201,123 +315,207 @@ function cleanDialDigits(raw: string): string {
       </section>
 
       {/* Incoming Quote Leads */}
-      <section class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold text-slate-50">Incoming Driveway Quote Leads</h2>
-          <span class="text-xs text-[#CBD5E1]">{visibleQuotes.length} active</span>
+      <section class="reveal-up stagger-2 space-y-3.5">
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="text-lg font-bold text-slate-50 sm:text-xl">Incoming Driveway Quote Leads</h2>
+          <span
+            id="active-leads-badge"
+            class="rounded-full border border-slate-700/90 bg-[#111622]/90 px-3 py-1 text-xs font-semibold text-[#CBD5E1] tabular-nums"
+          >
+            {visibleQuotes.length} active
+          </span>
         </div>
 
-        {visibleQuotes.length === 0 ? (
-          <div class="glass-panel rounded-2xl border border-dashed border-slate-700 p-8 text-center">
-            <p class="text-sm font-semibold text-slate-100">No active quote leads yet</p>
-            <p class="mt-1 text-xs text-[#CBD5E1]">
-              Share your quote page link (/p/{prospect.slug}) in your Instagram bio and Google Business profile to start capturing leads here.
-            </p>
-          </div>
-        ) : (
-          <div class="space-y-3">
-            {visibleQuotes.map((q) => {
-              const meta = leadStatusMeta[q.leadStatus] || leadStatusMeta.new;
-              const dial = cleanDialDigits(q.customerPhone);
-              const replyText = `Hi ${q.customerName}, thanks for requesting a ${q.packageName} quote with ${prospect.businessName} (${prospect.currencySymbol}${q.estimatedMin}-${prospect.currencySymbol}${q.estimatedMax}). What day works best for your driveway slot?`;
-              return (
-                <article
-                  class="owner-lead-card glass-panel anisotropic-border rounded-2xl p-4 sm:p-5"
-                  data-quote-card={q.id}
-                >
-                  <div class="flex flex-wrap items-start justify-between gap-3">
-                    <div class="min-w-0 flex-1">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-base font-bold text-slate-50">{q.customerName}</h3>
-                        <span class={`lead-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${meta.classes}`}>
-                          {meta.label}
+        <div
+          id="empty-leads-state"
+          class={`glass-panel anisotropic-border rounded-2xl border border-dashed border-slate-700/80 p-8 text-center ${
+            visibleQuotes.length === 0 ? '' : 'hidden'
+          }`}
+        >
+          <p class="text-sm font-semibold text-slate-100">No active quote leads yet</p>
+          <p class="mt-1.5 text-xs text-[#CBD5E1]">
+            Share your quote page link (<code class="text-[#7DD3FC]">/p/{prospect.slug}</code>) in your Instagram bio and Google Business profile to start capturing leads here.
+          </p>
+        </div>
+
+        <div id="leads-list" class={`space-y-3.5 ${visibleQuotes.length === 0 ? 'hidden' : ''}`}>
+          {visibleQuotes.map((q) => {
+            const meta = leadStatusMeta[q.leadStatus] || leadStatusMeta.new;
+            const dial = cleanDialDigits(q.customerPhone);
+            const vehicleLabel =
+              vehicleLabelMap[q.vehicleSize] || q.vehicleSize.toUpperCase();
+            const conditionLabel =
+              conditionLabelMap[q.conditionLevel] || q.conditionLevel.replace('_', ' ');
+            const timingLabel =
+              timingLabelMap[q.preferredTiming] || q.preferredTiming.replace('_', ' ');
+            const addonsList = parseAddonNames(q.addonsSelectedJson);
+            const createdLabel = formatLeadDate(q.createdAt);
+            const replyText = `Hi ${q.customerName}, thanks for requesting a ${q.packageName} quote with ${prospect.businessName} (${prospect.currencySymbol}${q.estimatedMin}-${prospect.currencySymbol}${q.estimatedMax}). What day works best for your driveway slot?`;
+            return (
+              <article
+                class="owner-lead-card glass-panel anisotropic-border spotlight-card interactive-card rounded-2xl p-4 sm:p-5"
+                data-quote-card={q.id}
+                data-current-status={q.leadStatus}
+              >
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h3 class="text-base font-bold text-slate-50 sm:text-lg">{q.customerName}</h3>
+                      <span class={`lead-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${meta.classes}`}>
+                        {meta.label}
+                      </span>
+                      {q.isPreviewTest === 1 && (
+                        <span class="rounded-full border border-slate-700 bg-slate-800/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
+                          Preview Test
                         </span>
-                        {q.isPreviewTest === 1 && (
-                          <span class="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
-                            Preview Test
+                      )}
+                      {createdLabel && (
+                        <span class="text-[11px] text-slate-400">
+                          {createdLabel}
+                        </span>
+                      )}
+                    </div>
+
+                    <div class="mt-2.5 flex flex-wrap items-center gap-1.5 text-xs">
+                      <span class="rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-2.5 py-1 font-semibold text-slate-100">
+                        {q.packageName}
+                      </span>
+                      <span class="rounded-lg border border-slate-700/80 bg-[#0C1017]/80 px-2.5 py-1 text-[#CBD5E1]">
+                        {vehicleLabel}
+                      </span>
+                      <span class="rounded-lg border border-slate-700/80 bg-[#0C1017]/80 px-2.5 py-1 text-[#CBD5E1]">
+                        {conditionLabel}
+                      </span>
+                      <span class="rounded-lg border border-slate-700/80 bg-[#0C1017]/80 px-2.5 py-1 text-[#CBD5E1]">
+                        {prospect.postalLabel}: <strong class="text-slate-100">{q.customerPostal}</strong>
+                      </span>
+                      <span class="rounded-lg border border-slate-700/80 bg-[#0C1017]/80 px-2.5 py-1 text-[#CBD5E1]">
+                        Timing: <strong class="text-slate-100">{timingLabel}</strong>
+                      </span>
+                    </div>
+
+                    {addonsList.length > 0 && (
+                      <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                        {addonsList.map((addon) => (
+                          <span class="rounded-md border border-cyan-400/20 bg-[#0C1017]/75 px-2 py-0.5 text-[11px] font-medium text-[#7DD3FC]">
+                            + {addon}
                           </span>
-                        )}
+                        ))}
                       </div>
-                      <div class="mt-1.5 text-xs text-[#CBD5E1]">
-                        <strong class="text-slate-100">{q.packageName}</strong> · {q.vehicleSize.toUpperCase()} · {q.conditionLevel.replace('_', ' ')} · {prospect.postalLabel}: <strong class="text-slate-100">{q.customerPostal}</strong> · Timing: {q.preferredTiming.replace('_', ' ')}
-                      </div>
-                      {q.notes && (
-                        <p class="mt-2 rounded-lg border border-slate-800 bg-[#0C1017]/80 px-3 py-1.5 text-xs text-slate-200">
-                          Notes: {q.notes}
-                        </p>
-                      )}
-                    </div>
+                    )}
 
-                    <div class="text-right">
-                      <div class="font-display tabular-nums text-xl font-bold text-[#38BDF8]">
-                        {prospect.currencySymbol}{q.estimatedMin} - {prospect.currencySymbol}{q.estimatedMax}
-                      </div>
-                      <div class="text-[11px] text-slate-400">
-                        {q.customerPhone}
-                      </div>
-                    </div>
+                    {q.notes && (
+                      <p class="mt-2.5 rounded-xl border border-slate-800/90 bg-[#090C12]/85 px-3 py-2 text-xs text-slate-200">
+                        <span class="font-semibold text-slate-400">Vehicle / Notes:</span> {q.notes}
+                      </p>
+                    )}
                   </div>
 
-                  <div class="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800 pt-3">
-                    <div class="flex flex-wrap gap-2">
-                      {dial && (
-                        <>
-                          <a
-                            href={`sms:${dial}?body=${encodeURIComponent(replyText)}`}
-                            class="rounded-lg bg-[#38BDF8] px-3 py-1.5 text-xs font-bold text-[#06131F] hover:bg-[#7DD3FC]"
-                          >
-                            Text Customer
-                          </a>
-                          <a
-                            href={`tel:${dial}`}
-                            class="rounded-lg border border-slate-600 bg-[#0C1017] px-3 py-1.5 text-xs font-semibold text-slate-100 hover:border-sky-400/50"
-                          >
-                            Call
-                          </a>
-                        </>
-                      )}
+                  <div class="shrink-0 text-right">
+                    <div class="font-display tabular-nums text-xl font-bold text-[#00F2FE] sm:text-2xl">
+                      {prospect.currencySymbol}{q.estimatedMin} - {prospect.currencySymbol}{q.estimatedMax}
                     </div>
-
-                    <div class="flex flex-wrap gap-1.5">
-                      <button
-                        type="button"
-                        data-lead-id={q.id}
-                        data-lead-status="contacted"
-                        class="lead-status-btn rounded-lg border border-amber-400/40 bg-amber-400/15 px-2.5 py-1 text-[11px] font-bold text-amber-200 hover:bg-amber-400/25"
-                      >
-                        Contacted
-                      </button>
-                      <button
-                        type="button"
-                        data-lead-id={q.id}
-                        data-lead-status="booked"
-                        class="lead-status-btn rounded-lg border border-emerald-400/40 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/30"
-                      >
-                        Booked
-                      </button>
-                      <button
-                        type="button"
-                        data-lead-id={q.id}
-                        data-lead-status="archived"
-                        class="lead-status-btn rounded-lg border border-slate-600 bg-[#0C1017] px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:border-red-400/40 hover:text-red-200"
-                      >
-                        Archive
-                      </button>
+                    <div class="mt-0.5 font-mono text-[11px] text-slate-400 tabular-nums">
+                      {q.customerPhone}
                     </div>
                   </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
+                </div>
+
+                <div class="mt-4 flex flex-wrap items-center justify-between gap-2.5 border-t border-slate-800/90 pt-3.5">
+                  <div class="flex flex-wrap gap-2">
+                    {dial && (
+                      <>
+                        <a
+                          href={`sms:${dial}?body=${encodeURIComponent(replyText)}`}
+                          class="btn-hydro-primary inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold"
+                        >
+                          Text Customer
+                        </a>
+                        <a
+                          href={`tel:${dial}`}
+                          class="inline-flex items-center gap-1.5 rounded-xl border border-slate-600/90 bg-[#0C1017]/90 px-3.5 py-2 text-xs font-semibold text-slate-100 transition-colors hover:border-cyan-400/60 hover:text-[#7DD3FC]"
+                        >
+                          Call
+                        </a>
+                      </>
+                    )}
+                  </div>
+
+                  <div class="flex flex-wrap gap-1.5">
+                    <button
+                      type="button"
+                      data-lead-id={q.id}
+                      data-lead-status="contacted"
+                      class={`lead-status-btn rounded-xl border px-3 py-1.5 text-[11px] font-bold transition-colors ${
+                        q.leadStatus === 'contacted'
+                          ? 'border-amber-400/70 bg-amber-400/25 text-amber-100 ring-1 ring-amber-400/35'
+                          : 'border-amber-400/40 bg-amber-400/15 text-amber-200 hover:bg-amber-400/25'
+                      }`}
+                    >
+                      Contacted
+                    </button>
+                    <button
+                      type="button"
+                      data-lead-id={q.id}
+                      data-lead-status="booked"
+                      class={`lead-status-btn rounded-xl border px-3 py-1.5 text-[11px] font-bold transition-colors ${
+                        q.leadStatus === 'booked'
+                          ? 'border-emerald-400/70 bg-emerald-500/30 text-emerald-100 ring-1 ring-emerald-400/35'
+                          : 'border-emerald-400/40 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                      }`}
+                    >
+                      Booked
+                    </button>
+                    <button
+                      type="button"
+                      data-lead-id={q.id}
+                      data-lead-status="archived"
+                      class="lead-status-btn rounded-xl border border-slate-600/90 bg-[#0C1017]/90 px-3 py-1.5 text-[11px] font-bold text-slate-300 transition-colors hover:border-red-400/50 hover:text-red-200"
+                    >
+                      Archive
+                    </button>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </section>
     </main>
 
-    <script is:inline define:vars={{ ownerToken: prospect.ownerPortalToken || '' }}>
+    <script is:inline define:vars={{ ownerToken: prospect.ownerPortalToken || '', shopSlug: prospect.slug }}>
       (function () {
+        const reducedMotion =
+          typeof window.matchMedia === 'function' &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const copyBtn = document.getElementById('copy-shop-link-btn');
+        if (copyBtn) {
+          const labelSpan = copyBtn.querySelector('span');
+          const origLabel = labelSpan ? labelSpan.textContent : 'Copy Bio Link';
+          let resetTimer = 0;
+
+          copyBtn.addEventListener('click', async () => {
+            const shareUrl = `${window.location.origin}/p/${shopSlug}`;
+            try {
+              await navigator.clipboard.writeText(shareUrl);
+              if (labelSpan) labelSpan.textContent = 'Link Copied!';
+              copyBtn.classList.add('border-emerald-400/60', 'text-emerald-300');
+              window.clearTimeout(resetTimer);
+              resetTimer = window.setTimeout(() => {
+                if (labelSpan) labelSpan.textContent = origLabel;
+                copyBtn.classList.remove('border-emerald-400/60', 'text-emerald-300');
+              }, 1800);
+            } catch {
+              window.prompt('Copy your public quote page link:', shareUrl);
+            }
+          });
+        }
+
         const settingsForm = document.getElementById('owner-settings-form');
         const settingsFeedback = document.getElementById('owner-settings-feedback');
         const settingsBtn = document.getElementById('owner-settings-btn');
+        const headerBadge = document.getElementById('header-turnaround-badge');
 
         settingsForm?.addEventListener('submit', async (e) => {
           e.preventDefault();
@@ -349,6 +547,9 @@ function cleanDialDigits(raw: string): string {
             }
             settingsFeedback.className = 'text-xs font-semibold text-emerald-300';
             settingsFeedback.textContent = `Saved! Live badge: ${data.turnaroundBadge}`;
+            if (headerBadge && data.turnaroundBadge) {
+              headerBadge.textContent = data.turnaroundBadge;
+            }
           } catch {
             settingsFeedback.className = 'text-xs font-semibold text-red-300';
             settingsFeedback.textContent = 'Network error saving settings.';
@@ -357,6 +558,66 @@ function cleanDialDigits(raw: string): string {
             settingsBtn.textContent = orig;
           }
         });
+
+        const kpiNewCount = document.getElementById('kpi-new-count');
+        const kpiBookedCount = document.getElementById('kpi-booked-count');
+        const kpiNewDot = document.getElementById('kpi-new-dot');
+        const activeBadge = document.getElementById('active-leads-badge');
+        const leadsList = document.getElementById('leads-list');
+        const emptyState = document.getElementById('empty-leads-state');
+
+        function bumpCounter(el, nextValue) {
+          if (!el) return;
+          const nextStr = String(nextValue);
+          if (el.textContent?.trim() === nextStr) return;
+          el.textContent = nextStr;
+          if (!reducedMotion) {
+            el.classList.remove('price-bump');
+            void el.offsetWidth;
+            el.classList.add('price-bump');
+          }
+        }
+
+        function syncLeadCounters() {
+          const cards = Array.from(document.querySelectorAll('#leads-list .owner-lead-card'));
+          const activeCount = cards.length;
+          const nextNew = cards.filter(
+            (card) => card.getAttribute('data-current-status') === 'new'
+          ).length;
+          const nextBooked = cards.filter(
+            (card) => card.getAttribute('data-current-status') === 'booked'
+          ).length;
+
+          bumpCounter(kpiNewCount, nextNew);
+          bumpCounter(kpiBookedCount, nextBooked);
+          if (kpiNewDot) {
+            kpiNewDot.classList.toggle('hidden', nextNew === 0);
+          }
+          if (activeBadge) {
+            activeBadge.textContent = `${activeCount} active`;
+          }
+          if (leadsList && emptyState) {
+            leadsList.classList.toggle('hidden', activeCount === 0);
+            emptyState.classList.toggle('hidden', activeCount > 0);
+          }
+        }
+
+        function styleStatusButtons(card, activeStatus) {
+          card.querySelectorAll('.lead-status-btn').forEach((button) => {
+            const btnStatus = button.getAttribute('data-lead-status');
+            if (btnStatus === 'contacted') {
+              button.className =
+                activeStatus === 'contacted'
+                  ? 'lead-status-btn rounded-xl border px-3 py-1.5 text-[11px] font-bold transition-colors border-amber-400/70 bg-amber-400/25 text-amber-100 ring-1 ring-amber-400/35'
+                  : 'lead-status-btn rounded-xl border px-3 py-1.5 text-[11px] font-bold transition-colors border-amber-400/40 bg-amber-400/15 text-amber-200 hover:bg-amber-400/25';
+            } else if (btnStatus === 'booked') {
+              button.className =
+                activeStatus === 'booked'
+                  ? 'lead-status-btn rounded-xl border px-3 py-1.5 text-[11px] font-bold transition-colors border-emerald-400/70 bg-emerald-500/30 text-emerald-100 ring-1 ring-emerald-400/35'
+                  : 'lead-status-btn rounded-xl border px-3 py-1.5 text-[11px] font-bold transition-colors border-emerald-400/40 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30';
+            }
+          });
+        }
 
         document.querySelectorAll('.lead-status-btn').forEach((btn) => {
           btn.addEventListener('click', async () => {
@@ -374,16 +635,32 @@ function cleanDialDigits(raw: string): string {
               if (res.ok && data?.ok) {
                 const card = document.querySelector(`[data-quote-card="${quoteId}"]`);
                 if (leadStatus === 'archived') {
-                  card?.remove();
-                } else {
-                  const pill = card?.querySelector('.lead-status-pill');
+                  if (card instanceof HTMLElement) {
+                    if (reducedMotion) {
+                      card.remove();
+                      syncLeadCounters();
+                    } else {
+                      card.style.transition = 'opacity 220ms ease, transform 220ms ease';
+                      card.style.opacity = '0';
+                      card.style.transform = 'translateY(-6px) scale(0.98)';
+                      window.setTimeout(() => {
+                        card.remove();
+                        syncLeadCounters();
+                      }, 220);
+                    }
+                  }
+                } else if (card instanceof HTMLElement) {
+                  card.setAttribute('data-current-status', leadStatus);
+                  const pill = card.querySelector('.lead-status-pill');
                   if (pill) {
                     pill.textContent = leadStatus === 'booked' ? 'Booked' : 'Contacted';
                     pill.className =
                       leadStatus === 'booked'
-                        ? 'lead-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+                        ? 'lead-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border-emerald-400/40 shadow-[0_0_12px_rgba(16,185,129,0.16)]'
                         : 'lead-status-pill rounded-full border px-2.5 py-0.5 text-[11px] font-bold bg-amber-400/15 text-amber-200 border-amber-400/40';
                   }
+                  styleStatusButtons(card, leadStatus);
+                  syncLeadCounters();
                 }
               }
             } finally {

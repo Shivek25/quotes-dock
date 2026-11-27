@@ -84,6 +84,8 @@
 - **P3 / V12 (`SH_QD_V12`, completed & deployed live at `https://quotes-dock.pages.dev`)**:
   - Hardened `sendWebhookAlert()` (`src/lib/alerts/webhook.ts`) to inspect response bodies and catch `{ ok: false }` JSON or Google Apps Script HTML exception pages (`<!DOCTYPE html>`) instead of falsely reporting `Alert Sent`.
   - Updated the `/studio` Apps Script relay snippet (`src/pages/studio.astro`) to use `MailApp.sendEmail({ to, subject, body, htmlBody, name })` with `Session.getEffectiveUser().getEmail()` and structured `try / catch` JSON error reporting, keeping the user's already-authorized `MailApp` permission scope intact.
+- **P3 / V13 (deployed directly on `main`)**:
+  - Upgraded `/owner/[token]` (`src/pages/owner/[token].astro`) to the full Obsidian Hydro Studio visual system (`showScrollLaser={true}` `.studio-backdrop` grid + orbs + desktop cursor glow, floating glassmorphic header bar with `Copy Bio Link` and `.btn-hydro-primary`, `.spotlight-card` hover borders, `.input-carbon` quick controls, clean vehicle/condition/timing/add-on spec chips, and live animated KPI counter updates + smooth archive transitions without tilting operational buttons).
 - **Future Upgrades (Post-Launch / P3+)**:
   - Enable Cloudflare R2 in Cloudflare Dashboard, create `quotes-dock-media`, and re-enable `r2_buckets` in `wrangler.jsonc` to lift photo uploads from 750 KB (D1 fallback) to 5 MB (R2).
   - Attach a dedicated QuotesDock custom domain + verified Resend sending domain (`RESEND_FROM_EMAIL`) + Polar.sh / Lemon Squeezy checkout URLs (`FOUNDING_CHECKOUT_URL`, `STANDARD_CHECKOUT_URL`).
