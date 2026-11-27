@@ -11,6 +11,7 @@ import {
   isSameOriginStudioRequest,
   isStudioAuthorized,
 } from '../../lib/security/auth';
+import { buildInquiryAlertEmail } from '../../lib/alerts/email-templates';
 import { sendWebhookAlert } from '../../lib/alerts/webhook';
 import {
   newInquirySchema,
@@ -118,29 +119,33 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const typeLabel =
       data.inquiryType === 'claim_page'
-        ? 'PAGE CLAIM'
+        ? 'Page Claim'
         : data.inquiryType === 'removal_request'
-          ? 'REMOVAL REQUEST'
-          : 'FREE PREVIEW REQUEST';
+          ? 'Removal Request'
+          : 'Free Preview Request';
 
-    const bodyLines = [
-      `Type: ${typeLabel}`,
-      `Business: ${resolvedBusinessName} (${resolvedCity || 'City not provided'}, ${resolvedCountry})`,
-      `Owner: ${data.ownerName}`,
-      `Contact: ${data.contactInfo}`,
-      `Plan: ${data.planTier}`,
-      data.slug ? `Preview Slug: /p/${data.slug}` : '',
-      data.notes ? `Notes: ${data.notes}` : '',
-    ].filter(Boolean);
-
-    const inquirySubject = `[QuotesDock ${typeLabel}] ${resolvedBusinessName}`;
-    const inquiryText = bodyLines.join('\n');
+    const origin = new URL(request.url).origin;
+    const inquiryEmail = buildInquiryAlertEmail({
+      headingLabel: typeLabel,
+      businessName: resolvedBusinessName,
+      ownerName: data.ownerName,
+      contactInfo: data.contactInfo,
+      city: resolvedCity,
+      country: resolvedCountry,
+      planTier: data.planTier,
+      slug: data.slug || null,
+      notes: data.notes || '',
+      studioUrl: `${origin}/studio`,
+    });
 
     if (founderWebhookUrl) {
       const whRes = await sendWebhookAlert({
         webhookUrl: founderWebhookUrl,
-        text: `${inquirySubject}\n${inquiryText}`,
-        subject: inquirySubject,
+        text: `${inquiryEmail.subject}\n${inquiryEmail.plainText}`,
+        emailText: inquiryEmail.plainText,
+        html: inquiryEmail.html,
+        senderName: inquiryEmail.senderName,
+        subject: inquiryEmail.subject,
         to: founderEmail,
         founderEmail,
         secret: webhookSecret,
@@ -173,8 +178,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
         body: JSON.stringify({
           from: resendFromEmail,
           to: [founderEmail],
-          subject: inquirySubject,
-          text: inquiryText,
+          subject: inquiryEmail.subject,
+          text: inquiryEmail.plainText,
+          html: inquiryEmail.html,
         }),
         signal: AbortSignal.timeout(4000),
       }).catch((err) => {

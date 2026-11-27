@@ -12,6 +12,7 @@ import {
   hashClientIp,
   isStudioAuthorized,
 } from '../../lib/security/auth';
+import { buildQuoteAlertEmail } from '../../lib/alerts/email-templates';
 import { sendWebhookAlert } from '../../lib/alerts/webhook';
 import { quoteSubmissionSchema } from '../../lib/validation/schemas';
 
@@ -49,6 +50,7 @@ async function sendResendEmail(params: {
   to: string;
   subject: string;
   text: string;
+  html?: string;
 }): Promise<{ ok: boolean; error?: string }> {
   try {
     const res = await fetch('https://api.resend.com/emails', {
@@ -62,6 +64,7 @@ async function sendResendEmail(params: {
         to: [params.to],
         subject: params.subject,
         text: params.text,
+        ...(params.html ? { html: params.html } : {}),
       }),
       signal: AbortSignal.timeout(4500),
     });
@@ -215,7 +218,23 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       (data.notes ? `\nNotes: ${data.notes}` : '') +
       (ownerPortalUrl && prospect.mode === 'live' ? `\nManage Lead: ${ownerPortalUrl}` : '');
 
-    const emailSubject = `New ${priceRange} Mobile Detail Lead in ${data.customerPostal} (${data.customerName})`;
+    const quoteEmail = buildQuoteAlertEmail({
+      businessName: prospect.businessName,
+      customerName: data.customerName,
+      customerPhone: data.customerPhone,
+      postalLabel: prospect.postalLabel,
+      customerPostal: data.customerPostal,
+      vehicleLabel,
+      packageName: estimate.packageObj.name,
+      durationLabel: estimate.packageObj.durationLabel,
+      conditionLabel,
+      addonsSummary,
+      priceRange,
+      timingLabel,
+      notes: data.notes,
+      ownerPortalUrl: prospect.mode === 'live' ? ownerPortalUrl : '',
+    });
+    const emailSubject = quoteEmail.subject;
     let emailDispatched = false;
     let webhookDispatched = false;
 
@@ -256,9 +275,12 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       if (prospect.webhookUrl) {
         const whRes = await sendWebhookAlert({
           webhookUrl: prospect.webhookUrl,
-          subject: emailSubject,
+          subject: quoteEmail.subject,
           to: prospect.ownerEmail || '',
           text: smsPreview,
+          emailText: quoteEmail.plainText,
+          html: quoteEmail.html,
+          senderName: quoteEmail.senderName,
           payload: quoteWebhookPayload,
         });
         if (whRes.ok) {
@@ -273,11 +295,14 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       if (founderWebhookUrl && founderWebhookUrl !== prospect.webhookUrl) {
         const fwhRes = await sendWebhookAlert({
           webhookUrl: founderWebhookUrl,
-          subject: emailSubject,
+          subject: quoteEmail.subject,
           to: prospect.ownerEmail || founderAlertEmail,
           founderEmail: founderAlertEmail,
           secret: webhookSecret,
           text: smsPreview,
+          emailText: quoteEmail.plainText,
+          html: quoteEmail.html,
+          senderName: quoteEmail.senderName,
           payload: quoteWebhookPayload,
         });
         if (fwhRes.ok) {
@@ -299,8 +324,9 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
             apiKey: resendApiKey,
             from: resendFromEmail,
             to: prospect.ownerEmail,
-            subject: emailSubject,
-            text: smsPreview,
+            subject: quoteEmail.subject,
+            text: quoteEmail.plainText,
+            html: quoteEmail.html,
           });
           if (emailRes.ok) {
             emailDispatched = true;

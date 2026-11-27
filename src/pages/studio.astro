@@ -123,11 +123,12 @@ const gmailAppsScriptSnippet = `function doPost(e) {
   }
   var recipient = data.to || data.founderEmail || Session.getActiveUser().getEmail();
   if (recipient) {
-    MailApp.sendEmail({
-      to: recipient,
-      subject: data.subject || 'New QuotesDock Lead',
-      body: data.text || data.content || ''
-    });
+    var plainBody = data.text || data.content || '';
+    var options = { name: data.senderName || 'QuotesDock' };
+    if (data.html) {
+      options.htmlBody = data.html;
+    }
+    GmailApp.sendEmail(recipient, data.subject || 'New Quote Request', plainBody, options);
   }
   return ContentService.createTextOutput(JSON.stringify({ ok: true }))
     .setMimeType(ContentService.MimeType.JSON);
@@ -817,7 +818,7 @@ const gmailAppsScriptSnippet = `function doPost(e) {
                 <div class="rounded-xl border border-slate-800 bg-[#0C1017]/90 p-3.5">
                   <div class="font-bold text-emerald-300">Option B: Free Gmail Relay (Google Apps Script)</div>
                   <p class="mt-1 text-[11px] leading-relaxed">
-                    Go to <code class="text-slate-100">script.google.com</code> -&gt; New Project, paste the script below, Deploy as <strong>Web app</strong> (Execute as: <em>Me</em>, Access: <em>Anyone</em>), and set the Web App URL as <code class="text-slate-100">FOUNDER_WEBHOOK_URL</code>.
+                    Go to <code class="text-slate-100">script.google.com</code> -&gt; New Project, paste the script below, Deploy as <strong>Web app</strong> (Execute as: <em>Me</em>, Access: <em>Anyone</em>), and set the Web App URL as <code class="text-slate-100">FOUNDER_WEBHOOK_URL</code>. Click <em>Not spam</em> once (or add a Gmail filter with <em>Never send it to Spam</em>) for self-sent alerts.
                   </p>
                 </div>
               </div>

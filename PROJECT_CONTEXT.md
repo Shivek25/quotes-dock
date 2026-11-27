@@ -78,6 +78,9 @@
   - Extracted SSRF-safe `sendWebhookAlert()` (`src/lib/alerts/webhook.ts`) with `redirect: 'follow'` support for Discord, Slack, Make/Zapier, and zero-domain Google Apps Script Gmail relays (`FOUNDER_WEBHOOK_URL` + optional `WEBHOOK_SECRET`).
   - Wired `FOUNDER_WEBHOOK_URL` into both `POST /api/quotes` (for live shop quote alerts, including `ownerEmail` in relay payloads) and `POST /api/inquiries` (for free preview requests, claims, and removals).
   - Updated `/studio` (`src/pages/studio.astro`) so unconfigured Resend setups show a calm `Saved in Owner Inbox` badge instead of an alarming red error, relabeled `sent` to `Alert Sent`, added inline `Owner Alert Email` delivery readiness hints, and added a collapsible zero-domain Gmail relay & webhook setup guide.
+- **P3 / V11 (`SH_QD_V11`, completed & deployed live at `https://quotes-dock.pages.dev`)**:
+  - Added Obsidian HTML & anti-spam email builder (`src/lib/alerts/email-templates.ts`) with table-based dark UI cards, clickable phone/inbox CTAs, HTML escaping, and spam-safe subjects (no currency amounts or raw 64-char hex URLs in plain sight).
+  - Updated `sendWebhookAlert()`, `POST /api/quotes`, `POST /api/inquiries`, and the `/studio` Apps Script snippet to send multipart `text/plain` + `text/html` (`htmlBody`) and custom `senderName` via `GmailApp.sendEmail`.
 - **Future Upgrades (Post-Launch / P3+)**:
   - Enable Cloudflare R2 in Cloudflare Dashboard, create `quotes-dock-media`, and re-enable `r2_buckets` in `wrangler.jsonc` to lift photo uploads from 750 KB (D1 fallback) to 5 MB (R2).
   - Attach a dedicated QuotesDock custom domain + verified Resend sending domain (`RESEND_FROM_EMAIL`) + Polar.sh / Lemon Squeezy checkout URLs (`FOUNDING_CHECKOUT_URL`, `STANDARD_CHECKOUT_URL`).

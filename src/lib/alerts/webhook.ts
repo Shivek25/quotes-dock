@@ -3,6 +3,9 @@ import { isSafePublicWebhookUrl } from '../validation/schemas';
 export interface WebhookAlertParams {
   webhookUrl: string;
   text: string;
+  emailText?: string;
+  html?: string;
+  senderName?: string;
   subject?: string;
   to?: string;
   founderEmail?: string;
@@ -30,9 +33,11 @@ export async function sendWebhookAlert(
       : lower.includes('hooks.slack.com')
         ? { text: params.text }
         : {
-            text: params.text,
+            text: params.emailText || params.text,
+            html: params.html || '',
+            senderName: params.senderName || 'QuotesDock',
             content: params.text,
-            subject: params.subject || 'QuotesDock Alert',
+            subject: params.subject || 'QuotesDock Notification',
             to: params.to || '',
             founderEmail: params.founderEmail || '',
             ...(params.secret ? { secret: params.secret } : {}),
